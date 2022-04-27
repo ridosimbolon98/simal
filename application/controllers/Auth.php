@@ -35,7 +35,7 @@ class Auth extends CI_Controller {
 		if($cek > 0){
 			$level    = $data[0]->level;
 			$userId   = $data[0]->id_user;
-			$bagian   = $data[0]->bagian;
+			$bagian   = $data[0]->kd_dept;
 			// menyimpan data session
 			$data_session  = array(
 				'username' => $username,

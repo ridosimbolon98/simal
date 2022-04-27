@@ -137,7 +137,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="<?= base_url(); ?>admin/user" class="nav-link active">
+            <a href="<?= base_url(); ?>admin/user" class="nav-link">
               <i class="nav-icon fas fa-users"></i>
               <p>
                 Data User
@@ -153,7 +153,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="<?= base_url(); ?>admin/jadwal" class="nav-link">
+            <a href="<?= base_url(); ?>admin/jadwal" class="nav-link active">
               <i class="nav-icon fas fa-calendar"></i>
               <p>
                 Data Jadwal
@@ -210,30 +210,27 @@
           </li>
         </ul>
       </nav>
-      <!-- /.sidebar-menu -->
 
     </div>
-    <!-- /.sidebar -->
   </aside>
   <!-- /.Main Sidebar Container -->
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
     <section class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Data User</h1>
+            <h1>Data Jadwal Audit</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="<?= base_url(); ?>">Home</a></li>
-              <li class="breadcrumb-item active">Data User</li>
+              <li class="breadcrumb-item active">Data Jadwal</li>
             </ol>
           </div>
         </div>
-      </div><!-- /.container-fluid -->
+      </div>
     </section>
 
     <!-- Main content -->
@@ -241,7 +238,7 @@
       <div class="container-fluid">
 
         <div class="mb-3">
-          <button class="btn btn-info mr-2" data-toggle="modal" data-target="#add-user"><i class="fa fa-plus"></i> Tambah user baru</button>
+          <button class="btn btn-info mr-2" data-toggle="modal" data-target="#add-jadwal"><i class="fa fa-plus"></i> Tambah Jadwal Audit Baru</button>
         </div>
 
         <div class="row">
@@ -249,32 +246,33 @@
 
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Tabel Data User</h3>
+                <h3 class="card-title">Tabel Data Jadwal Audit</h3>
               </div>
-              <!-- /.card-header -->
+
               <div class="card-body">
                 <table id="example1" class="table table-bordered table-striped">
                   <thead>
                     <tr class="text-center">
-                      <th>No</th>
-                      <th>Nama</th>
-                      <th>Username</th>
-                      <th>Level</th>
-                      <th>Bagian</th>
+                      <th>Kode</th>
+                      <th>Tgl & Waktu</th>
+                      <th>Auditee</th>
+                      <th>Auditor</th>
+                      <th>Realisasi</th>
+                      <th>Periode</th>
                       <th>Action</th>
                   </tr>
                   </thead>
                   <tbody>
-                    <?php $no=1; foreach($users as $row): ?>
+                    <?php foreach($jadwal as $row): ?>
                     <tr class="text-center">
-                      <td><?= $no++; ?></td>
-                      <td><?= $row->nama ?></td>
-                      <td><?= $row->username ?></td>
-                      <td><?= $row->level ?></td>
-                      <td><?= $row->bagian_dept ?></td>
+                      <td class="text-center"><?= $row->kd_jadwal; ?></td>
+                      <td><?= substr($row->tgl_waktu,0,16) ?></td>
+                      <td><?= $row->area_dept ?></td>
+                      <td><?= strtoupper($row->nama) ?></td>
+                      <td><?= ($row->realisasi == 'f') ? "BELUM" : "SUDAH" ; ?></td>
+                      <td><?= $row->periode ?></td>
                       <td class="text-center">
-                        <a id="update-user" class="btn btn-sm btn-primary" href="javascript:;" data-toggle="modal" data-target="#update-user" data-id="<?= $row->id_user; ?>" data-username="<?= $row->username; ?>"> Update</a>
-                        <a class="btn btn-sm btn-danger" href="<?= base_url(); ?>admin/deleteUser/<?= $row->id_user; ?>" onclick="return confirm('Apakah anda yakin hapus user ini?');"> Delete</a>
+                        <a id="update-jadwal" class="btn btn-sm btn-primary" href="javascript:;" data-toggle="modal" data-target="#update-jadwal" data-id="<?= $row->kd_jadwal; ?>"> Edit</a>
                       </td>
                     </tr>
                     <?php endforeach; ?>
@@ -285,7 +283,6 @@
         </div>
       </div>
     </section>
-    <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
 
@@ -304,51 +301,38 @@
   <!-- /.control-sidebar -->
 
   
-  <!-- Modal Add User -->
-  <div class="modal fade bd-example-modal-lg" id="add-user" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <!-- Modal Add Jadwal -->
+  <div class="modal fade bd-example-modal-lg" id="add-jadwal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Tambah User Baru</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Tambah Jadwal Baru</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <form action="<?= base_url(); ?>admin/addUser" method="post">
+        <form action="<?= base_url(); ?>admin/addJadwal" method="post">
           <div class="modal-body">
             <div class="form-group">
-              <label for="nama">Nama</label>
-              <input type="text" name="nama" class="form-control" placeholder="Input nama user" required autofocus>
+              <label for="date_time">Tanggal & Waktu Audit</label>
+              <input type="datetime-local" name="date_time" class="form-control" required>
             </div>
             <div class="form-group">
-              <label for="username">Username</label>
-              <input type="text" name="username" class="form-control" placeholder="Input username" required>
-            </div>
-            <div class="form-group">
-              <label for="password">Password</label>
-              <input id="password" type="password" name="password" class="form-control" placeholder="Input password" required>
-            </div>
-            <div class="form-group">
-              <label for="konf_pass">Konfirmasi Password</label>
-              <input id="konfPassword" type="password" name="konf_pass" class="form-control" placeholder="Input konfirmasi password" required>
-              <span id="alertPass"></span>
-            </div>
-            <div class="form-group">
-              <label for="level">Level User</label>
-              <select class="form-control" name="level" id="" required>
-                  <option value="" disabled-selected>--Pilih Level--</option>
-                  <option value="admin" >ADMIN</option>
-                  <option value="auditor" >AUDITOR</option>
-                  <option value="user" >USER AUDITEE</option>
+              <label for="auditee">Auditee</label>
+              <select class="form-control" name="auditee" required>
+                <option value="" disabled-selected>--Pilih Auditee--</option>
+                <?php foreach($dept as $row): ?>
+                  <option value="<?= $row->id_dept ?>"><?= $row->area_dept; ?> -- <?= $row->bagian_dept ?></option>
+                <?php endforeach; ?>
               </select>
             </div>
             <div class="form-group">
-              <label for="bagian">Bagian User</label>
-              <select class="form-control" name="bagian" id="" required>
-                  <option value="" disabled-selected>--Pilih Bagian--</option>
-                  <?php foreach($area as $row): ?>
-                    <option value="<?= $row->id_dept ?>"><?= $row->area_dept ?> -- <?= $row->bagian_dept ?></option>
-                  <?php endforeach; ?>
+              <label for="auditor">Auditor</label>
+              <select class="form-control" name="auditor" required>
+                <option value="" disabled-selected>--Pilih Koor Auditor--</option>
+                <?php foreach($user as $row): ?>
+                  <option value="<?= $row->id_user ?>"><?= strtoupper($row->nama); ?></option>
+                <?php endforeach; ?>
               </select>
             </div>
           </div>
@@ -360,7 +344,7 @@
       </div>
     </div>
   </div>
-  <!-- End Add User -->
+  <!-- End Add Jadwal -->
 
 </div>
 <!-- ./wrapper -->
@@ -408,23 +392,6 @@
       "responsive": true,
     });
   });
-
-</script>
-
-<script>
-let pass = document.getElementById("password");
-let pass_konf = document.getElementById("konfPassword");
-
-pass_konf.addEventListener("input", () => {
-	let alertPass = document.getElementById("alertPass");
-
-	if (pass.value != pass_konf.value) {
-		alertPass.innerHTML = "*Konfirmasi password tidak sama!";
-		alertPass.setAttribute("class", "alert alert-warning my-2");
-	} else {
-    
-  }
-});
 </script>
 
 <script>

@@ -32,10 +32,7 @@
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="<?= base_url(); ?>home/pabrik" class="nav-link" target="_blank">Form Audit Pabrik</a>
-      </li>
-      <li class="nav-item d-none d-sm-inline-block">
-        <a href="<?= base_url(); ?>home/np" class="nav-link" target="_blank">Form Audit Non-Pabrik</a>
+        <a href="<?= base_url(); ?>home/form" class="nav-link" target="_blank">Form Audit 5R</a>
       </li>
     </ul>
 
@@ -95,8 +92,7 @@
       <!-- Sidebar Menu -->
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-          <!-- Add icons to the links using the .nav-icon class
-               with font-awesome or any other icon font library -->
+
           <li class="nav-item">
             <a href="<?= base_url(); ?>user/" class="nav-link active">
               <i class="nav-icon fas fa-th"></i>
@@ -106,7 +102,23 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="<?= base_url(); ?>user/lap" class="nav-link">
+            <a href="<?= base_url(); ?>user/ref_audit" class="nav-link">
+              <i class="nav-icon fas fa-random"></i>
+              <p>
+                Temuan Referensi
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?= base_url(); ?>user/jadwal" class="nav-link">
+              <i class="nav-icon fas fa-calendar"></i>
+              <p>
+                Jadwal Audit
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?= base_url(); ?>user/lk" class="nav-link">
               <i class="nav-icon far fa-calendar-alt"></i>
               <p>
                 Ketidaksesuaian
@@ -212,10 +224,10 @@
                   <div class="form-group row">
                     <label for="" class="col-sm-3 col-form-label">Gambar Temuan & Sesudah Audit</label>
                     <div class="col-sm-4">
-                      <img class="img-thumbnail rounded" src="<?= base_url(); ?>public/audit/<?= $row->gambar; ?>" alt="gambar-temuan">
+                      <img class="img-thumbnail rounded" src="<?= $SITE_URL.'/temuan_audit/' ?><?= $row->gambar; ?>" alt="gambar-temuan">
                     </div>
                     <div class="col-sm-4">
-                      <img class="img-thumbnail rounded" src="<?= base_url(); ?>public/audit/<?= $row->gambar_sesudah; ?>" alt="gambar-sesudah">
+                      <img class="img-thumbnail rounded" src="<?= $SITE_URL.'/temuan_audit/' ?><?= $row->gambar_sesudah; ?>" alt="gambar-sesudah">
                     </div>
                   </div>
                   <div class="form-group row">
@@ -252,11 +264,8 @@
             <!-- /.card -->
 
           </div>
-          <!-- /.col -->
         </div>
-        <!-- /.row -->
       </div>
-      <!-- /.container-fluid -->
     </section>
     <!-- /.content -->
   </div>
@@ -394,17 +403,17 @@
   });
 
   $(document).on("click", "#img-temuan", function () {
-    const bu = window.location.origin + "/audit/";
+    const bu = window.location.origin + "/temuan_audit/";
     var id = $(this).data("id");
-    var gambar = bu+"public/audit/"+id;
+    var gambar = bu+id;
 
     $("#img-temuan-if").attr("src", gambar);
   });
 
   $(document).on("click", "#img-sesudah", function () {
-    const bu1 = window.location.origin + "/audit/";
+    const bu1 = window.location.origin + "/temuan_audit/";
     var id1 = $(this).data("id_");
-    var gambar = bu1+"public/audit/"+id1;
+    var gambar = bu1+id1;
 
     $("#img-sesudah-if").attr("src", gambar);
   });

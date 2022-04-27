@@ -16,9 +16,21 @@
   <link rel="stylesheet" href="<?= base_url(); ?>assets/bootstrap/dist/css/bootstrap.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/dist/css/adminlte.min.css">
+  <!-- Toastr -->
+  <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/plugins/toastr/toastr.min.css">
+  <link rel="stylesheet" href="<?= base_url(); ?>assets/custom/st_dm.css">
+
   <style>
     .img-audit{
       height: 100px !important;
+    }
+    .ib_success:hover{
+      background-color: #28A745 !important;
+      color: #fff !important;
+    }
+    .ib_warning:hover{
+      color: #fff !important;
+      background-color: #ffc107 !important;
     }
   </style>
 </head>
@@ -32,10 +44,7 @@
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="<?= base_url(); ?>home/pabrik" class="nav-link" target="_blank">Form Audit Pabrik</a>
-      </li>
-      <li class="nav-item d-none d-sm-inline-block">
-        <a href="<?= base_url(); ?>home/np" class="nav-link" target="_blank">Form Audit Non-Pabrik</a>
+        <a href="<?= base_url(); ?>home/form" class="nav-link" target="_blank">Form Audit 5R</a>
       </li>
     </ul>
 
@@ -95,8 +104,7 @@
       <!-- Sidebar Menu -->
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-          <!-- Add icons to the links using the .nav-icon class
-               with font-awesome or any other icon font library -->
+
           <li class="nav-item">
             <a href="<?= base_url(); ?>user/" class="nav-link active">
               <i class="nav-icon fas fa-th"></i>
@@ -106,7 +114,23 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="<?= base_url(); ?>user/lap" class="nav-link">
+            <a href="<?= base_url(); ?>user/ref_audit" class="nav-link">
+              <i class="nav-icon fas fa-random"></i>
+              <p>
+                Temuan Referensi
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?= base_url(); ?>user/jadwal" class="nav-link">
+              <i class="nav-icon fas fa-calendar"></i>
+              <p>
+                Jadwal Audit
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?= base_url(); ?>user/lk" class="nav-link">
               <i class="nav-icon far fa-calendar-alt"></i>
               <p>
                 Ketidaksesuaian
@@ -146,18 +170,47 @@
             </ol>
           </div>
         </div>
-      </div><!-- /.container-fluid -->
+      </div>
     </section>
 
     <!-- Main content -->
     <section class="content">
       <div class="container-fluid">
+
+        <div class="mb-3">
+          <div class="row">
+            <div class="col-md-3 col-sm-6 col-12">
+              <div class="info-box ib_success">
+                <span class="info-box-icon bg-success"><i class="fas fa-unlock-alt"></i></span>
+                <a class="bg_mt" href="<?= base_url('user/otorisasi'); ?>">
+                  <div id="dept-widget" class="info-box-content">
+                    <span class="info-box-text">Halaman Otorisasi Audit</span>
+                    <span class="info-box-number"><?= $jlh_otor; ?> temuan</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+
+            <div class="col-md-3 col-sm-6 col-12">
+              <div class="info-box ib_warning">
+                <span class="info-box-icon bg-warning"><i class="fas fa-random"></i></span>
+                <a class="bg_mt" href="<?= base_url('user/ref_temuan'); ?>">
+                  <div id="dept-widget" class="info-box-content">
+                    <span class="info-box-text">Halaman Referensi Audit</span>
+                    <span class="info-box-number"><?= $jlh_refa ?> referensi</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="row">
           <div class="col-12">
 
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Data Table Audit 5R Area <?= $area; ?></h3>
+                <h3 class="card-title">Data Table Audit 5R Area <?= $area; ?> | <span class="text-info">(Sudah di Otorisasi)</span></h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
@@ -169,9 +222,7 @@
                       <th>Temuan</th>
                       <th>Keterangan</th>
                       <th>Gbr Temuan</th>
-                      <th>Gbr Sesudah</th>
                       <th>Tim Audit</th>
-                      <th>Rekomendasi</th>
                       <th>Status</th>
                       <th>Action</th>
                   </tr>
@@ -180,11 +231,10 @@
                     <?php $no=1; foreach($audit as $row): ?>
                     <tr>
                       <td class="text-center"><?= $no++; ?></td>
-                      <td><?= $row->tgl_audit ?></td>
+                      <td><?= substr($row->tgl_audit,0,16) ?></td>
                       <td><?= $row->desk_pt ?></td>
                       <td><?= $row->ket_audit ?></td>
-                      <td class="text-center"><button id="img-temuan" type="button" data-toggle="modal" data-target="#exampleModal" data-id="<?= $row->gambar; ?>"><img id="img_audit" class="img-audit" src="<?= base_url(); ?>public/audit/<?= $row->gambar; ?>" alt="gambar-temuan"></button></td>
-                      <td class="text-center"><button id="img-sesudah" type="button" data-toggle="modal" data-target="#exampleModal1" data-id_="<?= $row->gambar_sesudah; ?>"><img id="img_sesudah" class="img-audit" src="<?= base_url(); ?>public/audit/<?= $row->gambar_sesudah; ?>" alt="gambar-sesudah-belum-ada"></button></td>
+                      <td class="text-center"><button id="img-temuan" type="button" data-toggle="modal" data-target="#exampleModal" data-id="<?= $row->gambar; ?>"><img id="img_audit" class="img-audit" src="<?= $SITE_URL.'/temuan_audit/' ?><?= $row->gambar; ?>" alt="gambar-temuan"></button></td>
                       <td>
                         <?php
                         $i=0;
@@ -195,25 +245,19 @@
                         }
                         ?>
                       </td>
-                      <td><?= $row->rekomendasi ?></td>
                       <td class="text-center"><?= ($row->status == 'f') ? "OPEN" : "CLOSED" ; ?></td>
                       <td class="text-center d-flex justify-content-between">
-                        <a id="update-temuan" class="btn btn-sm btn-primary" href="javascript:;" data-toggle="modal" data-target="#update-gs" data-id_aud="<?= $row->id_audit; ?>" data-gs="<?= $row->gambar_sesudah; ?>"><i class="fa fa-pen-square text-white" data-toogle="tooltip" title="Update Temuan"></i> </a>
+                        <a id="btn-rt" class="btn btn-sm btn-info mr-1" href="javascript:;" data-toggle="modal" data-target="#ref-temuan" data-id_aud="<?= $row->id_audit; ?>"><i class="fa fa-random text-white" data-toogle="tooltip" title="Referensi Temuan"></i> </a> 
                         <a class="btn btn-sm btn-success" href="<?= base_url(); ?>user/detail_temuan/<?= $row->id_audit; ?>" data-toogle="tooltip" title="Detail Temuan"><i class="fa fa-list text-white"></i></a>
                       </td>
                     </tr>
                     <?php endforeach; ?>
                 </table>
               </div>
-              <!-- /.card-body -->
             </div>
-            <!-- /.card -->
           </div>
-          <!-- /.col -->
         </div>
-        <!-- /.row -->
       </div>
-      <!-- /.container-fluid -->
     </section>
     <!-- /.content -->
   </div>
@@ -275,24 +319,31 @@
   </div>
   <!-- End Modal Detail Gambar Temuan -->
   
-  
-
-  <!-- Modal Update Rekomendasi -->
-  <div class="modal fade bd-example-modal-lg" id="update-gs" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <!-- Modal Update Refensi Temuan -->
+  <div class="modal fade bd-example-modal-lg" id="ref-temuan" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Update Rekomendasi</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Tambah Referensi Temuan</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <form action="<?= base_url(); ?>user/update_gbr" method="post" enctype="multipart/form-data">
+        <form action="<?= base_url(); ?>user/add_ref" method="post" enctype="multipart/form-data">
           <div class="modal-body">
             <div class="form-group">
-              <label for="rekom">Gambar Sesudah</label>
+              <label for="rekom">Referensi Bagian</label>
               <input type="hidden" name="id_audit" class="form-control" id="id_audit">
-              <input type="file" class="form-control" name="gambar" id="gambar_sesudah" required>
+              <select name="referensi" id="" class="form-control" required>
+                <option value="" disabled selected>--Pilih Referensi Bagian--</option>
+                <?php foreach ($dept as $row): ?>
+                  <option value="<?= $row->bagian_dept ?>" ><?= $row->bagian_dept ?></option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="rekom">Alasan Referensi</label>
+              <textarea class="form-control" name="alasan" id="" cols="30" rows="10" required></textarea>
             </div>
           </div>
           <div class="modal-footer">
@@ -303,7 +354,7 @@
       </div>
     </div>
   </div>
-  <!-- End Update Rekomendasi -->
+  <!-- End Update Refensi Temuan -->
 
 </div>
 <!-- ./wrapper -->
@@ -332,6 +383,8 @@
 <script src="<?= base_url(); ?>assets/adminlte/dist/js/demo.js"></script>
 <!-- Sweetalert -->
 <script src="<?= base_url(); ?>assets/sweetalert/sweetalert.min.js"></script>
+<!-- Toastr -->
+<script src="<?= base_url(); ?>assets/adminlte/plugins/toastr/toastr.min.js"></script>
 <!-- Page specific script -->
 <script>
   $(function () {
@@ -351,34 +404,41 @@
   });
 
   $(document).on("click", "#img-temuan", function () {
-    const bu = window.location.origin + "/audit/";
+    const bu = window.location.origin + "/temuan_audit/";
     var id = $(this).data("id");
-    var gambar = bu+"public/audit/"+id;
+    var gambar = bu+id;
 
     $("#img-temuan-if").attr("src", gambar);
   });
 
   $(document).on("click", "#img-sesudah", function () {
-    const bu1 = window.location.origin + "/audit/";
+    const bu1 = window.location.origin + "/temuan_audit/";
     var id1 = $(this).data("id_");
-    var gambar = bu1+"public/audit/"+id1;
+    var gambar = bu1+id1;
 
     $("#img-sesudah-if").attr("src", gambar);
   });
 
-  
-
-  $(document).on("click", "#update-temuan", function () {
+  $(document).on("click", "#btn-rt", function () {
     var id_aud = $(this).data("id_aud");
-    var gs = $(this).data("gs");
-
     $("#id_audit").val(id_aud);
-    $("#gambar_sesudah").val(gs);
   });
 
   $('#simpanUK').click(function(){
-    return confirm('Apakah anda yakin update rekomendasi?');
+    return confirm('Apakah anda yakin tambah referensi temuan?');
   });
+</script>
+
+<script>
+  <?php if($this->session->flashdata('success')){ ?>
+    toastr.success("<?php echo $this->session->flashdata('success'); ?>");
+  <?php }else if($this->session->flashdata('error')){  ?>
+    toastr.error("<?php echo $this->session->flashdata('error'); ?>");
+  <?php }else if($this->session->flashdata('warning')){  ?>
+    toastr.warning("<?php echo $this->session->flashdata('warning'); ?>");
+  <?php }else if($this->session->flashdata('info')){  ?>
+    toastr.info("<?php echo $this->session->flashdata('info'); ?>");
+  <?php } ?>
 </script>
 </body>
 </html>

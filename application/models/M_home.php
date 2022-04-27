@@ -36,4 +36,13 @@ class M_home extends CI_Model {
         $this->db->where($where);
 		return $this->db->update($table,$data);
     }
+
+    // Fungsi untuk mengambil data auditor
+    function getAuditor($table,$table2,$where) {
+		$this->db->select('*');
+		$this->db->from($table);
+		$this->db->join($table2, $table.'.id_auditor='.$table2.'.id_auditor');
+        $this->db->where($where);
+		return $this->db->get();
+	}
 }

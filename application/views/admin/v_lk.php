@@ -32,10 +32,7 @@
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="<?= base_url(); ?>home/pabrik" class="nav-link" target="_blank">Form Audit Pabrik</a>
-      </li>
-      <li class="nav-item d-none d-sm-inline-block">
-        <a href="<?= base_url(); ?>home/np" class="nav-link" target="_blank">Form Audit Non-Pabrik</a>
+        <a href="<?= base_url(); ?>home/form" class="nav-link" target="_blank">Form Audit 5R</a>
       </li>
     </ul>
 
@@ -142,6 +139,22 @@
               <i class="nav-icon fas fa-users"></i>
               <p>
                 Data User
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?= base_url(); ?>admin/auditor" class="nav-link">
+              <i class="nav-icon fas fa-user-friends"></i>
+              <p>
+                Data Auditor
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?= base_url(); ?>admin/jadwal" class="nav-link">
+              <i class="nav-icon fas fa-calendar"></i>
+              <p>
+                Data Jadwal
               </p>
             </a>
           </li>
@@ -256,27 +269,22 @@
                       <td class="text-center"><?= $row->kd_lok_audit ?></td>
                       <td class="text-center"><?= $row->bagian_dept ?></td>
                       <td><?= $row->ket_audit ?></td>
-                      <td class="text-center"><button id="img-temuan" type="button" data-toggle="modal" data-target="#exampleModal" data-id="<?= $row->gambar; ?>"><img id="img_audit" class="img-audit" src="<?= base_url(); ?>public/audit/<?= $row->gambar; ?>" alt="gambar-temuan"></button></td>
+                      <td class="text-center"><button id="img-temuan" type="button" data-toggle="modal" data-target="#exampleModal" data-id="<?= $row->gambar; ?>"><img id="img_audit" class="img-audit" src="<?= $SITE_URL.'/temuan_audit/' ?><?= $row->gambar; ?>" alt="gambar-temuan"></button></td>
                       <td class="text-justify"><?= $row->rekomendasi ?></td>
-                      <td class="text-center"><button id="img-temuan" type="button" data-toggle="modal" data-target="#exampleModal" data-id="<?= $row->gambar_sesudah; ?>"><img id="img_audit" class="img-audit" src="<?= base_url(); ?>public/audit/<?= $row->gambar_sesudah; ?>" alt="gambar-sesudah-belum-ada"></button></td>
+                      <td class="text-center"><button id="img-temuan" type="button" data-toggle="modal" data-target="#exampleModal" data-id="<?= $row->gambar_sesudah; ?>"><img id="img_audit" class="img-audit" src="<?= $SITE_URL.'/temuan_audit/' ?><?= $row->gambar_sesudah; ?>" alt="gambar-sesudah-belum-ada"></button></td>
                       <td class="text-center"><?= $row->koor_dept ?></td>
                       <td class="text-center"><?= $row->due_date ?></td>
                       <td class="text-center"><?= ($row->status == 'f') ? "OPEN" : "CLOSED" ; ?></td>
                     </tr>
                     <?php endforeach; ?>
+                  </tbody>
                 </table>
               </div>
-              <!-- /.card-body -->
             </div>
-            <!-- /.card -->
           </div>
-          <!-- /.col -->
         </div>
-        <!-- /.row -->
       </div>
-      <!-- /.container-fluid -->
     </section>
-    <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
 
@@ -390,24 +398,13 @@
   });
 
   $(document).on("click", "#img-temuan", function () {
-    const bu = window.location.origin + "/audit/";
+    const bu = window.location.origin + "/temuan_audit/";
     var id = $(this).data("id");
-    var gambar = bu+"public/audit/"+id;
+    var gambar = bu+id;
 
     $("#img-temuan-if").attr("src", gambar);
   });
 
-  $(document).on("click", "#update-temuan", function () {
-    var id = $(this).data("id");
-    var rekom = $(this).data("rekom");
-
-    $("#id_audit").val(id);
-    $("#rekom").val(rekom);
-  });
-
-  $('#simpanUK').click(function(){
-    return confirm('Apakah anda yakin update rekomendasi?');
-  });
 </script>
 </body>
 </html>

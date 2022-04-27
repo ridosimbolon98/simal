@@ -16,6 +16,8 @@
   <link rel="stylesheet" href="<?= base_url(); ?>assets/bootstrap/dist/css/bootstrap.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/dist/css/adminlte.min.css">
+  <!-- Toastr -->
+  <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/plugins/toastr/toastr.min.css">
   <style>
     .img-audit{
       height: 100px !important;
@@ -32,10 +34,7 @@
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="<?= base_url(); ?>home/pabrik" class="nav-link" target="_blank">Form Audit Pabrik</a>
-      </li>
-      <li class="nav-item d-none d-sm-inline-block">
-        <a href="<?= base_url(); ?>home/np" class="nav-link" target="_blank">Form Audit Non-Pabrik</a>
+        <a href="<?= base_url(); ?>home/form" class="nav-link" target="_blank">Form Audit 5R</a>
       </li>
     </ul>
 
@@ -145,6 +144,22 @@
               </p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="<?= base_url(); ?>admin/auditor" class="nav-link">
+              <i class="nav-icon fas fa-user-friends"></i>
+              <p>
+                Data Auditor
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?= base_url(); ?>admin/jadwal" class="nav-link">
+              <i class="nav-icon fas fa-calendar"></i>
+              <p>
+                Data Jadwal
+              </p>
+            </a>
+          </li>
           <li class="nav-header">LAPORAN</li>
           <li class="nav-item">
             <a href="#" class="nav-link">
@@ -195,16 +210,13 @@
           </li>
         </ul>
       </nav>
-      <!-- /.sidebar-menu -->
 
     </div>
-    <!-- /.sidebar -->
   </aside>
   <!-- /.Main Sidebar Container -->
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
     <section class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
@@ -263,7 +275,7 @@
                       <td><?= $row->desk_pt ?></td>
                       <td><?= $row->ket_audit ?></td>
                       <td><?= $row->jlh_tem_audit ?></td>
-                      <td><button id="img-temuan" type="button" data-toggle="modal" data-target="#exampleModal" data-id="<?= $row->gambar; ?>"><img id="img_audit" class="img-audit" src="<?= base_url(); ?>public/audit/<?= $row->gambar; ?>" alt="gambar-temuan"></button></td>
+                      <td><button id="img-temuan" type="button" data-toggle="modal" data-target="#exampleModal" data-id="<?= $row->gambar; ?>"><img id="img_audit" class="img-audit" src="<?= $SITE_URL.'/temuan_audit/' ?><?= $row->gambar; ?>" alt="gambar-temuan"></button></td>
                       <td>
                         <?php
                         $i=0;
@@ -281,17 +293,11 @@
                     <?php endforeach; ?>
                 </table>
               </div>
-              <!-- /.card-body -->
             </div>
-            <!-- /.card -->
           </div>
-          <!-- /.col -->
         </div>
-        <!-- /.row -->
       </div>
-      <!-- /.container-fluid -->
     </section>
-    <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
 
@@ -390,6 +396,8 @@
 <script src="<?= base_url(); ?>assets/adminlte/dist/js/demo.js"></script>
 <!-- Sweetalert -->
 <script src="<?= base_url(); ?>assets/sweetalert/sweetalert.min.js"></script>
+<!-- Toastr -->
+<script src="<?= base_url(); ?>assets/adminlte/plugins/toastr/toastr.min.js"></script>
 <!-- Page specific script -->
 <script>
   $(function () {
@@ -409,9 +417,9 @@
   });
 
   $(document).on("click", "#img-temuan", function () {
-    const bu = window.location.origin + "/audit/";
+    const bu = window.location.origin + "/temuan_audit/";
     var id = $(this).data("id");
-    var gambar = bu+"public/audit/"+id;
+    var gambar = bu+id;
 
     $("#img-temuan-if").attr("src", gambar);
   });
@@ -430,5 +438,18 @@
     return confirm('Apakah anda yakin update rekomendasi?');
   });
 </script>
+
+<script>
+<?php if($this->session->flashdata('success')){ ?>
+  toastr.success("<?php echo $this->session->flashdata('success'); ?>");
+<?php }else if($this->session->flashdata('error')){  ?>
+  toastr.error("<?php echo $this->session->flashdata('error'); ?>");
+<?php }else if($this->session->flashdata('warning')){  ?>
+  toastr.warning("<?php echo $this->session->flashdata('warning'); ?>");
+<?php }else if($this->session->flashdata('info')){  ?>
+  toastr.info("<?php echo $this->session->flashdata('info'); ?>");
+<?php } ?>
+</script>
+
 </body>
 </html>

@@ -16,6 +16,8 @@
   <link rel="stylesheet" href="<?= base_url(); ?>assets/bootstrap/dist/css/bootstrap.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/dist/css/adminlte.min.css">
+  <!-- Toastr -->
+  <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/plugins/toastr/toastr.min.css">
   <style>
     .img-audit{
       height: 100px !important;
@@ -32,10 +34,7 @@
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="<?= base_url(); ?>home/pabrik" class="nav-link" target="_blank">Form Audit Pabrik</a>
-      </li>
-      <li class="nav-item d-none d-sm-inline-block">
-        <a href="<?= base_url(); ?>home/np" class="nav-link" target="_blank">Form Audit Non-Pabrik</a>
+        <a href="<?= base_url(); ?>home/form" class="nav-link" target="_blank">Form Audit 5R</a>
       </li>
     </ul>
 
@@ -142,6 +141,22 @@
               <i class="nav-icon fas fa-users"></i>
               <p>
                 Data User
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?= base_url(); ?>admin/auditor" class="nav-link">
+              <i class="nav-icon fas fa-user-friends"></i>
+              <p>
+                Data Auditor
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?= base_url(); ?>admin/jadwal" class="nav-link">
+              <i class="nav-icon fas fa-calendar"></i>
+              <p>
+                Data Jadwal
               </p>
             </a>
           </li>
@@ -291,17 +306,12 @@
                     ?>
                 </table>
               </div>
-              <!-- /.card-body -->
             </div>
-            <!-- /.card -->
           </div>
-          <!-- /.col -->
         </div>
-        <!-- /.row -->
       </div>
-      <!-- /.container-fluid -->
     </section>
-    <!-- /.content -->
+
   </div>
   <!-- /.content-wrapper -->
 
@@ -319,59 +329,6 @@
   </aside>
   <!-- /.control-sidebar -->
 
-  <!-- Modal Detail Gambar Temuan -->
-  <div class="modal fade bd-example-modal-lg" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Detail Gambar Temuan</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <img class="img-fluid rounded" id="img-temuan-if" src="">
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- End Modal Detail Gambar Temuan -->
-  
-  <!-- Modal Update Rekomendasi -->
-  <div class="modal fade bd-example-modal-lg" id="update-rekom" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Update Rekomendasi</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <form action="<?= base_url(); ?>admin/update_rekom" method="post">
-          <div class="modal-body">
-            <div class="form-group">
-              <label for="rekom">Rekomendasi</label>
-              <input type="hidden" name="id_audit" class="form-control" id="id_audit">
-              <input type="hidden" name="id_dep" class="form-control" value="<?= $id_dep; ?>">
-              <textarea class="form-control" name="rekomendasi" id="rekom" rows="3" required></textarea>
-            </div>
-            <div class="form-group">
-              <label for="rekom">Due Date</label>
-              <input type="date" class="form-control" name="due_date" id="due_date" required>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-primary" id="simpanUK">Simpan</button>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-  <!-- End Update Rekomendasi -->
 
 </div>
 <!-- ./wrapper -->
@@ -400,6 +357,8 @@
 <script src="<?= base_url(); ?>assets/adminlte/dist/js/demo.js"></script>
 <!-- Sweetalert -->
 <script src="<?= base_url(); ?>assets/sweetalert/sweetalert.min.js"></script>
+<!-- Toastr -->
+<script src="<?= base_url(); ?>assets/adminlte/plugins/toastr/toastr.min.js"></script>
 <!-- Page specific script -->
 <script>
   $(function () {
@@ -418,27 +377,19 @@
     });
   });
 
-  $(document).on("click", "#img-temuan", function () {
-    const bu = window.location.origin + "/audit/";
-    var id = $(this).data("id");
-    var gambar = bu+"public/audit/"+id;
-
-    $("#img-temuan-if").attr("src", gambar);
-  });
-
-  $(document).on("click", "#update-temuan", function () {
-    var id = $(this).data("id");
-    var rekom = $(this).data("rekom");
-    var due_date = $(this).data("due_date");
-
-    $("#id_audit").val(id);
-    $("#rekom").val(rekom);
-    $("#due_date").val(due_date);
-  });
-
-  $('#simpanUK').click(function(){
-    return confirm('Apakah anda yakin update rekomendasi?');
-  });
 </script>
+
+<script>
+<?php if($this->session->flashdata('success')){ ?>
+  toastr.success("<?php echo $this->session->flashdata('success'); ?>");
+<?php }else if($this->session->flashdata('error')){  ?>
+  toastr.error("<?php echo $this->session->flashdata('error'); ?>");
+<?php }else if($this->session->flashdata('warning')){  ?>
+  toastr.warning("<?php echo $this->session->flashdata('warning'); ?>");
+<?php }else if($this->session->flashdata('info')){  ?>
+  toastr.info("<?php echo $this->session->flashdata('info'); ?>");
+<?php } ?>
+</script>
+
 </body>
 </html>

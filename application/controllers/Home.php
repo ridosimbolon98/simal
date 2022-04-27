@@ -21,28 +21,113 @@ class Home extends CI_Controller {
 	}
 
 	function index(){
-		$data['title'] = "Audit 5R-Pabrik | Form Audit Page";
-		$where         = array('area_auditor' => 'PABRIK');
-		$data['area']  = $this->m_home->get('s_mst.tb_dept')->result();
-		$data['audit'] = $this->m_home->getWhere('s_mst.tb_auditor', $where)->result();
+		// hapus session audit
+		$this->session->unset_userdata('lokasi');
+		$this->session->unset_userdata('tim_audit');
+		$this->session->unset_userdata('area');
+		$this->session->unset_userdata('audit');
+
+		$data['title']   = "Audit 5R | Form Audit Page";
+		$userid          = $this->session->userdata("user_id");
+		$where           = array('id_koor' => $userid);
+		$data['area']    = $this->m_home->get('s_mst.tb_dept')->result();
+		$data['auditor'] = $this->m_home->getAuditor('s_mst.tb_map_auditor','s_mst.tb_auditor', $where)->result();
 		$this->load->view('auditor/v_index', $data);
 	}
 
-	function pabrik(){
-		$data['title'] = "Audit 5R-Pabrik | Form Audit Page";
-		$userid        = $this->session->userdata("user_id");
-		$where         = array('area_auditor' => 'PABRIK', 'parent_koor' => $userid);
-		$data['area']  = $this->m_home->get('s_mst.tb_dept')->result();
-		$data['audit'] = $this->m_home->getWhere('s_mst.tb_auditor', $where)->result();
-		$this->load->view('auditor/v_pabrik', $data);
+	function form(){
+		$isAudit = $this->session->has_userdata('audit');
+		if ($isAudit) {
+			$lokasi        = $this->session->userdata("lokasi");
+			$data['title'] = "Audit 5R-$lokasi| Form Audit Page";
+			$this->load->view('auditor/v_form', $data);
+		} else {
+			if (!empty($_POST['area'])) {
+				$auditor        = $this->input->post('tim_audit[]');
+				$area           = $this->input->post('area');
+				
+				$where          = array('id_dept' => $area);
+				$data['lokasi'] = $this->m_home->getWhere('s_mst.tb_dept', $where)->result();
+				$lokasi         = $data['lokasi'][0]->kat_dept;
+				
+				$audit_session  = array(
+					'lokasi'    => $lokasi,
+					'tim_audit' => json_encode($auditor),
+					'area'      => $area,
+					'audit'     => true,
+				);
+		
+				// Mencatat log audit
+				$this->session->set_userdata($audit_session);
+				$data['title'] = "Audit 5R-$lokasi| Form Audit Page";
+				$this->load->view('auditor/v_form', $data);
+			} else {
+				echo "<script>alert('Silakan pilih Tim Audit dan Area terlebih dahulu!');</script>";
+				echo "<script>location='".base_url()."home';</script>";
+				exit;
+			}
+		}
 	}
 
-	function np(){
-		$data['title'] = "Audit 5R-Non Pabrik | Form Audit Page";
-		$where         = array('area_auditor' => 'NON-PABRIK');
-		$data['area']  = $this->m_home->get('s_mst.tb_dept')->result();
-		$data['audit'] = $this->m_home->getWhere('s_mst.tb_auditor', $where)->result();
-		$this->load->view('auditor/v_non_pabrik', $data);
+	// Fungsi untuk menyimpan data tidak ada audit
+	function formno(){
+		$isAudit = $this->session->has_userdata('audit');
+		if ($isAudit) {
+			$lokasi        = $this->session->userdata("lokasi");
+			$data['title'] = "Audit 5R-$lokasi| Form Audit Page";
+			$this->load->view('auditor/v_form', $data);
+		} else {
+			if (!empty($_POST['area'])) {
+				$auditor        = $this->input->post('tim_audit[]');
+				$area           = $this->input->post('area');
+				
+				$where          = array('id_dept' => $area);
+				$data['lokasi'] = $this->m_home->getWhere('s_mst.tb_dept', $where)->result();
+				$lokasi         = $data['lokasi'][0]->kat_dept;
+				$periode        = date('Y-m');
+				
+				$data_audit = array(
+					'kd_lok_audit'  => $lokasi,
+					'tgl_audit'     => date("Y-m-d"),
+					'ket_audit'     => "TIDAK ADA TEMUAN",
+					'user_audit'    => $this->session->userdata("user_id"),
+					'kd_dept_audit' => $area,
+					'status'        => false,
+					'tim_audit'     => json_encode($auditor),
+					'gambar_sesudah'=> '0',
+					'updated'       => date("Y-m-d"),
+					'periode'       => $periode,
+					'otorisasi'     => 'BELUM',
+				);
+		
+				$insert = $this->m_home->insert('s_mst.tb_audit',$data_audit);
+				if ($insert){
+					$log_type = 'insert';
+					$log_desc = 'Tambah Data Audit Area: '.$area.', Lokasi: '.$lokasi;
+					$ip       = $this->input->ip_address();
+					$userLog  = $this->session->userdata("username");
+					date_default_timezone_set("Asia/Jakarta");
+					$data_log = array(
+						'username'      => $userLog,
+						'type_log'      => $log_type,
+						'deskripsi_log' => $log_desc,
+						'date'          => date("Y-m-d H:i:s"),
+						'ip'            => $ip
+					);
+					$this->m_log->insertLog('s_log.tb_log', $data_log);
+					$this->session->set_flashdata('success', "Berhasil submit data audit.");
+					redirect(base_url('home/form'));
+				} else{
+					$this->session->set_flashdata('error', "Gagal submit data audit.");
+					echo "<script>location='".base_url()."home/form';</script>";
+					exit;
+				}
+			} else {
+				echo "<script>alert('Silakan pilih Tim Audit dan Area terlebih dahulu!');</script>";
+				echo "<script>location='".base_url()."home';</script>";
+				exit;
+			}
+		}
 	}
 
 	public function get_at(){
@@ -82,11 +167,14 @@ class Home extends CI_Controller {
 	}
 
 	function send(){
+		date_default_timezone_set("Asia/Jakarta");
+		$lokasi        = $this->session->userdata("lokasi");
+		$data['title'] = "Audit 5R-$lokasi| Form Audit Page";
+
 		$k_lok   = $this->input->post('k_lok');
-		$auditor = $this->input->post('tim_audit[]');
-		$area    = $this->input->post('area');
-		$tanggal = $this->input->post('tanggal');
-		$periode = date('Y-m', strtotime($tanggal));
+		$auditor = $this->session->userdata("tim_audit");
+		$area    = $this->session->userdata("area");
+		$periode = date('Y-m');
 		$k_5r    = $this->input->post('k_5r');
 		$a_tem   = $this->input->post('a_tem');
 		$k_tem   = $this->input->post('k_tem');
@@ -94,7 +182,7 @@ class Home extends CI_Controller {
 		$jlh_tem = $this->input->post('jlh_temuan');
 		$gambar  = $this->input->post('gambar');
 
-		$config['upload_path']   = './public/audit';
+		$config['upload_path']   = $_SERVER['DOCUMENT_ROOT'].'/temuan_audit';
 		$config['allowed_types'] = 'jpg|png|jpeg';
 		$config['remove_space']  = TRUE;
 		$this->load->library('upload',$config);
@@ -106,7 +194,7 @@ class Home extends CI_Controller {
 
 			$data_audit = array(
 				'kd_lok_audit'  => $k_lok,
-				'tgl_audit'     => $tanggal,
+				'tgl_audit'     => date("Y-m-d"),
 				'kd_5r_audit'   => $k_5r,
 				'kd_atem_audit' => $a_tem,
 				'kd_tem_audit'  => $k_tem,
@@ -116,16 +204,17 @@ class Home extends CI_Controller {
 				'user_audit'    => $this->session->userdata("user_id"),
 				'kd_dept_audit' => $area,
 				'status'        => false,
-				'tim_audit'     => json_encode($auditor),
+				'tim_audit'     => $auditor,
 				'gambar_sesudah'=> '0',
 				'updated'       => date("Y-m-d"),
-				'periode'       => $periode
+				'periode'       => $periode,
+				'otorisasi'     => 'BELUM',
 			);
 
 			$insert = $this->m_home->insert('s_mst.tb_audit',$data_audit);
 			if ($insert){
 				$log_type = 'insert';
-				$log_desc = 'Tambah Data Audit';
+				$log_desc = 'Tambah Data Audit Area: '.$area.', Lokasi: '.$k_lok;
 				$ip       = $this->input->ip_address();
 				$userLog  = $this->session->userdata("username");
 				date_default_timezone_set("Asia/Jakarta");
@@ -137,10 +226,11 @@ class Home extends CI_Controller {
 					'ip'            => $ip
 				);
 				$this->m_log->insertLog('s_log.tb_log', $data_log);
-				redirect(base_url('home'));
+				$this->session->set_flashdata('success', "Berhasil submit data audit.");
+				redirect(base_url('home/form'));
 			} else{
-				echo "<script>alert('Gagal send data audit');</script>";
-				echo "<script>location='".base_url()."home';</script>";
+				$this->session->set_flashdata('error', "Gagal submit data audit.");
+				echo "<script>location='".base_url()."home/form';</script>";
 				exit;
 			}
 		} else {
@@ -150,6 +240,10 @@ class Home extends CI_Controller {
 			echo "</pre>";
 		}
 
+	}
+
+	function md5(){
+		$this->load->view('auditor/md5');
 	}
 
 

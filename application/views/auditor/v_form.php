@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="<?= base_url(); ?>assets/multi-select/dist/css/BsMultiSelect.min.css">
     <link rel="stylesheet" href="<?= base_url(); ?>assets/fontawesome/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="<?= base_url(); ?>assets/css/su_index.css">
+    <!-- Toastr -->
+    <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/plugins/toastr/toastr.min.css">
 </head>
 <body>
     <!-- Navbar Section -->
@@ -27,16 +29,12 @@
                         <a class="nav-link" aria-current="page" href="#">HOME</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url(); ?>home/np">NON-PABRIK</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="<?= base_url(); ?>home">PABRIK</a>
+                        <a class="nav-link" href="<?= base_url(); ?>home/form">FORM AUDIT</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        AUTENTIKASI</a>
+                        <?= strtoupper($this->session->userdata("username")); ?></a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="<?= base_url(); ?>auth">Login</a></li>
                             <li><a class="dropdown-item" href="<?= base_url(); ?>auth/logout">Logout</a></li>
                             <li>
                             <hr class="dropdown-divider">
@@ -61,30 +59,8 @@
                         </div>
                         <form action="<?= base_url(); ?>home/send" method="post" enctype="multipart/form-data">
                             <div class="mb-3">
-                                <label for="tim_audit" class="form-label">Tim Audit</label>
-                                <input name="k_lok" type="hidden" class="form-control" value="PABRIK">
-                                <select name="tim_audit[]" id="tim_audit" class="form-select form-select-sm" aria-label="tim_audit" multiple="multiple" required>
-                                    <option value="" disabled selected>--Pilih Tim Audit--</option>
-                                    <?php foreach($audit as $row): ?>
-                                        <option value="<?= $row->nama_auditor; ?>"><?= $row->nama_auditor; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="area" class="form-label">Area & Bagian</label>
-                                <select name="area" id="area" class="form-select form-select-sm" aria-label="area" required>
-                                    <option value="" disabled selected data-live-search="true">--Pilih Area & Bagian--</option>
-                                    <?php foreach ($area as $row) : ?>
-                                        <option value="<?= $row->id_dept ?>"><?= $row->area_dept ?> - <?= $row->bagian_dept ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="tgl_audit" class="form-label">Tanggal Temuan</label>
-                                <input name="tanggal" type="date" class="form-control" id="tgl_audit" required>
-                            </div>
-                            <div class="mb-3">
                                 <label for="k_5r" class="form-label">Kategori 5R</label>
+                                <input name="k_lok" type="hidden" class="form-control" value="<?= $this->session->userdata("lokasi") ?>">
                                 <select name="k_5r" id="k_5r" class="form-select form-select-sm" aria-label="k_5r" required>
                                     <option value="" disabled selected>--Pilih Kategori 5R--</option>
                                     <option value="RINGKAS">RINGKAS</option>
@@ -115,9 +91,10 @@
                             </div>
                             <div class="mb-3">
                                 <label for="formFileSm" class="form-label">Gambar Temuan</label>
-                                <input class="form-control form-control-sm" id="formFileSm" type="file" name="gambar" required>
+                                <input class="form-control form-control-sm" id="formFileSm" type="file" name="gambar" accept="image/*" capture="camera" required>
                             </div>
                             <button type="submit" class="btn btn-success" onclick="return confirm('Apakah anda yakin submit audit ini?');">Submit</button>
+                            <a href="<?= base_url(); ?>home" class="btn btn-info">Kembali</a>
                         </form>
                     </div>
                 </div>
@@ -133,13 +110,13 @@
                                 <p>Pertama, lakukan autentikasi atau login sesuai dengan user auditor masing-masing.</p>
                             </li>
                             <li>
-                                <p>Setelah itu, silakan pilih pada menu form Pabrik atau Non-Pabrik. Jika audit dilakukan di area Pabrik, maka silakan klik menu Pabrik. Jika audit dilakukan di area Non-Pabrik, silakan klik menu Non-Pabrik.</p>
+                                <p>Setelah itu, silakan pilih pada menu Ada temuan atau Tidak.</p>
                             </li>
                             <li>
-                                <p>Lalu, akan muncul form Audit 5R dengan isian (field) Tim Audit, Area dan Bagian, Tanggal Temuan, Kategori 5R, Aspek Temuan, Kategori Temuan, Lokasi/Keterangan, Jumlah Temuan, dan Gambar Temuan.</p>
+                                <p>Lalu, akan muncul form, pilih tim auditor bersama lokasi area audit, lalu klik lanjutkan.</p>
                             </li>
                             <li>
-                                <p>Silakan pilih Tim Audit yang melakukan audit pada saat itu. Setelah itu silakan pilih Area & Bagian yang dilakukan audit. Pilih tanggal sesuai dengan tanggal audit. Pilih Kategori 5R, Aspek Temuan dan Kategori Temuan yang terdapat temuan. Setelah itu, isi Lokasi/Keterangan yang jelas mengenai temuan tersebut. Isi jumlah temuan sesuai dengan kondisi di lapangan. Lalu ambil gambar evidence temuan.</p>
+                                <p>Selat itu, pilih Kategori 5R, Aspek Temuan dan Kategori Temuan yang terdapat temuan. Setelah itu, isi Lokasi/Keterangan yang jelas mengenai temuan tersebut. Isi jumlah temuan sesuai dengan kondisi di lapangan. Lalu ambil gambar evidence temuan.</p>
                             </li>
                             <li>
                                 <p>Pastikan semua isian form sudah terisi dengan benar, jika sudah silakan klik Submit.</p>
@@ -163,7 +140,8 @@
     <script src="<?= base_url(); ?>assets/bootstrap/dist/js/popper.min.js"></script>
     <script src="<?= base_url(); ?>assets/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="<?= base_url(); ?>assets/multi-select/dist/js/BsMultiSelect.min.js"></script>
-
+    <!-- Toastr -->
+    <script src="<?= base_url(); ?>assets/adminlte/plugins/toastr/toastr.min.js"></script>
     <!-- End Script Section -->
 
     <script type="text/javascript">
@@ -257,5 +235,16 @@
         });
     </script>
     
+    <script>
+        <?php if($this->session->flashdata('success')){ ?>
+        toastr.success("<?php echo $this->session->flashdata('success'); ?>");
+        <?php }else if($this->session->flashdata('error')){  ?>
+        toastr.error("<?php echo $this->session->flashdata('error'); ?>");
+        <?php }else if($this->session->flashdata('warning')){  ?>
+        toastr.warning("<?php echo $this->session->flashdata('warning'); ?>");
+        <?php }else if($this->session->flashdata('info')){  ?>
+        toastr.info("<?php echo $this->session->flashdata('info'); ?>");
+        <?php } ?>
+    </script>
 </body>
 </html>

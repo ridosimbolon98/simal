@@ -31,10 +31,7 @@
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="<?= base_url(); ?>home/pabrik" class="nav-link" target="_blank">Form Audit Pabrik</a>
-      </li>
-      <li class="nav-item d-none d-sm-inline-block">
-        <a href="<?= base_url(); ?>home/np" class="nav-link" target="_blank">Form Audit Non-Pabrik</a>
+        <a href="<?= base_url(); ?>home/form" class="nav-link" target="_blank">Form Audit 5R</a>
       </li>
     </ul>
 
@@ -144,6 +141,22 @@
               </p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="<?= base_url(); ?>admin/auditor" class="nav-link">
+              <i class="nav-icon fas fa-user-friends"></i>
+              <p>
+                Data Auditor
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?= base_url(); ?>admin/jadwal" class="nav-link">
+              <i class="nav-icon fas fa-calendar"></i>
+              <p>
+                Data Jadwal
+              </p>
+            </a>
+          </li>
           <li class="nav-header">LAPORAN</li>
           <li class="nav-item">
             <a href="#" class="nav-link">
@@ -236,9 +249,7 @@
                 <span class="info-box-text"><?= $row->area_dept ?></span>
                 <span class="info-box-number"><?= $row->bagian_dept ?></span>
               </div>
-              <!-- /.info-box-content -->
             </div>
-            <!-- /.info-box -->
           </div>
         <?php endforeach; ?>
 

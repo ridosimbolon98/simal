@@ -39,6 +39,34 @@ class M_admin extends CI_Model {
 		$this->db->select('*');
 		$this->db->from($table);
 		$this->db->join($table2, $table.'.kd_dept='.$table2.'.id_dept');
+        $this->db->order_by($table.'.id_user', 'DESC');
+		return $this->db->get();
+	}
+
+    // Fungsi untuk mengambil data users
+    function getKoor($table,$table2,$where) {
+		$this->db->select('*');
+		$this->db->from($table);
+		$this->db->join($table2, $table.'.kd_dept='.$table2.'.id_dept');
+        $this->db->where($where);
+		return $this->db->get();
+	}
+
+    // Fungsi untuk mengambil data map auditor
+    function getMapAuditors($table,$table2,$table3) {
+		$this->db->select('*');
+		$this->db->from($table);
+		$this->db->join($table2, $table.'.id_auditor='.$table2.'.id_auditor');
+		$this->db->join($table3, $table.'.id_koor='.$table3.'.id_user');
+		return $this->db->get();
+	}
+
+    // Fungsi untuk mengambil data jadwal auditor
+    function getJadwal($table,$table2,$table3) {
+		$this->db->select('*');
+		$this->db->from($table);
+		$this->db->join($table2, $table.'.auditor='.$table2.'.id_user');
+		$this->db->join($table3, $table.'.auditee='.$table3.'.id_dept');
 		return $this->db->get();
 	}
     
@@ -73,5 +101,10 @@ class M_admin extends CI_Model {
     // Fungsi untuk hapus seluruh data di tabel ranking
     function truncateRanking($table){
         return $this->db->truncate($table);
+    }
+
+    // insert data ke database
+    function insertData($table, $data){
+        return $this->db->insert($table,$data);
     }
 }
