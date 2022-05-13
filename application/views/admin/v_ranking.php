@@ -233,7 +233,7 @@
             </ol>
           </div>
         </div>
-      </div><!-- /.container-fluid -->
+      </div>
     </section>
 
     <!-- Main content -->
@@ -250,14 +250,14 @@
               <div class="card-body">
                 <form class="form-inline" action="<?= base_url(); ?>admin/generate_ranking" method="post">
                   <div class="form-group mb-2">
-                    <label for="">Pilih Periode</label>
-                    <input type="month" name="periode" class="form-control mx-2" required>
-                    <select name="area" id="" class="form-control mr-2" required>
+                    <label class="mr-2 mb-2">Pilih Periode</label>
+                    <input type="month" name="periode" class="form-control mr-2 mb-2" required>
+                    <select name="area" id="" class="form-control mr-2 mb-2" required>
                       <option value="" disabled selected>--Pilih Area--</option>
                       <option value="PABRIK">PABRIK</option>
                       <option value="NON-PABRIK">NON-PABRIK</option>
                     </select>
-                    <button type="submit" class="btn btn-primary">Generate</button>
+                    <button type="submit" class="btn btn-primary mb-2"><i class="fa fa-chart-bar"></i> Generate</button>
                   </div>
                 </form>
                 <table id="example1" class="table table-bordered table-striped">
@@ -268,6 +268,7 @@
                       <th>Auditee</th>
                       <th>Periode</th>
                       <th>Total Nilai</th>
+                      <th>Ranking</th>
                       <th>Kategori</th>
                   </tr>
                   </thead>
@@ -284,6 +285,7 @@
                            <td class="text-center"><?= $row->nama_dep; ?></td>
                            <td class="text-center"><?= $row->periode_ranking; ?></td>
                            <td class="text-center"><?= $row->total_ranking; ?></td>
+                           <td class="text-center"><?= $row->row_number; ?></td>
                            <td class="text-center">
                               <?php
                                 if ($row->total_ranking >= 0 && $row->total_ranking <= 26) {
@@ -363,7 +365,7 @@
 <script>
   $(function () {
     $("#example1").DataTable({
-      "responsive": true, "lengthChange": false, "autoWidth": false,
+      "responsive": true, "lengthChange": true, "autoWidth": false,
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
     }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     $('#example2').DataTable({

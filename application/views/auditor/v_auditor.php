@@ -161,8 +161,6 @@
     <section class="content">
       <div class="container-fluid">
 
-      <?php echo $_SERVER['DOCUMENT_ROOT']; ?>
-
         <div class="row">
 
           <!-- Data Auditor -->

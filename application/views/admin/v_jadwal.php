@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
   <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
   <link rel="stylesheet" href="<?= base_url(); ?>assets/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="<?= base_url(); ?>assets/multi-select/dist/css/BsMultiSelect.min.css">
   <!-- Toastr -->
   <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/plugins/toastr/toastr.min.css">
   <!-- Theme style -->
@@ -314,24 +315,30 @@
         <form action="<?= base_url(); ?>admin/addJadwal" method="post">
           <div class="modal-body">
             <div class="form-group">
-              <label for="date_time">Tanggal & Waktu Audit</label>
-              <input type="datetime-local" name="date_time" class="form-control" required>
+              <label for="date_time">Tanggal Audit</label>
+              <input type="date" name="date_time" class="form-control" required>
             </div>
             <div class="form-group">
-              <label for="auditee">Auditee</label>
-              <select class="form-control" name="auditee" required>
-                <option value="" disabled-selected>--Pilih Auditee--</option>
-                <?php foreach($dept as $row): ?>
-                  <option value="<?= $row->id_dept ?>"><?= $row->area_dept; ?> -- <?= $row->bagian_dept ?></option>
-                <?php endforeach; ?>
+              <label for="area">Area Audit</label>
+              <select id="area" class="form-control" name="area" required>
+                <option value="" disabled-selected>--Pilih Area Audit--</option>
+                  <option value="PABRIK">PABRIK</option>
+                  <option value="NON-PABRIK">NON-PABRIK</option>
               </select>
             </div>
             <div class="form-group">
+              <label for="auditee">Section Auditee</label>
+              <select id="section" class="form-control" name="auditee" required>
+                <option value="" disabled-selected>--Pilih Section--</option>
+              </select>
+              <small id="ds"></small>
+            </div>
+            <div class="form-group">
               <label for="auditor">Auditor</label>
-              <select class="form-control" name="auditor" required>
-                <option value="" disabled-selected>--Pilih Koor Auditor--</option>
+              <select name="auditor[]" class="form-select form-control" id="auditor" aria-label="auditor" multiple="multiple" required>
+                <option value="" disabled selected>--Pilih Tim Audit--</option>
                 <?php foreach($user as $row): ?>
-                  <option value="<?= $row->id_user ?>"><?= strtoupper($row->nama); ?></option>
+                  <option value="<?= $row->id_user; ?>"><?= strtoupper($row->nama); ?></option>
                 <?php endforeach; ?>
               </select>
             </div>
@@ -351,6 +358,7 @@
 
 <!-- jQuery -->
 <script src="<?= base_url(); ?>assets/adminlte/plugins/jquery/jquery.min.js"></script>
+<script src="<?= base_url(); ?>assets/bootstrap/dist/js/popper.min.js"></script>
 <!-- Bootstrap 4 -->
 <script src="<?= base_url(); ?>assets/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="<?= base_url(); ?>assets/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -371,6 +379,7 @@
 <script src="<?= base_url(); ?>assets/adminlte/dist/js/adminlte.min.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="<?= base_url(); ?>assets/adminlte/dist/js/demo.js"></script>
+<script src="<?= base_url(); ?>assets/multi-select/dist/js/BsMultiSelect.min.js"></script>
 <!-- Sweetalert -->
 <script src="<?= base_url(); ?>assets/sweetalert/sweetalert.min.js"></script>
 <!-- Toastr -->
@@ -391,6 +400,62 @@
       "autoWidth": false,
       "responsive": true,
     });
+  });
+
+  $(document).ready(function(){
+    $('#auditor').bsMultiSelect();
+  });
+</script>
+
+<script>
+  let base_url = window.location.origin + "/audit/";
+  let area     = document.getElementById("area");
+  let section  = document.getElementById("section");
+
+  area.addEventListener("input", () => {
+      $(".s_sect").remove();
+      var data_lok = area.value;
+      $.ajax({
+          type: 'POST',
+          url: base_url + "admin/getSect",
+          data: {data: data_lok},
+          cache: false,
+          success: function(msg){
+              var data = JSON.parse(msg);
+              var iter = 0;
+              while (iter < data.length) {
+                  $("#section").append(
+                      "<option class='s_sect' value='" +
+                          data[iter].kd_section +
+                          "'>" +
+                          data[iter].nama_section + " - " + data[iter].area_section +
+                          "</option>"
+                  );
+                  iter++;
+              }
+          }
+      });
+  });
+
+  section.addEventListener("input", () => {
+      $(".s_dept").remove();
+      var data_sect = section.value;
+      $.ajax({
+          type: 'POST',
+          url: base_url + "admin/getDept",
+          data: {data: data_sect},
+          cache: false,
+          success: function(msg){
+              var data = JSON.parse(msg);
+              var iter = 0;
+              while (iter < data.length) {
+                  $("#ds").append(
+                    "<span class='text-info font-weight-light s_dept'>"+ data[iter].area_dept +', '+"</span>"
+                  );
+                  iter++;
+              }
+          }
+      });
   });
 </script>
 

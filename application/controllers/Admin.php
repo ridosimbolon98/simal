@@ -244,50 +244,77 @@ class Admin extends CI_Controller {
 		$data['title']   = "Audit 5R | Data Jadwal Audit Page";
 		$level           = $this->session->userdata("level");
 		$data['dept']    = $this->m_admin->get('s_mst.tb_dept')->result();
+		$data['section'] = $this->m_admin->get('s_mst.tb_section')->result();
 		$data['jadwal']  = $this->m_admin->getJadwal('s_mst.tb_jadwal','s_mst.tb_user','s_mst.tb_dept')->result();
-		$data['user']    = $this->m_admin->get('s_mst.tb_user')->result();
+		$where           = array('level' => 'auditor');
+		$data['user']    = $this->m_admin->getWhere('s_mst.tb_user', $where)->result();
 		$this->load->view('admin/v_jadwal', $data);
+	}
+
+	// FUNGSI UNTUK MENGAMBIL DATA SECTION
+	function getSect(){
+		$area = $this->input->post('data');
+		$where = array(
+			'area_section' => $area
+		);
+ 
+		$data = $this->m_admin->getWhere('s_mst.tb_section', $where)->result();
+		echo json_encode($data);
+	}
+
+	// FUNGSI UNTUK MENGAMBIL DATA DEPT
+	function getDept(){
+		$section = $this->input->post('data');
+		$where = array(
+			'section' => $section
+		);
+ 
+		$data = $this->m_admin->getWhere('s_mst.tb_dept', $where)->result();
+		echo json_encode($data);
 	}
 
 	// SUBMIT DATA JADWAL AUDIT KE TB_JADWAL
 	function addJadwal(){
 		date_default_timezone_set("Asia/Jakarta");
 		$data['title'] = "Audit 5R | Data Jadwal Audit Page";
-		$kd_jadwal     = "JA".date("YmdHi");
+		
 		$dt            = date_create($this->input->post("date_time"));
 		$auditee       = $this->input->post("auditee");
-		$auditor       = $this->input->post("auditor");
+		$auditor       = $this->input->post("auditor[]");
 		$periode       = date_format($dt,'Y-m');
 
-		// cek apakah jadwal audit suda ada pada periode tersebut atau tidak
-		$whereJA     = array(
-			'auditee' => $auditee,
-			'auditor' => $auditor,
-			'periode' => $periode,
-		);
 
-		$isJA = $this->m_admin->getWhere('s_mst.tb_jadwal', $whereJA)->num_rows(); 
-		if ($isJA > 0){
-			$this->session->set_flashdata('warning', "Jadwal auditor: $auditor, pada auditee: $auditee, periode: $periode, sudah ada di jadwal. Silakan pilih jadwal/periode lain!");
-			echo "<script>location='".base_url()."admin/jadwal';</script>";
-			exit;
-		}
+		for ($i=0; $i < count($auditor) ; $i++) { 
+			// cek apakah jadwal audit suda ada pada periode tersebut atau tidak
+			$whereJA     = array(
+				'auditee' => $auditee,
+				'auditor' => $auditor[$i],
+				'periode' => $periode,
+			);
+	
+			$isJA[$i] = $this->m_admin->getWhere('s_mst.tb_jadwal', $whereJA)->num_rows(); 
+			if ($isJA[$i] > 0){
+				$this->session->set_flashdata('warning', "Jadwal auditor: $auditor[$i], pada auditee: $auditee, periode: $periode, sudah ada di jadwal. Silakan pilih jadwal/periode lain!");
+				continue;
+			}
 
-		$data_jadwal     = array(
-			'kd_jadwal' => $kd_jadwal,
-			'tgl_waktu' => date_format($dt,'d-m-Y H:i'),
-			'auditee'   => $auditee,
-			'auditor'   => $auditor,
-			'realisasi' => false,
-			'periode'   => $periode,
-			'updated'   => date("Y-m-d H:i:s"),
-		);
+			$kd_jadwal[$i] = "JA".date("YmdHi").$i;
+	
+			$data_jadwal[$i] = array(
+				'kd_jadwal' => $kd_jadwal[$i],
+				'tgl_waktu' => date_format($dt,'d-m-Y H:i'),
+				'auditee'   => $auditee,
+				'auditor'   => $auditor[$i],
+				'realisasi' => false,
+				'periode'   => $periode,
+				'updated'   => date("Y-m-d H:i:s"),
+			);
+	
+			// insert user ke tb_user
+			$insertJadwal  = $this->m_admin->insertData('s_mst.tb_jadwal', $data_jadwal[$i]);
 
-		// insert user ke tb_user
-		$insertJadwal  = $this->m_admin->insertData('s_mst.tb_jadwal', $data_jadwal);
-		if ($insertJadwal){
 			$log_type = 'insert';
-			$log_desc = "Tambah data jadwal auditor: $auditor, pada auditee: $auditee, periode: $periode";
+			$log_desc = "Tambah data jadwal auditor: $auditor[$i], pada auditee: $auditee, periode: $periode";
 			$ip       = $this->input->ip_address();
 			$userLog  = $this->session->userdata("username");
 			date_default_timezone_set("Asia/Jakarta");
@@ -299,7 +326,10 @@ class Admin extends CI_Controller {
 				'ip'            => $ip
 			);
 			$this->m_log->insertLog('s_log.tb_log', $data_log);
-			$this->session->set_flashdata('success', "Jadwal auditor: $auditor, pada auditee: $auditee, periode: $periode berhasil ditambahkan");
+		}
+
+		if ($insertJadwal){
+			$this->session->set_flashdata('success', "Jadwal auditor berhasil ditambahkan");
 			echo "<script>location='".base_url()."admin/jadwal';</script>";
 		} else{
 			$this->session->set_flashdata('error', 'Gagal menambah data jadwal. Ada kesalahan saat input di sistem!');
@@ -589,13 +619,21 @@ class Admin extends CI_Controller {
 
 	// Fungsi untuk generate ranking
 	function generate_ranking(){
+		date_default_timezone_set("Asia/Jakarta");
 		$periode    = $this->input->post('periode');
 		$area       = $this->input->post('area');
 		$where_area = array('kat_dept' => $area);
 		$data_dept  = $this->m_admin->getWhere('s_mst.tb_dept', $where_area)->result();
 
+		// cek apakag rangking pada periode tertentu sudah ada atau tidak
+		$whereRanking = array('area_ranking' => $area, 'periode_ranking' => $periode);
+		$isRanking    = $this->m_admin->getWhere('s_mst.tb_ranking', $whereRanking)->num_rows();
+		if ($isRanking > 0) {
+			$this->m_admin->delete('s_mst.tb_ranking', $whereRanking);
+		}
+
 		// Kosongkan (truncate) tabel ranking
-		$this->m_admin->truncateRanking('s_mst.tb_ranking');
+		// $this->m_admin->truncateRanking('s_mst.tb_ranking');
 
 		// Generate ranking dan insert ke table tb_ranking
 		$i = 0;
@@ -731,27 +769,51 @@ class Admin extends CI_Controller {
 				$r4AT[$i] = 0;
 			}
 
-			$data_r1[$i] = $r1AT[$i] + $r1BT[$i] + $r1CT[$i];
-			$data_r2[$i] = $r2AT[$i] + $r2BT[$i] + $r2CT[$i];
-			$data_r3[$i] = $r3AT[$i] + $r3BT[$i] + $r3CT[$i];
-			$data_r4[$i] = $r4AT[$i];
-			$data_total[$i] = $data_r1[$i] + $data_r2[$i] + $data_r3[$i] +$data_r4[$i];
+			// cek updated temuan terakhir
+			$whereDateClose[$i] = array(
+				'kd_lok_audit'  => $area,
+				'periode'       => $periode,
+				'kd_dept_audit' => $row->id_dept,
+			);
 
+			// get jlh temuan open per auditee
+			$data_sum_temuan[$i] = $this->m_admin->getSumTemAuditee($row->id_dept)->result();
+			if ($data_sum_temuan[$i] == null) {
+				$real_sum[$i] = 0;
+			} else {
+				$real_sum[$i] = $data_sum_temuan[$i][0]->sum;
+			}
+
+
+			$date_close[$i] = $this->m_admin->getDateClose('s_mst.tb_audit', $whereDateClose[$i])->result();
+			$num_dl         = $this->m_admin->getDateClose('s_mst.tb_audit', $whereDateClose[$i])->num_rows();
+			if ($num_dl == 0) {
+				$updated_ranking[$i]  = '2000-01-01 01:01:01+07';
+			} else {
+				$updated_ranking[$i]  = $date_close[$i][0]->max;
+			}
+
+			$data_r1[$i]    = $r1AT[$i] + $r1BT[$i] + $r1CT[$i];
+			$data_r2[$i]    = $r2AT[$i] + $r2BT[$i] + $r2CT[$i];
+			$data_r3[$i]    = $r3AT[$i] + $r3BT[$i] + $r3CT[$i];
+			$data_r4[$i]    = $r4AT[$i];
+			$data_total[$i] = $data_r1[$i] + $data_r2[$i] + $data_r3[$i] +$data_r4[$i];
+			$id_ranking[$i] = date('YmdHis').$i;
 			$data_ranking[$i] = array(
+				'id_ranking'      => $id_ranking[$i],
 				'area_ranking'    => $area,
 				'dept_ranking'    => $row->id_dept,
 				'periode_ranking' => $periode,
-				'total_ranking'   => $data_total[$i],
-				'updated_ranking' => date('Y-m-d'),
-				'nama_dep'       => $row->area_dept
+				'total_ranking'   => $data_total[$i] - $real_sum[$i],
+				'updated_ranking' => $updated_ranking[$i],
+				'nama_dep'        => $row->bagian_dept,
 			);
-			$insert_ranking = $this->m_admin->insert('s_mst.tb_ranking', $data_ranking[$i]);
-			if ($insert_ranking){
+			$insert_ranking[$i] = $this->m_admin->insert('s_tmp.tb_ranking', $data_ranking[$i]);
+			if ($insert_ranking[$i]){
 				$log_type = 'insert';
 				$log_desc = 'Generate Data Ranking Temuan Audit, Area: '.$area.', Bagian: '.$row->area_dept.', Periode: '.$periode;
 				$ip       = $this->input->ip_address();
 				$userLog  = $this->session->userdata("username");
-				date_default_timezone_set("Asia/Jakarta");
 				$data_log = array(
 					'username'      => $userLog,
 					'type_log'      => $log_type,
@@ -760,24 +822,40 @@ class Admin extends CI_Controller {
 					'ip'            => $ip
 				);
 				$this->m_log->insertLog('s_log.tb_log', $data_log);
-				$this->session->set_flashdata('success', "Berhasil generate data ranking");
-				echo "<script>location='".base_url()."admin/ranking';</script>";
 			} else{
 				$this->session->set_flashdata('error', "Gagal generate data ranking. Ada kesalahan di sisi server. Error 500!");
-				echo "<script>location='".base_url()."admin/ranking';</script>";
-				exit;
+				continue;
 			}
-
-
 			$i++;
 		}
 
+		// cek apakag rangking pada periode tertentu sudah ada atau tidak
+		$whereRanking = array('area_ranking' => $area, 'periode_ranking' => $periode);
+		$isRanking    = $this->m_admin->getWhere('s_tmp.tb_ranking', $whereRanking)->num_rows();
+		if ($isRanking > 0) {
+			// lakukan generate urutan ranking dan simpan ke tabel master
+			$this->m_admin->generateRanking();
+			$this->m_admin->truncateRanking('s_tmp.tb_ranking');
+
+			$this->session->set_flashdata('success', "Berhasil generate data ranking");
+			echo "<script>location='".base_url()."admin/ranking';</script>";
+		} else {
+			$this->session->set_flashdata('error', "Gagal generate data ranking. Ada kesalahan di sisi server. Error 500!");
+			echo "<script>location='".base_url()."admin/ranking';</script>";
+			exit;
+		}
 	}
 
 	
 
 
 
+	// Menampilkan Data Log
+	public function log(){
+		$data['title'] = "Data Log | Audit 5R";
+		$data['log']   = $this->m_admin->getLog('s_log.tb_log')->result();
+		$this->load->view('admin/v_log', $data);
+	}
 
 	public function coba(){
 		

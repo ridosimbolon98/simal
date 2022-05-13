@@ -91,7 +91,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="formFileSm" class="form-label">Gambar Temuan</label>
-                                <input class="form-control form-control-sm" id="formFileSm" type="file" name="gambar" accept="image/*" capture="camera" required>
+                                <input class="form-control form-control-sm" id="formFileSm" type="file" name="files[]" multiple required>
                             </div>
                             <button type="submit" class="btn btn-success" onclick="return confirm('Apakah anda yakin submit audit ini?');">Submit</button>
                             <a href="<?= base_url(); ?>home" class="btn btn-info">Kembali</a>

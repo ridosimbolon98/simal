@@ -14,10 +14,10 @@
   <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
   <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
   <link rel="stylesheet" href="<?= base_url(); ?>assets/bootstrap/dist/css/bootstrap.min.css">
-  <!-- Theme style -->
-  <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/dist/css/adminlte.min.css">
   <!-- Toastr -->
   <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/plugins/toastr/toastr.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/dist/css/adminlte.min.css">
   <style>
     .img-audit{
       height: 100px !important;
@@ -72,9 +72,9 @@
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
 
     <!-- Brand Logo -->
-    <a href="<?= base_url(); ?>assets/adminlte/index3.html" class="brand-link">
+    <a href="<?= base_url(); ?>" class="brand-link">
       <img src="<?= base_url(); ?>assets/adminlte/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-      <span class="brand-text font-weight-light">User AUDIT 5R</span>
+      <span class="brand-text font-weight-light">Admin AUDIT 5R</span>
     </a>
 
     <!-- Sidebar -->
@@ -97,133 +97,90 @@
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
           <li class="nav-item">
-            <a href="<?= base_url(); ?>user/" class="nav-link active">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>
+                Dashboard
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="<?= base_url(); ?>admin" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Dashboard v1</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-header">MASTER DATA</li>
+          <li class="nav-item">
+            <a href="<?= base_url(); ?>admin/log" class="nav-link active">
               <i class="nav-icon fas fa-th"></i>
               <p>
-                Data Audit
+                Data Log
               </p>
             </a>
           </li>
-          <li class="nav-item">
-            <a href="<?= base_url(); ?>user/ref_audit" class="nav-link">
-              <i class="nav-icon fas fa-random"></i>
-              <p>
-                Temuan Referensi
-              </p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="<?= base_url(); ?>user/jadwal" class="nav-link">
-              <i class="nav-icon fas fa-calendar"></i>
-              <p>
-                Jadwal Audit
-              </p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="<?= base_url(); ?>user/lk" class="nav-link">
-              <i class="nav-icon far fa-calendar-alt"></i>
-              <p>
-                Ketidaksesuaian
-              </p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="<?= base_url(); ?>user/ranking" class="nav-link">
-              <i class="nav-icon fas fa-columns"></i>
-              <p>
-                Ranking
-              </p>
-            </a>
-          </li>
+          
         </ul>
       </nav>
-      <!-- /.sidebar-menu -->
 
     </div>
-    <!-- /.sidebar -->
   </aside>
   <!-- /.Main Sidebar Container -->
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
     <section class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Data Audit 5R</h1>
+            <h1>Data Log Audit</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="<?= base_url('user'); ?>">Home</a></li>
-              <li class="breadcrumb-item"><a href="<?= base_url('user'); ?>">Data Audit</a></li>
-              <li class="breadcrumb-item active">Otorisasi Audit</li>
+              <li class="breadcrumb-item"><a href="<?= base_url(); ?>">Home</a></li>
+              <li class="breadcrumb-item active">Data Log</li>
             </ol>
           </div>
         </div>
-      </div><!-- /.container-fluid -->
+      </div>
     </section>
 
     <!-- Main content -->
     <section class="content">
       <div class="container-fluid">
 
-        <div class="mb-3">
-          <a class="btn btn-info mr-2" href="<?= base_url('user/otorAudit'); ?>" onclick="return confirm('Apakah Anda yakin otorisasi audit hari ini?');"><i class="fa fa-unlock-alt mr-2"></i> Otorisasi Audit Hari Ini</a>
-        </div>
-
         <div class="row">
           <div class="col-12">
 
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Data Table Audit Periode <strong><?= date('d-m-Y'); ?></strong> | <span class="text-info">(Belum di Otorisasi)</span></h3>
+                <h3 class="card-title">Tabel Data Log</h3>
               </div>
-              <!-- /.card-header -->
+
               <div class="card-body">
                 <table id="example1" class="table table-bordered table-striped">
                   <thead>
                     <tr class="text-center">
-                      <th>No</th>
-                      <th>Tgl Audit</th>
-                      <th>Temuan</th>
-                      <th>Keterangan</th>
-                      <th>Gbr Temuan</th>
-                      <th>Tim Audit</th>
-                      <th>Status</th>
-                      <th>Otorisasi</th>
-                      <th>Action</th>
-                    </tr>
+                      <th>Kode</th>
+                      <th>Username</th>
+                      <th>Type Log</th>
+                      <th>Deskripsi Log</th>
+                      <th>Date Log</th>
+                      <th>IP</th>
+                  </tr>
                   </thead>
                   <tbody>
-                    <?php $no=1; foreach($audit as $row): ?>
-                      
-                    <tr>
-                      <td class="text-center"><?= $no++; ?></td>
-                      <td><?= substr($row->tgl_audit,0,16) ?></td>
-                      <td><?= $row->desk_pt ?></td>
-                      <td><?= $row->ket_audit ?></td>
-                      <td class="text-center">
-                        <button id="img-temuan" type="button" data-toggle="modal" data-target="#exampleModal" data-id="<?= $row->id_audit; ?>">
-                          <img id="img_audit" class="img-audit" src="<?= $SITE_URL.'/temuan_audit/' ?><?= json_decode($row->gambar,true)[0]; ?>" alt="gambar-temuan">
-                        </button>
-                      </td>
-                      <td>
-                        <?php
-                        $i=0;
-                        $auditors = json_decode($row->tim_audit);
-                        while($i < count($auditors)){
-                          echo ($i+1).". ".$auditors[$i]."<br>";
-                          $i++;
-                        }
-                        ?>
-                      </td>
-                      <td class="text-center"><?= ($row->status == 'f') ? "OPEN" : "CLOSED" ; ?></td>
-                      <td class="text-center"><?= $row->otorisasi ?></td>
-                      <td class="text-center">
-                        <a id="btnDelOtor" class="btn btn-sm btn-danger" href="<?= base_url(); ?>user/del_audit/<?= $row->id_audit; ?>" data-toggle="tooltip" data-html="true" title="Delete Data Audit" onclick="return confirm('Apakah anda yakin hapus data audit ini?');"><i class="fa fa-trash"></i></a>
-                      </td>
+                    <?php foreach($log as $row): ?>
+                    <tr class="text-center">
+                      <td><?= $row->id_log; ?></td>
+                      <td><?= $row->username ?></td>
+                      <td><?= $row->type_log ?></td>
+                      <td><?= $row->deskripsi_log ?></td>
+                      <td><?= $row->date ?></td>
+                      <td><?= $row->ip ?></td>
                     </tr>
                     <?php endforeach; ?>
                 </table>
@@ -249,42 +206,6 @@
     <!-- Control sidebar content goes here -->
   </aside>
   <!-- /.control-sidebar -->
-
-  <!-- Modal Detail Gambar Temuan -->
-  <div class="modal fade bd-example-modal-lg" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Detail Gambar Temuan</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
-            <div id="imgSlide" class="carousel-inner">
-              <div class="carousel-item active">
-                <img id="firstImg" class="d-block w-100" src="" alt="Gambar Temuan">
-              </div>
-            </div>
-            <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
-              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-              <span class="sr-only">Previous</span>
-            </a>
-            <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
-              <span class="carousel-control-next-icon" aria-hidden="true"></span>
-              <span class="sr-only">Next</span>
-            </a>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- End Modal Detail Gambar Temuan -->
-
 
 </div>
 <!-- ./wrapper -->
@@ -332,48 +253,19 @@
       "responsive": true,
     });
   });
-
-  $(document).on("click", "#img-temuan", function () {
-    const bu = window.location.origin + "/temuan_audit/";
-    const base_url = window.location.origin + "/audit/";
-    var idImg = $(this).data("id");
-
-    $.ajax({
-      type: 'POST',
-      url: base_url + "user/getImg",
-      data: {data: idImg},
-      cache: false,
-      success: function(msg){
-        var data_gbr = JSON.parse(msg);
-        var iter = 0;
-        while (iter < JSON.parse(data_gbr).length) {
-          $("#imgSlide").append(
-            "<div class='carousel-item s_img'><img class='d-block w-100' src='"+bu+JSON.parse(data_gbr)[iter]+"' alt='Gambar Temuan "+iter+"'></div>"
-          );
-          iter++;
-        }
-        $("#firstImg").attr("src", bu+JSON.parse(data_gbr)[0]);
-      }
-    });
-  });
-
-  $('#simpanUK').click(function(){
-    return confirm('Apakah anda yakin update rekomendasi?');
-  });
 </script>
 
 <script>
-  <?php if($this->session->flashdata('success')){ ?>
-    toastr.success("<?php echo $this->session->flashdata('success'); ?>");
-  <?php }else if($this->session->flashdata('error')){  ?>
-    toastr.error("<?php echo $this->session->flashdata('error'); ?>");
-  <?php }else if($this->session->flashdata('warning')){  ?>
-    toastr.warning("<?php echo $this->session->flashdata('warning'); ?>");
-  <?php }else if($this->session->flashdata('isrealisasi')){  ?>
-    toastr.warning("<?php echo $this->session->flashdata('isrealisasi'); ?>");
-  <?php }else if($this->session->flashdata('info')){  ?>
-    toastr.info("<?php echo $this->session->flashdata('info'); ?>");
-  <?php } ?>
+<?php if($this->session->flashdata('success')){ ?>
+  toastr.success("<?php echo $this->session->flashdata('success'); ?>");
+<?php }else if($this->session->flashdata('error')){  ?>
+  toastr.error("<?php echo $this->session->flashdata('error'); ?>");
+<?php }else if($this->session->flashdata('warning')){  ?>
+  toastr.warning("<?php echo $this->session->flashdata('warning'); ?>");
+<?php }else if($this->session->flashdata('info')){  ?>
+  toastr.info("<?php echo $this->session->flashdata('info'); ?>");
+<?php } ?>
 </script>
+
 </body>
 </html>

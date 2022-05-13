@@ -62,7 +62,7 @@ class M_auditor extends CI_Model {
 		$this->db->select('*');
 		$this->db->from($table);
 		$this->db->join($table2, $table.'.auditor='.$table2.'.id_user');
-		$this->db->join($table3, $table.'.auditee='.$table3.'.id_dept');
+		$this->db->join($table3, $table.'.auditee='.$table3.'.section');
         $this->db->where($where);
 		return $this->db->get();
 	}

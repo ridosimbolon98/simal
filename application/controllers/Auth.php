@@ -29,20 +29,22 @@ class Auth extends CI_Controller {
 			'username' => $username,
 			'password' => md5($password)
 			);
-		$data     = $this->m_auth->autentikasi('s_mst.tb_user',$where)->result();
+		$data     = $this->m_auth->autentikasi1('s_mst.tb_user','s_mst.tb_dept',$where)->result();
 		$cek      = $this->m_auth->autentikasi('s_mst.tb_user',$where)->num_rows();
 		
 		if($cek > 0){
 			$level    = $data[0]->level;
 			$userId   = $data[0]->id_user;
 			$bagian   = $data[0]->kd_dept;
+			$dept     = $data[0]->bagian_dept;
 			// menyimpan data session
 			$data_session  = array(
 				'username' => $username,
 				'level'    => $level,
 				'user_id'  => $userId,
 				'status'   => "logged",
-				'bagian'   => $bagian
+				'bagian'   => $bagian,
+				'dept'     => $dept
 			);
 
 			// Mencatat log login

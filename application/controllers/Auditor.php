@@ -41,8 +41,15 @@ class Auditor extends CI_Controller {
 			$data['audit'] = $this->m_auditor->getAuditByAuditor('s_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $where)->result();
 			$this->load->view('auditor/v_audit', $data);
 		} else {
-			$data['periode'] = "----/--";
-			$data['audit']   = null;
+			$data['periode'] = date('Y-m');
+			$where           = array (
+				'user_audit' => $userid,
+				'periode'    => $data['periode'],
+			);
+
+			// ambil data audit yg diaudit oleh auditor di session ini pd periode tertentu
+			$data['audit'] = $this->m_auditor->getAuditByAuditor('s_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $where)->result();
+
 			$this->session->set_flashdata('warning', "Silakan filter periode audit terlebih dahulu!");
 			$this->load->view('auditor/v_audit', $data);
 		}
@@ -88,21 +95,34 @@ class Auditor extends CI_Controller {
 
 	// Fungsi untuk close data audit
 	function close_audit($id_audit){
+		date_default_timezone_set("Asia/Jakarta");
 		$app_url  = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? "https" : "http");
 		$app_url .= "://" . $_SERVER['HTTP_HOST'];
 		$data['SITE_URL']= $app_url;
 
 		$data['title'] = "Audit 5R | Auditor Page";
+		$date_close    = date("Y-m-d H:i:s");
 		$where         = array('id_audit' => $id_audit);
-		$data_status   = array('status' => true);
+		$data_status   = array('status' => true, 'date_close' => $date_close);
 
 		$data_audit    = $this->m_auditor->getWhere('s_mst.tb_audit', $where)->result();
 		// cek apakah gambar sesudah sudah diupload oleh auditte
-		if ($data_audit[0]->gambar_sesudah == 0) {
+		if ($data_audit[0]->gambar_sesudah == '0') {
 			$this->session->set_flashdata('error', "Gagal close untuk data audit id: $id_audit. User auditee terkait belum upload gambar sesudah audit. Silakan di follow up ke user terkait!");
 			echo "<script>location='".base_url()."auditor';</script>";
 			exit;
+		} else if ($data_audit[0]->otorisasi == 'BELUM') {
+			// cek apakah data audit sudah diotorisasi
+			$this->session->set_flashdata('error', "Gagal close untuk data audit id: $id_audit. User auditee terkait belum otorisasi data audit. Silakan di follow up ke user terkait!");
+			echo "<script>location='".base_url()."auditor';</script>";
+			exit;
+		} else if ($data_audit[0]->status == 't') {
+			// cek apakah temuan sudah close atau tidak
+			$this->session->set_flashdata('error', "Gagal close untuk data audit id: $id_audit. Temuan audit sudah berstatus CLOSED!");
+			echo "<script>location='".base_url()."auditor';</script>";
+			exit;
 		}
+		
 
 		$update_audit  = $this->m_auditor->updateData('s_mst.tb_audit', $data_status, $where);
 		if ($update_audit){
@@ -110,7 +130,7 @@ class Auditor extends CI_Controller {
 			$log_desc = 'Ubah Data Status Temuan Audit id: '.$id_audit.', jadi TRUE';
 			$ip       = $this->input->ip_address();
 			$userLog  = $this->session->userdata("username");
-			date_default_timezone_set("Asia/Jakarta");
+			
 			$data_log = array(
 				'username'      => $userLog,
 				'type_log'      => $log_type,
@@ -151,6 +171,28 @@ class Auditor extends CI_Controller {
 		
 		$data['jadwal']  = $this->m_auditor->getJadwal('s_mst.tb_jadwal','s_mst.tb_user','s_mst.tb_dept',$where)->result();
 		$this->load->view('auditor/v_jadwal', $data);
+	}
+
+	// ambil data gambar
+	public function getImg(){
+		$id = $this->input->post('data');
+		$where = array(
+			'id_audit' => $id
+		);
+ 
+		$data = $this->m_auditor->getWhere('s_mst.tb_audit', $where)->result();
+		echo json_encode($data[0]->gambar);
+	}
+
+	// ambil data gambar
+	public function getImgSesudah(){
+		$id = $this->input->post('data');
+		$where = array(
+			'id_audit' => $id
+		);
+ 
+		$data = $this->m_auditor->getWhere('s_mst.tb_audit', $where)->result();
+		echo json_encode($data[0]->gambar_sesudah);
 	}
 
 

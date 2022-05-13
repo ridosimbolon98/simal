@@ -14,6 +14,8 @@
   <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
   <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
   <link rel="stylesheet" href="<?= base_url(); ?>assets/bootstrap/dist/css/bootstrap.min.css">
+  <!-- Toastr -->
+  <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/plugins/toastr/toastr.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/dist/css/adminlte.min.css">
   <style>
@@ -193,9 +195,21 @@
                     <tr>
                       <td class="text-center"><?= $no++; ?></td>
                       <td><?= $row->ket_audit ?></td>
-                      <td class="text-center"><button id="img-temuan" type="button" data-toggle="modal" data-target="#exampleModal" data-id="<?= $row->gambar; ?>"><img id="img_audit" class="img-audit" src="<?= $SITE_URL.'/temuan_audit/' ?><?= $row->gambar; ?>" alt="gambar-temuan"></button></td>
+                      <td class="text-center">
+                        <button id="img-temuan" type="button" data-toggle="modal" data-target="#exampleModal" data-id="<?= $row->id_audit; ?>">
+                          <img id="img_audit" class="img-audit" src="<?= $SITE_URL.'/temuan_audit/' ?><?= json_decode($row->gambar,true)[0]; ?>" alt="gambar-temuan">
+                        </button>
+                      </td>
                       <td class="text-justify"><?= $row->rekomendasi ?></td>
-                      <td class="text-center"><button id="img-temuan" type="button" data-toggle="modal" data-target="#exampleModal" data-id="<?= $row->gambar_sesudah; ?>"><img id="img_audit" class="img-audit" src="<?= $SITE_URL.'/temuan_audit/' ?><?= $row->gambar_sesudah; ?>" alt="gambar-sesudah-belum-ada"></button></td>
+                      <td class="text-center">
+                        <?php if($row->gambar_sesudah != '0') { ?>
+                          <button id="img-temuan2" type="button" data-toggle="modal" data-target="#exampleModal1" data-id2="<?= $row->id_audit; ?>">
+                            <img id="img_audit1" class="img-audit" src="<?= $SITE_URL.'/temuan_audit/' ?><?= json_decode($row->gambar_sesudah,true)[0]; ?>" alt="gambar-sesudah">
+                          </button>
+                        <?php } else { ?>
+                          <img id="img_audit" class="img-thumbnail rounded" src="" alt="gambar-sesudah-belum-ada">
+                        <?php }  ?>
+                      </td>
                       <td class="text-center"><?= $row->koor_dept ?></td>
                       <td class="text-center"><?= $row->due_date ?></td>
                       <td class="text-center"><?= ($row->status == 'f') ? "OPEN" : "CLOSED" ; ?></td>
@@ -235,15 +249,64 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalLabel">Detail Gambar Temuan</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <button type="button" class="close btnClose" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <img class="img-fluid rounded" id="img-temuan-if" src="">
+          <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+            <div id="imgSlide" class="carousel-inner">
+              <div class="carousel-item active">
+                <img id="firstImg" class="d-block w-100" src="" alt="Gambar Temuan">
+              </div>
+            </div>
+            <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="sr-only">Next</span>
+            </a>
+          </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+          <button type="button" class="btn btn-secondary btnClose" data-dismiss="modal">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End Modal Detail Gambar Temuan -->
+
+  <!-- Modal Detail Gambar Sesudah Temuan -->
+  <div class="modal fade bd-example-modal-lg" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Detail Gambar Sesudah</h5>
+          <button type="button" class="close btnClose" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div id="carouselExampleControls1" class="carousel slide" data-ride="carousel">
+            <div id="imgSlide2" class="carousel-inner">
+              <div class="carousel-item active">
+                <img id="firstImg2" class="d-block w-100" src="" alt="Gambar Temuan">
+              </div>
+            </div>
+            <a class="carousel-control-prev" href="#carouselExampleControls1" role="button" data-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#carouselExampleControls1" role="button" data-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="sr-only">Next</span>
+            </a>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btnClose" data-dismiss="modal">Tutup</button>
         </div>
       </div>
     </div>
@@ -265,7 +328,7 @@
             <div class="form-group">
               <label for="rekom">Gambar Sesudah</label>
               <input type="hidden" name="id_audit" class="form-control" id="id_audit">
-              <input type="file" class="form-control" name="gambar" id="gambar_sesudah" required>
+              <input type="file" class="form-control" name="files[]" id="gambar_sesudah" multiple required>
             </div>
           </div>
           <div class="modal-footer">
@@ -307,6 +370,8 @@
 <!-- Sweetalert -->
 <script src="<?= base_url(); ?>assets/sweetalert/sweetalert.min.js"></script>
 <!-- Page specific script -->
+<!-- Toastr -->
+<script src="<?= base_url(); ?>assets/adminlte/plugins/toastr/toastr.min.js"></script>
 <script>
   $(function () {
     $("#example1").DataTable({
@@ -326,10 +391,56 @@
 
   $(document).on("click", "#img-temuan", function () {
     const bu = window.location.origin + "/temuan_audit/";
-    var id = $(this).data("id");
-    var gambar = bu+id;
+    const base_url = window.location.origin + "/audit/";
+    var idImg = $(this).data("id");
 
-    $("#img-temuan-if").attr("src", gambar);
+    $.ajax({
+      type: 'POST',
+      url: base_url + "user/getImg",
+      data: {data: idImg},
+      cache: false,
+      success: function(msg){
+        var data_gbr = JSON.parse(msg);
+        var iter = 0;
+        while (iter < JSON.parse(data_gbr).length) {
+          $("#imgSlide").append(
+            "<div class='carousel-item s_img'><img class='d-block w-100' src='"+bu+JSON.parse(data_gbr)[iter]+"' alt='Gambar Temuan "+iter+"'></div>"
+          );
+          iter++;
+        }
+        $("#firstImg").attr("src", bu+JSON.parse(data_gbr)[0]);
+      }
+    });
+  });
+
+  $(document).on("click", ".btnClose", function () {
+    location.reload();
+  });
+
+  $(document).on("click", "#img-temuan2", function () {
+    const bu = window.location.origin + "/temuan_audit/";
+    const base_url = window.location.origin + "/audit/";
+    var idImg = $(this).data("id2");
+
+    $.ajax({
+      type: 'POST',
+      url: base_url + "user/getImgSesudah",
+      data: {data: idImg},
+      cache: false,
+      success: function(msg){
+        var data_gbr = JSON.parse(msg);
+        var iter = 0;
+
+        console.log(data_gbr);
+        while (iter < JSON.parse(data_gbr).length) {
+          $("#imgSlide2").append(
+            "<div class='carousel-item s_img'><img class='d-block w-100' src='"+bu+JSON.parse(data_gbr)[iter]+"' alt='Gambar Temuan "+iter+"'></div>"
+          );
+          iter++;
+        }
+        $("#firstImg2").attr("src", bu+JSON.parse(data_gbr)[0]);
+      }
+    });
   });
 
   $(document).on("click", "#update-temuan", function () {
@@ -344,6 +455,17 @@
     return confirm('Apakah anda yakin update rekomendasi?');
   });
 
+</script>
+<script>
+  <?php if($this->session->flashdata('success')){ ?>
+    toastr.success("<?php echo $this->session->flashdata('success'); ?>");
+  <?php }else if($this->session->flashdata('error')){  ?>
+    toastr.error("<?php echo $this->session->flashdata('error'); ?>");
+  <?php }else if($this->session->flashdata('warning')){  ?>
+    toastr.warning("<?php echo $this->session->flashdata('warning'); ?>");
+  <?php }else if($this->session->flashdata('info')){  ?>
+    toastr.info("<?php echo $this->session->flashdata('info'); ?>");
+  <?php } ?>
 </script>
 </body>
 </html>

@@ -248,7 +248,7 @@
         <div class="row">
 
           <!-- Data Auditor -->
-          <div class="col-6">
+          <div class="col-md-6 col-sm-12">
             <div class="card card-info">
               <div class="card-header">
                 <h3 class="card-title">Tabel Data Auditor</h3>
@@ -284,7 +284,7 @@
           <!-- End Data Auditor -->
 
           <!-- Data Mapped Auditor -->
-          <div class="col-6">
+          <div class="col-md-6 col-sm-12">
             <div class="card card-secondary">
               <div class="card-header">
                 <h3 class="card-title">Tabel Data Mapping Auditor</h3>

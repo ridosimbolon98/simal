@@ -21,11 +21,31 @@ class M_admin extends CI_Model {
         return $this->db->get($table);
     }
 
+    // fungsi untuk hapus data 
+    function delete($table,$where){
+        $this->db->where($where);
+        return $this->db->delete($table);
+    }
+    
+    function updateData($table,$data,$where){
+        $this->db->where($where);
+		return $this->db->update($table,$data);
+    }
+    
+    // Fungsi untuk ambil data dari database
+    function getLog($table){
+        $this->db->select('*');
+		$this->db->from($table);
+        $this->db->order_by($table.'.date', 'DESC');
+        return $this->db->get();
+    }
+
     // Fungsi untuk ambil data ranking dari database
     function getRanking($table){
         $this->db->select('*');
 		$this->db->from($table);
-        $this->db->order_by($table.'.total_ranking', 'DESC');
+        $this->db->order_by($table.'.periode_ranking', 'DESC');
+        $this->db->order_by($table.'.row_number', 'ASC');
         return $this->db->get();
     }
 
@@ -66,7 +86,7 @@ class M_admin extends CI_Model {
 		$this->db->select('*');
 		$this->db->from($table);
 		$this->db->join($table2, $table.'.auditor='.$table2.'.id_user');
-		$this->db->join($table3, $table.'.auditee='.$table3.'.id_dept');
+		$this->db->join($table3, $table.'.auditee='.$table3.'.section');
 		return $this->db->get();
 	}
     
@@ -106,5 +126,28 @@ class M_admin extends CI_Model {
     // insert data ke database
     function insertData($table, $data){
         return $this->db->insert($table,$data);
+    }
+
+    // fungsi untuk generate ranking dari tb tmp ke tbl mst
+    function generateRanking(){
+        $sql = "INSERT INTO s_mst.tb_ranking SELECT id_ranking, area_ranking, dept_ranking, periode_ranking, total_ranking, updated_ranking, nama_dep, 
+        row_number() OVER (ORDER BY total_ranking DESC, updated_ranking ASC) FROM s_tmp.tb_ranking";
+        return $this->db->query($sql);
+    }
+
+    // ambil data date close terlama
+    function getDateClose($table,$where){
+        $this->db->select('MAX(date_close)');
+		$this->db->from($table);
+        $this->db->where($where);
+        $this->db->group_by('date_close');
+        $this->db->limit('1');
+		return $this->db->get();
+    }
+
+    // ambil data jumlah temuan yg open per auditee
+    function getSumTemAuditee($auditee){
+        $sql = "select sum(jlh_tem_audit) from s_mst.tb_audit where kd_dept_audit='$auditee' and status='false'";
+        return $this->db->query($sql);
     }
 }

@@ -17,6 +17,12 @@ class M_user extends CI_Model {
         return $this->db->get($table);
     }
 
+    // fungsi untuk hapus data 
+    function delete($table,$where){
+        $this->db->where($where);
+        return $this->db->delete($table);
+    }
+
     // Fungsi untuk ambil data dari database
     function getDept($table){
         $sql = "SELECT bagian_dept FROM $table GROUP BY bagian_dept";
@@ -66,7 +72,14 @@ class M_user extends CI_Model {
 		return $this->db->get();
 	}
 
-    function getAuditPerID($table,$table2,$table3,$table4,$table5,$where) {
+    // ambil jumlah referensi audit ke bagian lain
+    function getRefOtherNum($dept){
+        $sql = "SELECT * FROM s_mst.tb_referensi a JOIN s_mst.tb_audit b ON a.id_audit=b.id_audit
+        WHERE b.bagian_dept='$dept' AND a.status_ref='false'";
+        return $this->db->query($sql);
+    }
+
+    function getAuditPerID($table,$table2,$table3,$table4,$where) {
 		$this->db->select('*');
 		$this->db->from($table);
 		$this->db->join($table2, $table.'.kd_dept_audit='.$table2.'.id_dept');
@@ -77,12 +90,10 @@ class M_user extends CI_Model {
 	}
 
     // AMBIL DATA JADWAL BERDASARKAN BAGIAN TERTENTU
-    function getJA($table,$table2,$table3,$where) {
-		$this->db->select('*');
-		$this->db->from($table);
-		$this->db->join($table2, $table.'.auditor='.$table2.'.id_user');
-		$this->db->join($table3, $table.'.auditee='.$table3.'.id_dept');
-        $this->db->where($where);
-		return $this->db->get();
+    function getJA($auditee) {
+        $sql = "SELECT distinct(section), kd_jadwal, tgl_waktu, auditee, auditor, realisasi, periode, nama FROM s_mst.tb_jadwal a LEFT OUTER JOIN s_mst.tb_user b on
+        a.auditor=b.id_user LEFT OUTER JOIN s_mst.tb_dept c on
+        a.auditee=c.section WHERE a.auditee='$auditee'";
+        return $this->db->query($sql);
 	}
 }
