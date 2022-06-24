@@ -16,6 +16,8 @@
   <link rel="stylesheet" href="<?= base_url(); ?>assets/bootstrap/dist/css/bootstrap.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/dist/css/adminlte.min.css">
+  <!-- Toastr -->
+  <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/plugins/toastr/toastr.min.css">
   <style>
     .img-audit{
       height: 100px !important;
@@ -65,7 +67,7 @@
     </ul>
   </nav>
   <!-- /.navbar -->
-
+<!-- KTP VG 3374104088950001 nik 20061903 -->
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
 
@@ -84,7 +86,7 @@
           <img src="<?= base_url(); ?>assets/adminlte/dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block"><?= strtoupper($this->session->userdata("username")); ?></a>
+          <a href="" class="d-block"><?= strtoupper($this->session->userdata("username")); ?></a>
         </div>
       </div>
       <!-- /.Sidebar user -->
@@ -183,7 +185,7 @@
             </ul>
           </li>
           <li class="nav-item">
-            <a href="<?= base_url(); ?>admin/lap" class="nav-link active">
+            <a href="<?= base_url(); ?>admin/lap" class="nav-link">
               <i class="nav-icon far fa-calendar-alt"></i>
               <p>
                 Ketidaksesuaian
@@ -191,7 +193,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="<?= base_url(); ?>admin/pareto" class="nav-link">
+            <a href="<?= base_url(); ?>admin/pareto" class="nav-link active">
               <i class="nav-icon far fa-image"></i>
               <p>
                 Pareto Temuan
@@ -222,17 +224,16 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Laporan Ketidaksesuaian</h1>
+            <h1>Data Pareto Audit 5R</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="<?= base_url(); ?>">Home</a></li>
-              <li class="breadcrumb-item"><a href="<?= base_url(); ?>admin/lap">Data Bagian</a></li>
-              <li class="breadcrumb-item active">Lap Ketidaksesuaian</li>
+              <li class="breadcrumb-item"><a href="<?= base_url(); ?>admin">Home</a></li>
+              <li class="breadcrumb-item active">Data Pareto</li>
             </ol>
           </div>
         </div>
-      </div><!-- /.container-fluid -->
+      </div>
     </section>
 
     <!-- Main content -->
@@ -243,53 +244,176 @@
 
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Data Table Audit 5R Area <?= $area; ?></h3>
+                <h3 class="card-title">Data Pareto Audit 5R Periode <?= $periode; ?></h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
+                <form class="form-inline" action="<?= base_url(); ?>admin/pareto" method="post">
+                  <div class="form-group mb-2">
+                    <label class="mr-2 mb-2">Pilih Periode</label>
+                    <input type="month" name="periode" class="form-control mr-2 mb-2" required>
+                    <button type="submit" class="btn btn-primary mb-2"><i class="fa fa-chart-bar"></i> Generate</button>
+                  </div>
+                </form>
                 <table id="example1" class="table table-bordered table-striped">
                   <thead>
                     <tr class="text-center">
-                      <th>No</th>
-                      <th>Area</th>
-                      <th>Lokasi</th>
-                      <th>Keterangan</th>
-                      <th>Kondisi Sebelum</th>
-                      <th>Rekomendasi</th>
-                      <th>Kondisi Sesudah</th>
-                      <th>PIC</th>
-                      <th>Due Date</th>
-                      <th>Status</th>
-                    </tr>
+                      <th>5R</th>
+                      <th>Aspek</th>
+                      <th>Pareto</th>
+                      <th>Jumlah</th>
+                  </tr>
                   </thead>
                   <tbody>
-                    <?php $no=1; foreach($audit as $row): ?>
+
                     <tr>
-                      <td class="text-center"><?= $no++; ?></td>
-                      <td class="text-center"><?= $row->kd_lok_audit ?></td>
-                      <td class="text-center"><?= $row->bagian_dept ?></td>
-                      <td><?= $row->ket_audit ?></td>
-                      <td class="text-center">
-                        <button id="img-temuan" type="button" data-toggle="modal" data-target="#exampleModal" data-id="<?= $row->id_audit; ?>">
-                          <img id="img_audit" class="img-audit" src="<?= $SITE_URL.'/temuan_audit/' ?><?= json_decode($row->gambar,true)[0]; ?>" alt="gambar-temuan">
-                        </button>
-                      </td>
-                      <td class="text-justify"><?= $row->rekomendasi ?></td>
-                      <td class="text-center">
-                        <?php if($row->gambar_sesudah != '0') { ?>
-                          <button id="img-temuan2" type="button" data-toggle="modal" data-target="#exampleModal1" data-id2="<?= $row->id_audit; ?>">
-                            <img id="img_audit1" class="img-audit" src="<?= $SITE_URL.'/temuan_audit/' ?><?= json_decode($row->gambar_sesudah,true)[0]; ?>" alt="gambar-sesudah">
-                          </button>
-                        <?php } else { ?>
-                          <img id="img_audit" class="img-thumbnail rounded" src="" alt="gambar-sesudah-belum-ada">
-                        <?php }  ?> 
-                      </td>
-                      <td class="text-center"><?= $row->koor_dept ?></td>
-                      <td class="text-center"><?= $row->due_date ?></td>
-                      <td class="text-center"><?= ($row->status == 'f') ? "OPEN" : "CLOSED" ; ?></td>
+                        <td rowspan="9" class="text-center">RINGKAS</td>
+                        <td rowspan="3" class="text-center">A : <?= $jlh_pareto[0][0]->desk_aspek ?></td>
+                        <td class="text-center"><?= $jlh_pareto[0][0]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[0][0]->jumlah ?></td>
                     </tr>
-                    <?php endforeach; ?>
-                  </tbody>
+                    <tr>
+                        <td class="text-center"><?= $jlh_pareto[0][1]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[0][1]->jumlah ?></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center"><?= $jlh_pareto[0][2]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[0][2]->jumlah ?></td>
+                    </tr>
+
+                    <tr>
+                        <td rowspan="3" class="text-center">B : <?= $jlh_pareto[1][0]->desk_aspek ?></td>
+                        <td class="text-center"><?= $jlh_pareto[1][0]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[1][0]->jumlah ?></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center"><?= $jlh_pareto[1][1]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[1][1]->jumlah ?></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center"><?= $jlh_pareto[1][2]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[1][2]->jumlah ?></td>
+                    </tr>
+
+                    <tr>
+                        <td rowspan="3" class="text-center">C : <?= $jlh_pareto[2][0]->desk_aspek ?></td>
+                        <td class="text-center"><?= $jlh_pareto[2][0]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[2][0]->jumlah ?></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center"><?= $jlh_pareto[2][1]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[2][1]->jumlah ?></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center"><?= $jlh_pareto[2][2]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[2][2]->jumlah ?></td>
+                    </tr>
+
+
+
+                    <tr>
+                        <td rowspan="9" class="text-center">RAPI</td>
+                        <td rowspan="3" class="text-center">A : <?= $jlh_pareto[3][0]->desk_aspek ?></td>
+                        <td class="text-center"><?= $jlh_pareto[3][0]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[3][0]->jumlah ?></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center"><?= $jlh_pareto[3][1]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[3][1]->jumlah ?></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center"><?= $jlh_pareto[3][2]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[3][2]->jumlah ?></td>
+                    </tr>
+                    
+                    <tr>
+                        <td rowspan="3" class="text-center">B : <?= $jlh_pareto[4][0]->desk_aspek ?></td>
+                        <td class="text-center"><?= $jlh_pareto[4][0]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[4][0]->jumlah ?></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center"><?= $jlh_pareto[4][1]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[4][1]->jumlah ?></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center"><?= $jlh_pareto[4][2]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[4][2]->jumlah ?></td>
+                    </tr>
+
+                    <tr>
+                        <td rowspan="3" class="text-center">C : <?= $jlh_pareto[5][0]->desk_aspek ?></td>
+                        <td class="text-center"><?= $jlh_pareto[5][0]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[5][0]->jumlah ?></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center"><?= $jlh_pareto[5][1]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[5][1]->jumlah ?></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center"><?= $jlh_pareto[5][2]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[5][2]->jumlah ?></td>
+                    </tr>
+
+
+
+                    <tr>
+                        <td rowspan="9" class="text-center">RESIK</td>
+                        <td rowspan="3" class="text-center">A : <?= $jlh_pareto[6][0]->desk_aspek ?></td>
+                        <td class="text-center"><?= $jlh_pareto[6][0]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[6][0]->jumlah ?></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center"><?= $jlh_pareto[6][1]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[6][1]->jumlah ?></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center"><?= $jlh_pareto[6][2]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[6][2]->jumlah ?></td>
+                    </tr>
+
+                    <tr>
+                        <td rowspan="3" class="text-center">B : <?= $jlh_pareto[7][0]->desk_aspek ?></td>
+                        <td class="text-center"><?= $jlh_pareto[7][0]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[7][0]->jumlah ?></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center"><?= $jlh_pareto[7][1]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[7][1]->jumlah ?></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center"><?= $jlh_pareto[7][2]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[7][2]->jumlah ?></td>
+                    </tr>
+
+                    <tr>
+                        <td rowspan="3" class="text-center">C : <?= $jlh_pareto[8][0]->desk_aspek ?></td>
+                        <td class="text-center"><?= $jlh_pareto[8][0]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[8][0]->jumlah ?></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center"><?= $jlh_pareto[8][1]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[8][1]->jumlah ?></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center"><?= $jlh_pareto[8][2]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[8][2]->jumlah ?></td>
+                    </tr>
+
+
+                    <tr>
+                        <td rowspan="3" class="text-center">RAWAT</td>
+                        <td rowspan="3" class="text-center">A : <?= $jlh_pareto[9][0]->desk_aspek ?></td>
+                        <td class="text-center"><?= $jlh_pareto[9][0]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[9][0]->jumlah ?></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center"><?= $jlh_pareto[9][1]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[9][1]->jumlah ?></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center"><?= $jlh_pareto[9][2]->desk_partem ?></td>
+                        <td class="text-center"><?= $jlh_pareto[9][2]->jumlah ?></td>
+                    </tr>
                 </table>
               </div>
             </div>
@@ -297,6 +421,7 @@
         </div>
       </div>
     </section>
+
   </div>
   <!-- /.content-wrapper -->
 
@@ -314,108 +439,6 @@
   </aside>
   <!-- /.control-sidebar -->
 
-  <!-- Modal Detail Gambar Temuan -->
-  <div class="modal fade bd-example-modal-lg" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Detail Gambar Temuan</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-
-          <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
-            <div id="imgSlide" class="carousel-inner">
-              <div class="carousel-item active">
-                <img id="firstImg" class="d-block w-100" src="" alt="Gambar Temuan">
-              </div>
-            </div>
-            <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
-              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-              <span class="sr-only">Previous</span>
-            </a>
-            <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
-              <span class="carousel-control-next-icon" aria-hidden="true"></span>
-              <span class="sr-only">Next</span>
-            </a>
-          </div>
-
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- End Modal Detail Gambar Temuan -->
-
-  <!-- Modal Detail Gambar Sesudah -->
-  <div class="modal fade bd-example-modal-lg" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Detail Gambar Sesudah</h5>
-          <button type="button" class="close btnClose" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          
-          <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
-            <div id="imgSlide2" class="carousel-inner">
-              <div class="carousel-item active">
-                <img id="firstImg2" class="d-block w-100" src="" alt="Gambar Temuan">
-              </div>
-            </div>
-            <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
-              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-              <span class="sr-only">Previous</span>
-            </a>
-            <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
-              <span class="carousel-control-next-icon" aria-hidden="true"></span>
-              <span class="sr-only">Next</span>
-            </a>
-          </div>
-
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary btnClose" data-dismiss="modal">Tutup</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- End Modal Detail Gambar Temuan -->
-  
-  <!-- Modal Update Rekomendasi -->
-  <div class="modal fade bd-example-modal-lg" id="update-rekom" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Update Rekomendasi</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <form action="<?= base_url(); ?>admin/update_rekom" method="post">
-          <div class="modal-body">
-            <div class="form-group">
-              <label for="rekom">Rekomendasi</label>
-              <input type="hidden" name="id_audit" class="form-control" id="id_audit">
-              <input type="hidden" name="id_dep" class="form-control" value="<?= $id_dep; ?>">
-              <textarea class="form-control" name="rekomendasi" id="rekom" rows="3"></textarea>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-primary" id="simpanUK">Simpan</button>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-  <!-- End Update Rekomendasi -->
 
 </div>
 <!-- ./wrapper -->
@@ -444,11 +467,13 @@
 <script src="<?= base_url(); ?>assets/adminlte/dist/js/demo.js"></script>
 <!-- Sweetalert -->
 <script src="<?= base_url(); ?>assets/sweetalert/sweetalert.min.js"></script>
+<!-- Toastr -->
+<script src="<?= base_url(); ?>assets/adminlte/plugins/toastr/toastr.min.js"></script>
 <!-- Page specific script -->
 <script>
   $(function () {
     $("#example1").DataTable({
-      "responsive": true, "lengthChange": false, "autoWidth": false,
+      "responsive": true, "lengthChange": true, "autoWidth": false,
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
     }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     $('#example2').DataTable({
@@ -462,58 +487,19 @@
     });
   });
 
-  $(document).on("click", "#img-temuan", function () {
-    const bu = window.location.origin + "/temuan_audit/";
-    const base_url = window.location.origin + "/audit/";
-    var idImg = $(this).data("id");
-
-    $.ajax({
-      type: 'POST',
-      url: base_url + "admin/getImg",
-      data: {data: idImg},
-      cache: false,
-      success: function(msg){
-        var data_gbr = JSON.parse(msg);
-        var iter = 0;
-        while (iter < JSON.parse(data_gbr).length) {
-          $("#imgSlide").append(
-            "<div class='carousel-item s_img'><img class='d-block w-100' src='"+bu+JSON.parse(data_gbr)[iter]+"' alt='Gambar Temuan "+iter+"'></div>"
-          );
-          iter++;
-        }
-        $("#firstImg").attr("src", bu+JSON.parse(data_gbr)[0]);
-      }
-    });
-  });
-
-  $(document).on("click", ".btnClose", function () {
-    location.reload();
-  });
-
-  $(document).on("click", "#img-temuan2", function () {
-    const bu = window.location.origin + "/temuan_audit/";
-    const base_url = window.location.origin + "/audit/";
-    var idImg = $(this).data("id2");
-
-    $.ajax({
-      type: 'POST',
-      url: base_url + "admin/getImgSesudah",
-      data: {data: idImg},
-      cache: false,
-      success: function(msg){
-        var data_gbr = JSON.parse(msg);
-        var iter = 0;
-        while (iter < JSON.parse(data_gbr).length) {
-          $("#imgSlide2").append(
-            "<div class='carousel-item s_img'><img class='d-block w-100' src='"+bu+JSON.parse(data_gbr)[iter]+"' alt='Gambar Temuan "+iter+"'></div>"
-          );
-          iter++;
-        }
-        $("#firstImg2").attr("src", bu+JSON.parse(data_gbr)[0]);
-      }
-    });
-  });
-
 </script>
+
+<script>
+<?php if($this->session->flashdata('success')){ ?>
+  toastr.success("<?php echo $this->session->flashdata('success'); ?>");
+<?php }else if($this->session->flashdata('error')){  ?>
+  toastr.error("<?php echo $this->session->flashdata('error'); ?>");
+<?php }else if($this->session->flashdata('warning')){  ?>
+  toastr.warning("<?php echo $this->session->flashdata('warning'); ?>");
+<?php }else if($this->session->flashdata('info')){  ?>
+  toastr.info("<?php echo $this->session->flashdata('info'); ?>");
+<?php } ?>
+</script>
+
 </body>
 </html>

@@ -29,12 +29,47 @@ class Admin extends CI_Controller {
 
 	// Menampilkan Data Audit Pabrik
 	function pabrik(){
-		$data['title'] = "Audit 5R | Data Audit bbarik";
+		$data['title'] = "Audit 5R | Data Audit pabrik";
 		$data['ap']    = "active";
 		$data['anp']   = "";
+		$data['area']  = "PABRIK";
 		$where_dept    = array('kat_dept' => "PABRIK");
         $data['dept']  = $this->m_admin->getWhere('s_mst.tb_dept',$where_dept)->result();
 		$this->load->view('admin/v_home', $data);
+	}
+
+	// Fungsi untuk menampilkan data temuan dengan status open
+	function stpb($status){
+		$app_url  = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? "https" : "http");
+		$app_url .= "://" . $_SERVER['HTTP_HOST'];
+		$data['SITE_URL']= $app_url;
+
+		$data['status'] = $status;
+		$data['title']  = "Audit 5R | Data Audit Status";
+	
+		$data['area'] = "PABRIK";
+		$data['ap']   = "active";
+		$data['anp']  = "";
+		$where          = array('s_mst.tb_audit.kd_lok_audit' => $data['area'], 's_mst.tb_audit.status' => "$status");
+		$data['temuan'] = $this->m_admin->getAllAudit('s_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $where)->result();
+		$this->load->view('admin/v_stp', $data);	
+	}
+
+	// Fungsi untuk menampilkan data temuan dengan status open
+	function stnp($status){
+		$app_url  = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? "https" : "http");
+		$app_url .= "://" . $_SERVER['HTTP_HOST'];
+		$data['SITE_URL']= $app_url;
+
+		$data['status'] = $status;
+		$data['title']  = "Audit 5R | Data Audit Status";
+	
+		$data['area'] = "NON-PABRIK";
+		$data['ap']   = "";
+		$data['anp']  = "active";
+		$where          = array('s_mst.tb_audit.kd_lok_audit' => $data['area'], 's_mst.tb_audit.status' => "$status");
+		$data['temuan'] = $this->m_admin->getAllAudit('s_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $where)->result();
+		$this->load->view('admin/v_stp', $data);		
 	}
 
 	// Menampilkan Data Audit Non Pabrik
@@ -42,6 +77,7 @@ class Admin extends CI_Controller {
 		$data['title'] = "Audit 5R | Data Audit Non Pabrik";
 		$data['ap']    = "";
 		$data['anp']   = "active";
+		$data['area']  = "NON-PABRIK";
         $where_dept    = array('kat_dept' => "NON-PABRIK");
         $data['dept']  = $this->m_admin->getWhere('s_mst.tb_dept',$where_dept)->result();
 		$this->load->view('admin/v_home', $data);
@@ -69,6 +105,29 @@ class Admin extends CI_Controller {
 		
         $data['audit'] = $this->m_admin->getAllAudit('s_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $where)->result();
 		$this->load->view('admin/v_audit', $data);
+	}
+
+
+	// ambil data gambar
+	public function getImg(){
+		$id = $this->input->post('data');
+		$where = array(
+			'id_audit' => $id
+		);
+ 
+		$data = $this->m_admin->getWhere('s_mst.tb_audit', $where)->result();
+		echo json_encode($data[0]->gambar);
+	}
+
+	// ambil data gambar
+	public function getImgSesudah(){
+		$id = $this->input->post('data');
+		$where = array(
+			'id_audit' => $id
+		);
+ 
+		$data = $this->m_admin->getWhere('s_mst.tb_audit', $where)->result();
+		echo json_encode($data[0]->gambar_sesudah);
 	}
 
 	// fungsi untuk menampilkan halaman user
@@ -126,6 +185,57 @@ class Admin extends CI_Controller {
 			echo "<script>location='".base_url()."admin/user';</script>";
 		} else{
 			$this->session->set_flashdata('error', 'Gagal menambah data User. Ada kesalahan di sisi server. Silakan ulangi lagi!');
+			echo "<script>location='".base_url()."admin/user';</script>";
+			exit;
+		}
+	}
+
+	// update data user ke database tb_user
+	public function editUser(){
+		$data['title'] = "Audit 5R | Data User Page";
+		$id_user       = $this->input->post("id_user");
+		$nama          = htmlspecialchars(trim($this->input->post("nama")));
+		$username      = htmlspecialchars(trim($this->input->post("username")));
+		$level         = $this->input->post("level");
+		$bagian        = $this->input->post("bagian");
+
+		// cek apakah username suda dipakai apa belum
+		$whereUser     = array('username' => $username);
+		$whereId       = array('id_user' => $id_user);
+		$isUsername    = $this->m_admin->getWhere('s_mst.tb_user', $whereUser)->num_rows(); 
+		if ($isUsername > 0){
+			$this->session->set_flashdata('warning', "Username $username sudah ada di sistem. Silakan pilih username lain!");
+			echo "<script>location='".base_url()."admin/user';</script>";
+			exit;
+		}
+
+		$data_user     = array(
+			'nama'     => $nama,
+			'username' => $username,
+			'level'    => $level,
+			'kd_dept'  => $bagian,
+		);
+
+		// insert user ke tb_user
+		$updateUser  = $this->m_admin->updateData('s_mst.tb_user', $data_user, $whereId);
+		if ($updateUser){
+			$log_type = 'update';
+			$log_desc = "Update Data User untuk ID: $id_user, Bagian: $bagian, Level: $level, Username: $username";
+			$ip       = $this->input->ip_address();
+			$userLog  = $this->session->userdata("username");
+			date_default_timezone_set("Asia/Jakarta");
+			$data_log = array(
+				'username'      => $userLog,
+				'type_log'      => $log_type,
+				'deskripsi_log' => $log_desc,
+				'date'          => date("Y-m-d H:i:s"),
+				'ip'            => $ip
+			);
+			$this->m_log->insertLog('s_log.tb_log', $data_log);
+			$this->session->set_flashdata('success', 'Berhasil update data User');
+			echo "<script>location='".base_url()."admin/user';</script>";
+		} else{
+			$this->session->set_flashdata('error', 'Gagal update data User. Ada kesalahan di sisi server. Silakan ulangi lagi!');
 			echo "<script>location='".base_url()."admin/user';</script>";
 			exit;
 		}
@@ -844,6 +954,139 @@ class Admin extends CI_Controller {
 			echo "<script>location='".base_url()."admin/ranking';</script>";
 			exit;
 		}
+	}
+
+
+	// fungsi untuk generate data pareto temuan
+	public function pareto(){
+		date_default_timezone_set("Asia/Jakarta");
+		$app_url  = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? "https" : "http");
+		$app_url .= "://" . $_SERVER['HTTP_HOST'];
+		$data['SITE_URL']= $app_url;
+
+		$data['title'] = "Audit 5R | Pareto Temuan Page";
+		$par_temuan    = $this->m_admin->get('s_mst.tb_par_temuan')->result();
+
+		if(isset($_POST['periode'])){
+			$periode       = $this->input->post("periode");
+			$wherePeriode  = array('periode' => $periode);
+			$cekPareto     = $this->m_admin->getWhere('s_mst.tb_pareto',$wherePeriode)->result();
+			if (count($cekPareto) > 0) {
+				// loop untuk set jumlah temuan tiap kode temuan
+
+				$i = 0;
+				foreach ($par_temuan as $pt){
+					$wherePer[$i]  = array(
+						'kd_partem'   => $pt->id_pt,
+						'periode'     => $periode,
+					);
+
+					$jlh_tem[$i] = $this->m_admin->getPareto('s_mst.tb_audit', $pt->id_pt, $periode)->result();
+					$par[$i]     = $jlh_tem[$i][0]->total;
+					if ($par[$i] === null) {
+						$par[$i] = 0;
+					}
+		
+					$data_pareto[$i] = array(
+						'kat_form'    => $pt->kd_form,
+						'kat_5r'      => $pt->kd_5r,
+						'aspek'       => $pt->kd_aspek,
+						'desk_partem' => $pt->desk_pt,
+						'jumlah'      => $par[$i],
+						'periode'     => $periode,
+						'kd_partem'   => $pt->id_pt,
+					);
+					$this->m_admin->updateData('s_mst.tb_pareto', $data_pareto[$i], $wherePer[$i]);			
+				}
+			} else {
+				// loop untuk set jumlah temuan tiap kode temuan
+				$i = 0;
+				foreach ($par_temuan as $pt){
+					$jlh_tem[$i] = $this->m_admin->getPareto('s_mst.tb_audit', $pt->id_pt, $periode)->result();
+					$par[$i]     = $jlh_tem[$i][0]->total;
+					if ($par[$i] === null) {
+						$par[$i] = 0;
+					}
+		
+					$data_pareto[$i] = array(
+						'kat_form'    => $pt->kd_form,
+						'kat_5r'      => $pt->kd_5r,
+						'aspek'       => $pt->kd_aspek,
+						'desk_partem' => $pt->desk_pt,
+						'jumlah'      => $par[$i],
+						'periode'     => $periode,
+						'kd_partem'   => $pt->id_pt,
+					);
+		
+					$this->m_admin->insertData('s_mst.tb_pareto', $data_pareto[$i]);			
+				}
+			}
+		} else {
+			$periode       = date('Y-m');
+			$wherePeriode  = array('periode' => $periode);
+			$cekPareto     = $this->m_admin->getWhere('s_mst.tb_pareto',$wherePeriode)->result();
+
+			if (count($cekPareto) > 0) {
+				// loop untuk set jumlah temuan tiap kode temuan
+
+				$i = 0;
+				foreach ($par_temuan as $pt){
+					$wherePer[$i]  = array(
+						'kd_partem'   => $pt->id_pt,
+						'periode'     => $periode,
+					);
+
+					$jlh_tem[$i] = $this->m_admin->getPareto('s_mst.tb_audit', $pt->id_pt, $periode)->result();
+					$par[$i]     = $jlh_tem[$i][0]->total;
+					if ($par[$i] === null) {
+						$par[$i] = 0;
+					}
+		
+					$data_pareto[$i] = array(
+						'kat_form'    => $pt->kd_form,
+						'kat_5r'      => $pt->kd_5r,
+						'aspek'       => $pt->kd_aspek,
+						'desk_partem' => $pt->desk_pt,
+						'jumlah'      => $par[$i],
+						'periode'     => $periode,
+						'kd_partem'   => $pt->id_pt,
+					);
+					$this->m_admin->updateData('s_mst.tb_pareto', $data_pareto[$i], $wherePer[$i]);			
+				}
+			} else {
+				// loop untuk set jumlah temuan tiap kode temuan
+				$i = 0;
+				foreach ($par_temuan as $pt){
+					$jlh_tem[$i] = $this->m_admin->getPareto('s_mst.tb_audit', $pt->id_pt, $periode)->result();
+					$par[$i]     = $jlh_tem[$i][0]->total;
+					if ($par[$i] === null) {
+						$par[$i] = 0;
+					}
+		
+					$data_pareto[$i] = array(
+						'kat_form'    => $pt->kd_form,
+						'kat_5r'      => $pt->kd_5r,
+						'aspek'       => $pt->kd_aspek,
+						'desk_partem' => $pt->desk_pt,
+						'jumlah'      => $par[$i],
+						'periode'     => $periode,
+						'kd_partem'   => $pt->id_pt,
+					);
+		
+					$this->m_admin->insertData('s_mst.tb_pareto', $data_pareto[$i]);
+				}
+			}
+		}
+		
+		$aspek = ['A','B','C','A','B','C','A','B','C','A'];
+		$kat5r = ['RINGKAS','RINGKAS','RINGKAS','RAPI','RAPI','RAPI','RESIK','RESIK','RESIK','RAWAT'];
+		$data['periode'] = $periode;
+
+		for ($i=0; $i < 10; $i++) { 
+			$data['jlh_pareto'][$i] = $this->m_admin->getJlhPareto($aspek[$i],$kat5r[$i],$periode)->result();
+		}
+
+		$this->load->view('admin/v_pareto', $data);
 	}
 
 	

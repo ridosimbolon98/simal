@@ -235,6 +235,17 @@
     <!-- Main content -->
     <section class="content">
       <div class="container-fluid">
+        
+        <div class="mb-3">
+          <?php if ($area == 'PABRIK') { ?>
+            <a href="<?= base_url(); ?>admin/stpb/f" class="btn btn-primary mr-2"><i class="fa fa-eye"></i> Data Temuan Status Open</a>
+            <a href="<?= base_url(); ?>admin/stpb/t" class="btn btn-danger mr-2"><i class="fa fa-eye-slash"></i> Data Temuan Status Close</a>
+          <?php } else { ?>
+            <a href="<?= base_url(); ?>admin/stnp/f" class="btn btn-primary mr-2"><i class="fa fa-eye"></i> Data Temuan Status Open</a>
+            <a href="<?= base_url(); ?>admin/stnp/t" class="btn btn-danger mr-2"><i class="fa fa-eye-slash"></i> Data Temuan Status Close</a>
+          <?php } ?>
+        </div>
+
         <h5 class="mb-2">Pilih Bagian</h5>
         <div class="row">
           
@@ -247,9 +258,7 @@
                 <span class="info-box-text"><?= $row->area_dept ?></span>
                 <span class="info-box-number"><?= $row->bagian_dept ?></span>
               </div>
-              <!-- /.info-box-content -->
             </div>
-            <!-- /.info-box -->
           </div>
         <?php endforeach; ?>
 

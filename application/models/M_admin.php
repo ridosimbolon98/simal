@@ -150,4 +150,28 @@ class M_admin extends CI_Model {
         $sql = "select sum(jlh_tem_audit) from s_mst.tb_audit where kd_dept_audit='$auditee' and status='false'";
         return $this->db->query($sql);
     }
+
+
+    // ambil data jumlah temuan yg open per auditee
+    function getPareto($table, $kd_temuan, $periode){
+        $sql = "select sum(jlh_tem_audit) as total from $table a where a.kd_tem_audit='$kd_temuan' and a.periode='$periode' ";
+        return $this->db->query($sql);
+    }
+
+    // fungsi untuk ambil data pareto
+    function getDataPareto($table,$table2,$where){
+        $this->db->select('*');
+		$this->db->from($table);
+		$this->db->join($table2, $table.'.aspek='.$table2.'.id_aspek');
+        $this->db->where($where);
+        $this->db->order_by($table.'.kat_5r', 'ASC');
+        $this->db->order_by($table.'.jumlah', 'DESC');
+		return $this->db->get();
+    }
+
+    // ambil data jumlah paretor terbaik
+    function getJlhPareto($aspek,$kat5r,$periode){
+        $sql = "select * from s_mst.tb_pareto a join s_mst.tb_aspek b on a.aspek=b.id_aspek where kode_aspek='$aspek' and a.kat_5r='$kat5r' and a.periode='$periode' order by jumlah desc limit(3)";
+        return $this->db->query($sql);
+    }
 }

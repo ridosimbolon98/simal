@@ -236,6 +236,7 @@
     <!-- Main content -->
     <section class="content">
       <div class="container-fluid">
+  
         <h5 class="mb-2">Pilih Bagian</h5>
         <div class="row">
 

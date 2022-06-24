@@ -272,7 +272,7 @@
                       <td><?= $row->area_auditor ?></td>
                       <td><?= $row->level_auditor ?></td>
                       <td class="text-center">
-                        <a id="update-user" class="btn btn-sm btn-primary" href="javascript:;" data-toggle="modal" data-target="#update-user" data-id="<?= $row->id_auditor; ?>"> Edit</a>
+                        <a id="update_auditor" class="btn btn-sm btn-primary" href="javascript:;" data-toggle="modal" data-target="#update-auditor" data-id="<?= $row->id_auditor; ?>" data-nama="<?= $row->nama_auditor; ?>" data-area="<?= $row->area_auditor; ?>" data-level="<?= $row->level_auditor; ?>"> Edit</a>
                         <a class="btn btn-sm btn-danger" href="<?= base_url(); ?>admin/deleteAuditor/<?= $row->id_auditor; ?>" onclick="return confirm('Apakah anda yakin hapus Auditor ini?');"> Delete</a>
                       </td>
                     </tr>
@@ -308,7 +308,7 @@
                       <td><?= $row->nama ?></td>
                       <td><?= $row->area_ma ?></td>
                       <td class="text-center">
-                        <a id="update-user" class="btn btn-sm btn-primary" href="javascript:;" data-toggle="modal" data-target="#update-user" data-id="<?= $row->id_ma; ?>"> Edit</a>
+                        <a id="update_map_aud" class="btn btn-sm btn-primary" href="javascript:;" data-toggle="modal" data-target="#update-map-aud" data-idmap="<?= $row->id_ma; ?>" data-id_auditor="<?= $row->id_auditor; ?>" data-id_koor="<?= $row->id_koor; ?>"> Edit</a>
                         <a class="btn btn-sm btn-danger" href="<?= base_url(); ?>admin/deleteMapAuditor/<?= $row->id_ma; ?>" onclick="return confirm('Apakah anda yakin hapus map auditor ini?');"> Delete</a>
                       </td>
                     </tr>
@@ -388,6 +388,54 @@
   </div>
   <!-- End Modal Add Auditor -->
 
+  <!-- Modal Update Data Auditor -->
+  <div class="modal fade bd-example-modal-lg" id="update-auditor" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header bg-info">
+          <h5 class="modal-title" id="exampleModalLabel">Update Data Auditor</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="<?= base_url(); ?>admin/editAuditor" method="post">
+          <div class="modal-body">
+            <div class="card card-info">
+              <div class="card-body">
+                <div class="form-group">
+                  <label for="nama">Nama Auditor</label>
+                  <input type="hidden" name="id_auditor" class="form-control" id="id_auditor">
+                  <input type="text" name="nama" class="form-control" id="nama" required autofocus>
+                </div>
+                <div class="form-group">
+                  <label for="area">Area Auditor</label>
+                  <select class="form-control" name="area" id="area" required>
+                    <option value="" disabled-selected>--Pilih Area--</option>
+                    <option value="PABRIK" >PABRIK</option>
+                    <option value="NON-PABRIK" >NON-PABRIK</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="level">Level Auditor</label>
+                  <select class="form-control" name="level" id="level" required>
+                    <option value="" disabled-selected>--Pilih Level Auditor--</option>
+                    <option value="KOORDINATOR" >KOORDINATOR</option>
+                    <option value="ANGGOTA" >ANGGOTA</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" id="">Simpan</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- End Modal Update Data Auditor -->
+
   <!-- Modal Map Auditor -->
   <div class="modal fade bd-example-modal-lg" id="map-auditor" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -432,6 +480,52 @@
     </div>
   </div>
   <!-- End Modal Map Auditor -->
+
+  <!-- Modal Update Map Auditor -->
+  <div class="modal fade bd-example-modal-lg" id="update-map-aud" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header bg-secondary">
+          <h5 class="modal-title" id="exampleModalLabel">Update Data Mapping Auditor</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="<?= base_url(); ?>admin/updateMapAuditor" method="post">
+          <div class="modal-body">
+            <div class="card card-info">
+              <div class="card-body">
+                <div class="form-group">
+                  <label for="auditor">Auditor</label>
+                  <input type="hidden" name="id_map" class="form-control" id="id_map">
+                  <select class="form-control" name="auditor" id="auditor" required>
+                    <option value="" disabled-selected>--Pilih Auditor--</option>
+                    <?php foreach($auditor as $row): ?>
+                      <option value="<?= $row->id_auditor ?>" ><?= strtoupper($row->nama_auditor) ?></option>
+                    <?php endforeach; ?>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="koordinator">Koordinator Auditor</label>
+                  <select class="form-control" name="koordinator" id="koordinator" required>
+                    <option value="" disabled-selected>--Pilih Koordinator--</option>
+                    <?php foreach($user as $row): ?>
+                      <option value="<?= $row->id_user ?>" ><?= strtoupper($row->nama) ?></option>
+                    <?php endforeach; ?>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" id="">Simpan</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- End Modal Update Map Auditor -->
 
 </div>
 <!-- ./wrapper -->
@@ -479,7 +573,30 @@
       "responsive": true,
     });
   });
+</script>
 
+<script>
+$(document).on("click", "#update_auditor", function () {
+	var id       = $(this).data("id");
+	var nama     = $(this).data("nama");
+	var area     = $(this).data("area");
+	var level    = $(this).data("level");
+
+	$("#id_auditor").val(id);
+	$("#nama").val(nama);
+	$("#area").val(area);
+	$("#level").val(level);
+});
+
+$(document).on("click", "#update_map_aud", function () {
+	var idmap      = $(this).data("idmap");
+	var id_auditor = $(this).data("id_auditor");
+	var id_koor    = $(this).data("id_koor");
+
+	$("#id_map").val(idmap);
+	$("#auditor").val(id_auditor);
+	$("#koordinator").val(id_koor);
+});
 </script>
 
 <script>

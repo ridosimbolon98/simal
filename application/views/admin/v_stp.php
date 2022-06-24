@@ -16,6 +16,8 @@
   <link rel="stylesheet" href="<?= base_url(); ?>assets/bootstrap/dist/css/bootstrap.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/dist/css/adminlte.min.css">
+  <!-- Toastr -->
+  <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/plugins/toastr/toastr.min.css">
   <style>
     .img-audit{
       height: 100px !important;
@@ -84,7 +86,7 @@
           <img src="<?= base_url(); ?>assets/adminlte/dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block"><?= strtoupper($this->session->userdata("username")); ?></a>
+          <a href="" class="d-block"><?= strtoupper($this->session->userdata("username")); ?></a>
         </div>
       </div>
       <!-- /.Sidebar user -->
@@ -119,7 +121,7 @@
           </li>
           <li class="nav-header">MASTER DATA</li>
           <li class="nav-item">
-            <a href="<?= base_url(); ?>admin/pabrik" class="nav-link">
+            <a href="<?= base_url(); ?>admin/pabrik" class="nav-link <?= $ap;?>">
               <i class="nav-icon fas fa-th"></i>
               <p>
                 Audit Pabrik
@@ -127,7 +129,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="<?= base_url(); ?>admin/non_pabrik" class="nav-link">
+            <a href="<?= base_url(); ?>admin/non_pabrik" class="nav-link <?= $anp;?>">
               <i class="nav-icon fas fa-th"></i>
               <p>
                 Audit Non-Pabrik
@@ -183,7 +185,7 @@
             </ul>
           </li>
           <li class="nav-item">
-            <a href="<?= base_url(); ?>admin/lap" class="nav-link active">
+            <a href="<?= base_url(); ?>admin/lap" class="nav-link">
               <i class="nav-icon far fa-calendar-alt"></i>
               <p>
                 Ketidaksesuaian
@@ -208,31 +210,28 @@
           </li>
         </ul>
       </nav>
-      <!-- /.sidebar-menu -->
 
     </div>
-    <!-- /.sidebar -->
   </aside>
   <!-- /.Main Sidebar Container -->
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
     <section class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Laporan Ketidaksesuaian</h1>
+            <h1>Data Audit 5R</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="<?= base_url(); ?>">Home</a></li>
-              <li class="breadcrumb-item"><a href="<?= base_url(); ?>admin/lap">Data Bagian</a></li>
-              <li class="breadcrumb-item active">Lap Ketidaksesuaian</li>
+              <li class="breadcrumb-item"><a href="<?= base_url(); ?>admin/<?php echo ($area == 'PABRIK') ? 'pabrik' : 'non_pabrik'; ?>">Data Bagian</a></li>
+              <li class="breadcrumb-item active">Data Temuan Open</li>
             </ol>
           </div>
         </div>
-      </div><!-- /.container-fluid -->
+      </div>
     </section>
 
     <!-- Main content -->
@@ -243,7 +242,7 @@
 
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Data Table Audit 5R Area <?= $area; ?></h3>
+                <h3 class="card-title">Data Table Audit 5R Area <?= $area; ?> Status Open</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
@@ -252,44 +251,48 @@
                     <tr class="text-center">
                       <th>No</th>
                       <th>Area</th>
-                      <th>Lokasi</th>
+                      <th>Auditee</th>
+                      <th>Tgl Audit</th>
+                      <th>5R</th>
+                      <th>Aspek</th>
+                      <th>Temuan</th>
                       <th>Keterangan</th>
-                      <th>Kondisi Sebelum</th>
+                      <th>Jumlah</th>
+                      <th>Gambar</th>
+                      <th>Tim Audit</th>
                       <th>Rekomendasi</th>
-                      <th>Kondisi Sesudah</th>
-                      <th>PIC</th>
-                      <th>Due Date</th>
-                      <th>Status</th>
-                    </tr>
+                  </tr>
                   </thead>
                   <tbody>
-                    <?php $no=1; foreach($audit as $row): ?>
+                    <?php $no=1; foreach($temuan as $row): ?>
                     <tr>
                       <td class="text-center"><?= $no++; ?></td>
-                      <td class="text-center"><?= $row->kd_lok_audit ?></td>
-                      <td class="text-center"><?= $row->bagian_dept ?></td>
+                      <td><?= $row->kd_lok_audit ?></td>
+                      <td><?= $row->area_dept ?></td>
+                      <td><?= $row->tgl_audit ?></td>
+                      <td><?= $row->kd_5r_audit ?></td>
+                      <td><?= $row->desk_aspek ?></td>
+                      <td><?= $row->desk_pt ?></td>
                       <td><?= $row->ket_audit ?></td>
-                      <td class="text-center">
+                      <td><?= $row->jlh_tem_audit ?></td>
+                      <td>
                         <button id="img-temuan" type="button" data-toggle="modal" data-target="#exampleModal" data-id="<?= $row->id_audit; ?>">
                           <img id="img_audit" class="img-audit" src="<?= $SITE_URL.'/temuan_audit/' ?><?= json_decode($row->gambar,true)[0]; ?>" alt="gambar-temuan">
                         </button>
                       </td>
-                      <td class="text-justify"><?= $row->rekomendasi ?></td>
-                      <td class="text-center">
-                        <?php if($row->gambar_sesudah != '0') { ?>
-                          <button id="img-temuan2" type="button" data-toggle="modal" data-target="#exampleModal1" data-id2="<?= $row->id_audit; ?>">
-                            <img id="img_audit1" class="img-audit" src="<?= $SITE_URL.'/temuan_audit/' ?><?= json_decode($row->gambar_sesudah,true)[0]; ?>" alt="gambar-sesudah">
-                          </button>
-                        <?php } else { ?>
-                          <img id="img_audit" class="img-thumbnail rounded" src="" alt="gambar-sesudah-belum-ada">
-                        <?php }  ?> 
+                      <td>
+                        <?php
+                        $i=0;
+                        $auditors = json_decode($row->tim_audit);
+                        while($i < count($auditors)){
+                          echo ($i+1).". ".$auditors[$i]."<br>";
+                          $i++;
+                        }
+                        ?>
                       </td>
-                      <td class="text-center"><?= $row->koor_dept ?></td>
-                      <td class="text-center"><?= $row->due_date ?></td>
-                      <td class="text-center"><?= ($row->status == 'f') ? "OPEN" : "CLOSED" ; ?></td>
+                      <td><?= $row->rekomendasi ?></td>
                     </tr>
                     <?php endforeach; ?>
-                  </tbody>
                 </table>
               </div>
             </div>
@@ -320,7 +323,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalLabel">Detail Gambar Temuan</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <button type="button" class="close btnClose" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -330,43 +333,6 @@
             <div id="imgSlide" class="carousel-inner">
               <div class="carousel-item active">
                 <img id="firstImg" class="d-block w-100" src="" alt="Gambar Temuan">
-              </div>
-            </div>
-            <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
-              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-              <span class="sr-only">Previous</span>
-            </a>
-            <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
-              <span class="carousel-control-next-icon" aria-hidden="true"></span>
-              <span class="sr-only">Next</span>
-            </a>
-          </div>
-
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- End Modal Detail Gambar Temuan -->
-
-  <!-- Modal Detail Gambar Sesudah -->
-  <div class="modal fade bd-example-modal-lg" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Detail Gambar Sesudah</h5>
-          <button type="button" class="close btnClose" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          
-          <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
-            <div id="imgSlide2" class="carousel-inner">
-              <div class="carousel-item active">
-                <img id="firstImg2" class="d-block w-100" src="" alt="Gambar Temuan">
               </div>
             </div>
             <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
@@ -404,7 +370,11 @@
               <label for="rekom">Rekomendasi</label>
               <input type="hidden" name="id_audit" class="form-control" id="id_audit">
               <input type="hidden" name="id_dep" class="form-control" value="<?= $id_dep; ?>">
-              <textarea class="form-control" name="rekomendasi" id="rekom" rows="3"></textarea>
+              <textarea class="form-control" name="rekomendasi" id="rekom" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+              <label for="rekom">Due Date</label>
+              <input type="date" class="form-control" name="due_date" id="due_date" required>
             </div>
           </div>
           <div class="modal-footer">
@@ -444,11 +414,13 @@
 <script src="<?= base_url(); ?>assets/adminlte/dist/js/demo.js"></script>
 <!-- Sweetalert -->
 <script src="<?= base_url(); ?>assets/sweetalert/sweetalert.min.js"></script>
+<!-- Toastr -->
+<script src="<?= base_url(); ?>assets/adminlte/plugins/toastr/toastr.min.js"></script>
 <!-- Page specific script -->
 <script>
   $(function () {
     $("#example1").DataTable({
-      "responsive": true, "lengthChange": false, "autoWidth": false,
+      "responsive": true, "lengthChange": true, "autoWidth": false,
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
     }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     $('#example2').DataTable({
@@ -490,30 +462,32 @@
     location.reload();
   });
 
-  $(document).on("click", "#img-temuan2", function () {
-    const bu = window.location.origin + "/temuan_audit/";
-    const base_url = window.location.origin + "/audit/";
-    var idImg = $(this).data("id2");
+  $(document).on("click", "#update-temuan", function () {
+    var id = $(this).data("id");
+    var rekom = $(this).data("rekom");
+    var due_date = $(this).data("due_date");
 
-    $.ajax({
-      type: 'POST',
-      url: base_url + "admin/getImgSesudah",
-      data: {data: idImg},
-      cache: false,
-      success: function(msg){
-        var data_gbr = JSON.parse(msg);
-        var iter = 0;
-        while (iter < JSON.parse(data_gbr).length) {
-          $("#imgSlide2").append(
-            "<div class='carousel-item s_img'><img class='d-block w-100' src='"+bu+JSON.parse(data_gbr)[iter]+"' alt='Gambar Temuan "+iter+"'></div>"
-          );
-          iter++;
-        }
-        $("#firstImg2").attr("src", bu+JSON.parse(data_gbr)[0]);
-      }
-    });
+    $("#id_audit").val(id);
+    $("#rekom").val(rekom);
+    $("#due_date").val(due_date);
   });
 
+  $('#simpanUK').click(function(){
+    return confirm('Apakah anda yakin update rekomendasi?');
+  });
 </script>
+
+<script>
+<?php if($this->session->flashdata('success')){ ?>
+  toastr.success("<?php echo $this->session->flashdata('success'); ?>");
+<?php }else if($this->session->flashdata('error')){  ?>
+  toastr.error("<?php echo $this->session->flashdata('error'); ?>");
+<?php }else if($this->session->flashdata('warning')){  ?>
+  toastr.warning("<?php echo $this->session->flashdata('warning'); ?>");
+<?php }else if($this->session->flashdata('info')){  ?>
+  toastr.info("<?php echo $this->session->flashdata('info'); ?>");
+<?php } ?>
+</script>
+
 </body>
 </html>

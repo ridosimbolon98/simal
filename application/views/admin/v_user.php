@@ -273,7 +273,7 @@
                       <td><?= $row->level ?></td>
                       <td><?= $row->bagian_dept ?></td>
                       <td class="text-center">
-                        <a id="update-user" class="btn btn-sm btn-primary" href="javascript:;" data-toggle="modal" data-target="#update-user" data-id="<?= $row->id_user; ?>" data-username="<?= $row->username; ?>"> Update</a>
+                        <a id="update_user" class="btn btn-sm btn-primary" href="javascript:;" data-toggle="modal" data-target="#update-user" data-id="<?= $row->id_user; ?>" data-nama="<?= $row->nama; ?>" data-username="<?= $row->username; ?>" data-level="<?= $row->level; ?>" data-bagian="<?= $row->kd_dept; ?>"> Update</a>
                         <a class="btn btn-sm btn-danger" href="<?= base_url(); ?>admin/deleteUser/<?= $row->id_user; ?>" onclick="return confirm('Apakah anda yakin hapus user ini?');"> Delete</a>
                       </td>
                     </tr>
@@ -304,66 +304,117 @@
   <!-- /.control-sidebar -->
 
   
-  <!-- Modal Add User -->
-  <div class="modal fade bd-example-modal-lg" id="add-user" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Tambah User Baru</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <form action="<?= base_url(); ?>admin/addUser" method="post">
-          <div class="modal-body">
-            <div class="form-group">
-              <label for="nama">Nama</label>
-              <input type="text" name="nama" class="form-control" placeholder="Input nama user" required autofocus>
-            </div>
-            <div class="form-group">
-              <label for="username">Username</label>
-              <input type="text" name="username" class="form-control" placeholder="Input username" required>
-            </div>
-            <div class="form-group">
-              <label for="password">Password</label>
-              <input id="password" type="password" name="password" class="form-control" placeholder="Input password" required>
-            </div>
-            <div class="form-group">
-              <label for="konf_pass">Konfirmasi Password</label>
-              <input id="konfPassword" type="password" name="konf_pass" class="form-control" placeholder="Input konfirmasi password" required>
-              <span id="alertPass"></span>
-            </div>
-            <div class="form-group">
-              <label for="level">Level User</label>
-              <select class="form-control" name="level" id="" required>
-                  <option value="" disabled-selected>--Pilih Level--</option>
-                  <option value="admin" >ADMIN</option>
-                  <option value="auditor" >AUDITOR</option>
-                  <option value="user" >USER AUDITEE</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="bagian">Bagian User</label>
-              <select class="form-control" name="bagian" id="" required>
-                  <option value="" disabled-selected>--Pilih Bagian--</option>
-                  <?php foreach($area as $row): ?>
-                    <option value="<?= $row->id_dept ?>"><?= $row->area_dept ?> -- <?= $row->bagian_dept ?></option>
-                  <?php endforeach; ?>
-              </select>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-primary" id="">Simpan</button>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-  <!-- End Add User -->
-
+  
 </div>
 <!-- ./wrapper -->
+
+<!-- Modal Add User -->
+<div class="modal fade bd-example-modal-lg" id="add-user" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Tambah User Baru</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="<?= base_url(); ?>admin/addUser" method="post">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="nama">Nama</label>
+            <input type="text" name="nama" class="form-control" placeholder="Input nama user" required autofocus>
+          </div>
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" name="username" class="form-control" placeholder="Input username" required>
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input id="password" type="password" name="password" class="form-control" placeholder="Input password" required>
+          </div>
+          <div class="form-group">
+            <label for="konf_pass">Konfirmasi Password</label>
+            <input id="konfPassword" type="password" name="konf_pass" class="form-control" placeholder="Input konfirmasi password" required>
+            <span id="alertPass"></span>
+          </div>
+          <div class="form-group">
+            <label for="level">Level User</label>
+            <select class="form-control" name="level" id="" required>
+                <option value="" disabled-selected>--Pilih Level--</option>
+                <option value="admin" >ADMIN</option>
+                <option value="auditor" >AUDITOR</option>
+                <option value="user" >USER AUDITEE</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="bagian">Bagian User</label>
+            <select class="form-control" name="bagian" id="" required>
+                <option value="" disabled-selected>--Pilih Bagian--</option>
+                <?php foreach($area as $row): ?>
+                  <option value="<?= $row->id_dept ?>"><?= $row->area_dept ?> -- <?= $row->bagian_dept ?></option>
+                <?php endforeach; ?>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" id="">Simpan</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- End Add User -->
+
+<!-- Modal Update User -->
+<div class="modal fade bd-example-modal-lg" id="update-user" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Edit Data User</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="<?= base_url(); ?>admin/editUser" method="post">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="nama">Nama</label>
+            <input type="hidden" name="id_user" class="form-control" id="id_user">
+            <input type="text" name="nama" class="form-control" id="nama" required autofocus>
+          </div>
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" name="username" class="form-control" id="username" required>
+          </div>
+          <div class="form-group">
+            <label for="level">Level User</label>
+            <select class="form-control" name="level" id="level" required>
+                <option value="" disabled-selected>--Pilih Level--</option>
+                <option value="admin" >ADMIN</option>
+                <option value="auditor" >AUDITOR</option>
+                <option value="user" >USER AUDITEE</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="bagian">Bagian User</label>
+            <select class="form-control" name="bagian" id="bagian" required>
+                <option value="" disabled-selected>--Pilih Bagian--</option>
+                <?php foreach($area as $row): ?>
+                  <option value="<?= $row->id_dept ?>"><?= $row->area_dept ?> -- <?= $row->bagian_dept ?></option>
+                <?php endforeach; ?>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" id="">Simpan</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- End Update User -->
 
 <!-- jQuery -->
 <script src="<?= base_url(); ?>assets/adminlte/plugins/jquery/jquery.min.js"></script>
@@ -428,15 +479,31 @@ pass_konf.addEventListener("input", () => {
 </script>
 
 <script>
-<?php if($this->session->flashdata('success')){ ?>
-  toastr.success("<?php echo $this->session->flashdata('success'); ?>");
-<?php }else if($this->session->flashdata('error')){  ?>
-  toastr.error("<?php echo $this->session->flashdata('error'); ?>");
-<?php }else if($this->session->flashdata('warning')){  ?>
-  toastr.warning("<?php echo $this->session->flashdata('warning'); ?>");
-<?php }else if($this->session->flashdata('info')){  ?>
-  toastr.info("<?php echo $this->session->flashdata('info'); ?>");
-<?php } ?>
+$(document).on("click", "#update_user", function () {
+	var id       = $(this).data("id");
+	var username = $(this).data("username");
+	var nama     = $(this).data("nama");
+	var level    = $(this).data("level");
+	var bagian   = $(this).data("bagian");
+
+	$("#id_user").val(id);
+	$("#username").val(username);
+	$("#nama").val(nama);
+	$("#level").val(level);
+	$("#bagian").val(bagian);
+});
+</script>
+
+<script>
+  <?php if($this->session->flashdata('success')){ ?>
+    toastr.success("<?php echo $this->session->flashdata('success'); ?>");
+  <?php }else if($this->session->flashdata('error')){  ?>
+    toastr.error("<?php echo $this->session->flashdata('error'); ?>");
+  <?php }else if($this->session->flashdata('warning')){  ?>
+    toastr.warning("<?php echo $this->session->flashdata('warning'); ?>");
+  <?php }else if($this->session->flashdata('info')){  ?>
+    toastr.info("<?php echo $this->session->flashdata('info'); ?>");
+  <?php } ?>
 </script>
 
 </body>
