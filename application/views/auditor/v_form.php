@@ -11,6 +11,27 @@
     <link rel="stylesheet" href="<?= base_url(); ?>assets/css/su_index.css">
     <!-- Toastr -->
     <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/plugins/toastr/toastr.min.css">
+    <script src="<?= base_url(); ?>assets/js/jquery.min.js"></script>
+    <script src="<?= base_url(); ?>assets/js/jquery.form.js"></script>
+    <style type="text/css">
+    .test {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 9999;
+      background-color: #fff;
+    }
+    .progress{
+      width: 50%;
+    }
+    .loading {
+      width: 100%;
+      height: 100%;
+    }
+    </style>
+
 </head>
 <body>
     <!-- Navbar Section -->
@@ -96,6 +117,21 @@
                             <button type="submit" class="btn btn-success" onclick="return confirm('Apakah anda yakin submit audit ini?');">Submit</button>
                             <a href="<?= base_url(); ?>home" class="btn btn-info">Kembali</a>
                         </form>
+                        <br>
+
+                        <div class="test d-none">
+                            <div class="loading d-flex flex-wrap justify-content-center align-items-center">
+                                <div class="progress">
+                                    <div class="progress-bar" aria-valuenow="" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+                                    0%
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <p>Mohon menunggu, sedang proses upload gambar</p>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -136,7 +172,6 @@
     <!-- End Form Audit -->
 
     <!-- Script Section -->
-    <script src="<?= base_url(); ?>assets/js/jquery.min.js"></script>
     <script src="<?= base_url(); ?>assets/bootstrap/dist/js/popper.min.js"></script>
     <script src="<?= base_url(); ?>assets/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="<?= base_url(); ?>assets/multi-select/dist/js/BsMultiSelect.min.js"></script>
@@ -227,6 +262,31 @@
                 }
             });
         });
+    </script>
+
+    <script>
+    $(document).ready(function(){        
+        $('form').ajaxForm({
+            beforeSend:function(){
+                $(".test").fadeOut();
+                $('#success').empty();
+                $('.progress-bar').text('0%');
+                $('.progress-bar').css('width', '0%');
+            },
+            
+            uploadProgress:function(event, position, total, percentComplete){
+                $(".test").fadeIn();
+                $(".test").removeClass("d-none");
+                $('.progress-bar').text(percentComplete + '0%');
+                $('.progress-bar').css('width', percentComplete + '0%');
+            },
+
+            success:function(data){
+                $(".test").fadeOut();
+                location.reload();
+            }
+        });
+    });
     </script>
 
     <script>

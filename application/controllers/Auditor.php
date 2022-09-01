@@ -293,7 +293,7 @@ class Auditor extends CI_Controller {
 
 		date_default_timezone_set("Asia/Jakarta");
     $id_audit = $this->input->post('idaudit');
-    $id_dept = $this->input->post('iddept');
+    $id_dept  = $this->input->post('iddept');
 		$jumlah   = count($_FILES['files']['name']);
 		
 		$whereAud = array('id_audit' => $id_audit);
@@ -358,5 +358,46 @@ class Auditor extends CI_Controller {
 		}
   }
 
+
+	/**
+	 * 
+	 * ==============================================================================
+	 * Fungsi untuk upload data file
+	 */
+	function cb() {
+		$data['title'] = "Upload Multiple File";
+		$this->load->view('auditor/upload', $data);
+	}
+
+	function upload(){
+		$this->load->library('compress');
+		if(isset($_FILES['file']))
+		{
+			for ($i=0; $i < count($_FILES['file']['name']); $i++) {
+				// config upload
+				$root_folder             = $_SERVER['DOCUMENT_ROOT'].'/temuan_audit/';
+				$imname[$i]              = $_FILES['file']['tmp_name'][$i];
+				$source_photo[$i]        = $imname[$i];
+				$namecreate[$i]          = "AUDIT5R_".time();
+				$namecreatenumber[$i]    = rand(1000 , 10000);
+				$picname[$i]             = $namecreate[$i].$namecreatenumber[$i];
+				$finalname[$i]           = $picname[$i].".jpeg";
+				$dest_photo[$i]          = $root_folder.$finalname[$i];
+				$compressimage[$i]       = $this->compress->compress_image($source_photo[$i], $dest_photo[$i], 60);
+	
+				if($compressimage[$i]){
+					$data_gbr[$i]['file_name'] = $finalname[$i];
+				} else {
+					echo "<pre>";
+					print_r('error upload gambar audit');
+					echo "</pre>";
+				}
+				$data_gbr[$i] = $data_gbr[$i]['file_name'];
+			}
+			$this->session->set_flashdata('success', "Berhasil submit gambar temuan audit");
+			$res = array('success'  => 'Multiple Image File Has Been uploaded Successfully');
+			return json_encode($res);
+		}
+	}
 
 }

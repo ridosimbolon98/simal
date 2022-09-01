@@ -27,9 +27,9 @@ class User extends CI_Controller {
 		$data['SITE_URL']= $app_url;
 
 		$data['title'] = "Audit 5R | User Page";
-        $data['id_user'] = $this->session->userdata('user_id');
-        $whereUserId   = array('id_user' => $data['id_user']);
-        $data['user']  = $this->m_user->getUserById('s_mst.tb_user', 's_mst.tb_dept',$whereUserId)->result();
+    $data['id_user'] = $this->session->userdata('user_id');
+    $whereUserId   = array('id_user' => $data['id_user']);
+    $data['user']  = $this->m_user->getUserById('s_mst.tb_user', 's_mst.tb_dept',$whereUserId)->result();
 		$data['area']  = $data['user'][0]->kat_dept;
 		$bagian        = $this->session->userdata('bagian');
 		$dept          = $this->session->userdata('dept');
@@ -41,8 +41,8 @@ class User extends CI_Controller {
 		$whereAud           = array('kd_dept_audit' => $bagian, 'status' => false, 'otorisasi' => 'BELUM');
 
 		$data['jlh_otor']   = $this->m_user->getWhere('s_mst.tb_audit', $whereAud)->num_rows();
-        $data['jlh_refa']   = $this->m_user->getRefOtherNum($bagian)->num_rows();
-        $data['jlh_temuan'] = $this->m_user->getJlhTemNum($bagian)->result();
+    $data['jlh_refa']   = $this->m_user->getRefOtherNum($bagian)->num_rows();
+    $data['jlh_temuan'] = $this->m_user->getJlhTemNum($bagian)->result();
 
 		$data['dept']      = $this->m_user->getDept('s_mst.tb_dept')->result();
 		$data['audit']     = $this->m_user->getAllAudit('s_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $where)->result();
@@ -78,11 +78,11 @@ class User extends CI_Controller {
 		$data['SITE_URL']  = $app_url;
 		
 		$data['title']     = "Audit 5R | Temuan Referensi Page";
-        $kd_dept           = $this->session->userdata('bagian');
-        $whereDept         = array('id_dept' => $kd_dept);
+    $kd_dept           = $this->session->userdata('bagian');
+    $whereDept         = array('id_dept' => $kd_dept);
 		$dept_user         = $this->m_user->getWhere('s_mst.tb_dept', $whereDept)->result();
 		$where             = array('dept_ref' => $dept_user[0]->bagian_dept);
-        $data['ref_audit'] = $this->m_user->getRefAudit('s_mst.tb_referensi', 's_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $where)->result();
+    $data['ref_audit'] = $this->m_user->getRefAudit('s_mst.tb_referensi', 's_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $where)->result();
 		$this->load->view('user/v_ref_audit', $data);
 	}
 
@@ -93,10 +93,10 @@ class User extends CI_Controller {
 		$data['SITE_URL']  = $app_url;
 		
 		$data['title']     = "Audit 5R | Temuan Referensi Page";
-        $kd_dept           = $this->session->userdata('bagian');
-        $dept              = $this->session->userdata('dept');
+    $kd_dept           = $this->session->userdata('bagian');
+    $dept              = $this->session->userdata('dept');
 		$where             = array('s_mst.tb_audit.kd_dept_audit' => $kd_dept, 'status_ref' => false);
-        $data['ref_audit'] = $this->m_user->getRefAudit('s_mst.tb_referensi', 's_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $where)->result();
+    $data['ref_audit'] = $this->m_user->getRefAudit('s_mst.tb_referensi', 's_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $where)->result();
 		$this->load->view('user/v_ref_temuan', $data);
 	}
 
@@ -231,11 +231,11 @@ class User extends CI_Controller {
 	// menampilkan data jadwal audit bagian
 	function jadwal(){
 		$data['title'] = "Audit 5R | Jadwal Audit Page";
-        $bagian        = $this->session->userdata('bagian');
-        $whereDept     = array('id_dept' => $bagian);
-        $data['dept']  = $this->m_user->getWhere('s_mst.tb_dept', $whereDept)->result();
+    $bagian        = $this->session->userdata('bagian');
+    $whereDept     = array('id_dept' => $bagian);
+    $data['dept']  = $this->m_user->getWhere('s_mst.tb_dept', $whereDept)->result();
 		$auditee       = $data['dept'][0]->section;
-        $data['jadwal']= $this->m_user->getJA($auditee)->result();
+    $data['jadwal']  = $this->m_user->getJadwalAuditor('s_tmp.tb_jadwal','s_mst.tb_user',$whereDept)->result();
 		
 		$this->load->view('user/v_jadwal', $data);
 	}
@@ -249,11 +249,11 @@ class User extends CI_Controller {
 		$data['title'] = "Audit 5R | Lap Ketidaksesuaian Page";
 		$id_dept       = $this->session->userdata('bagian');
 		$dept          = $this->session->userdata('dept');
-        $where         = array('s_mst.tb_audit.bagian_dept' => $dept, 'otorisasi' => 'SUDAH');
-        $where2        = array('id_dept' => $id_dept);
-        $data['dept']  = $this->m_user->getWhere('s_mst.tb_dept', $where2)->result();
+		$where         = array('s_mst.tb_audit.bagian_dept' => $dept, 'otorisasi' => 'SUDAH');
+		$where2        = array('id_dept' => $id_dept);
+		$data['dept']  = $this->m_user->getWhere('s_mst.tb_dept', $where2)->result();
 		$data['area']  = $data['dept'][0]->kat_dept;
-        $data['audit'] = $this->m_user->getAllAudit('s_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $where)->result();
+		$data['audit'] = $this->m_user->getAllAudit('s_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $where)->result();
 		$this->load->view('user/v_lk', $data);
 	}
 
@@ -266,9 +266,9 @@ class User extends CI_Controller {
 		date_default_timezone_set("Asia/Jakarta");
 		$data['title'] = "Audit 5R | Otorisasi Audit Page";
 
-        $userid        = $this->session->userdata('user_id');
-        $bagian        = $this->session->userdata('bagian');
-        $dept          = $this->session->userdata('dept');
+		$userid        = $this->session->userdata('user_id');
+		$bagian        = $this->session->userdata('bagian');
+		$dept          = $this->session->userdata('dept');
 		$whereAudit    = array(
 			'tgl_audit'     => date('Y-m-d'),
 			's_mst.tb_audit.kd_dept_audit' => $bagian,
@@ -280,7 +280,7 @@ class User extends CI_Controller {
 		$whereAud           = array('kd_dept_audit' => $bagian, 'status' => false, 'otorisasi' => 'BELUM');
 
 		$data['jlh_otor'] = $this->m_user->getWhere('s_mst.tb_audit', $whereAud)->num_rows();
-        $data['jlh_refa'] = $this->m_user->getRefAudit('s_mst.tb_referensi', 's_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $whereRef)->num_rows();
+		$data['jlh_refa'] = $this->m_user->getRefAudit('s_mst.tb_referensi', 's_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $whereRef)->num_rows();
 
 		$data['audit']    = $this->m_user->getAllAudit('s_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $whereAudit)->result();
 		$this->load->view('user/v_otorisasi', $data);
@@ -294,9 +294,9 @@ class User extends CI_Controller {
 
 		date_default_timezone_set("Asia/Jakarta");
 		$data['title'] = "Audit 5R | Otorisasi Audit Page";
-        $userid        = $this->session->userdata('user_id');
-        $bagian        = $this->session->userdata('bagian');
-        $dept          = $this->session->userdata('dept');
+		$userid        = $this->session->userdata('user_id');
+		$bagian        = $this->session->userdata('bagian');
+		$dept          = $this->session->userdata('dept');
 		$whereAudit    = array(
 			'tgl_audit'     => date('Y-m-d'),
 			's_mst.tb_audit.kd_dept_audit' => $bagian,
@@ -448,7 +448,7 @@ class User extends CI_Controller {
 		$username  = $this->session->userdata("username");
 
 		date_default_timezone_set("Asia/Jakarta");
-        $id_audit = $this->input->post('idaudit');
+		$id_audit = $this->input->post('idaudit');
 		$jumlah   = count($_FILES['files']['name']);
 		
 		$whereAud = array('id_audit' => $id_audit);
@@ -470,7 +470,7 @@ class User extends CI_Controller {
 
 		// data utk notif wa
 		$waktu     = time();
-		$des	   = "User auditie *".strtoupper($username)."* telah melakukan tindak lanjut temuan dengan ID: ".$id_audit.", per tanggal ".date("d-m-Y").". Harap auditor segera dilakukan pengecekan dan jika sudah sesuai, silakan temuan tersebut untuk di closed.\n\nTerima kasih atas kerjasamanya.";
+		$des	     = "User auditie *".strtoupper($username)."* telah melakukan tindak lanjut temuan dengan ID: ".$id_audit.", per tanggal ".date("d-m-Y").". Harap auditor segera dilakukan pengecekan dan jika sudah sesuai, silakan temuan tersebut untuk di closed.\n\nTerima kasih atas kerjasamanya.";
 		$status_wa = false;
 		$tipe_trx  = "TINDAK LANJUT AUDITIE";
 
@@ -543,7 +543,7 @@ class User extends CI_Controller {
 
 		$data['title']  = "User Audit | Detail Temuan Audit 5R";
 		$data['id_user']= $this->session->userdata('user_id');
-        $whereUserId    = array('id_user' => $data['id_user']);
+		$whereUserId    = array('id_user' => $data['id_user']);
 		$data['user']   = $this->m_user->getUserById('s_mst.tb_user', 's_mst.tb_dept',$whereUserId)->result();
 		$data['area']   = $data['user'][0]->kat_dept;
 		$where          = array('id_audit' => $id_audit);
@@ -560,7 +560,7 @@ class User extends CI_Controller {
 
 		$data['title']  = "User Audit | Detail Temuan Referensi Audit 5R";
 		$data['id_user']= $this->session->userdata('user_id');
-        $whereUserId    = array('id_user' => $data['id_user']);
+		$whereUserId    = array('id_user' => $data['id_user']);
 		$data['user']   = $this->m_user->getUserById('s_mst.tb_user', 's_mst.tb_dept',$whereUserId)->result();
 		$data['area']   = $data['user'][0]->kat_dept;
 

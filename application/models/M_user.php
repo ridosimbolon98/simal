@@ -109,4 +109,13 @@ class M_user extends CI_Model {
         $sql = "insert into $table (select * from $table2 WHERE id_audit='$id_audit')";
         return $this->db->query($sql);
 	}
+
+    // fungsi untuk ambil data jadwal auditor
+    function getJadwalAuditor($table,$table2,$where){
+        $this->db->select('*');
+		$this->db->from($table);
+		$this->db->join($table2, $table.'.koor='.$table2.'.id_user');
+        $this->db->where($where);
+		return $this->db->get();
+    }
 }

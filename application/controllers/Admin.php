@@ -78,8 +78,8 @@ class Admin extends CI_Controller {
 		$data['ap']    = "";
 		$data['anp']   = "active";
 		$data['area']  = "NON-PABRIK";
-        $where_dept    = array('kat_dept' => "NON-PABRIK");
-        $data['dept']  = $this->m_admin->getWhere('s_mst.tb_dept',$where_dept)->result();
+		$where_dept    = array('kat_dept' => "NON-PABRIK");
+		$data['dept']  = $this->m_admin->getWhere('s_mst.tb_dept',$where_dept)->result();
 		$this->load->view('admin/v_home', $data);
 	}
 
@@ -90,10 +90,10 @@ class Admin extends CI_Controller {
 		$data['SITE_URL']= $app_url;
 		
 		$data['title'] = "Audit 5R | Data Audit Page";
-        $data['id_dep']= $id_dept;
-        $where         = array('kd_dept_audit' => $id_dept);
-        $where2        = array('id_dept' => $id_dept);
-        $data['dept']  = $this->m_admin->getWhere('s_mst.tb_dept', $where2)->result();
+		$data['id_dep']= $id_dept;
+		$where         = array('kd_dept_audit' => $id_dept);
+		$where2        = array('id_dept' => $id_dept);
+		$data['dept']  = $this->m_admin->getWhere('s_mst.tb_dept', $where2)->result();
 		$data['area']  = $data['dept'][0]->kat_dept;
 		if ($data['area'] == 'PABRIK') {
 			$data['ap']    = "active";
@@ -103,7 +103,7 @@ class Admin extends CI_Controller {
 			$data['anp']   = "active";
 		}
 		
-        $data['audit'] = $this->m_admin->getAllAudit('s_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $where)->result();
+		$data['audit'] = $this->m_admin->getAllAudit('s_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $where)->result();
 		$this->load->view('admin/v_audit', $data);
 	}
 
@@ -680,11 +680,11 @@ class Admin extends CI_Controller {
 
 		$data['title'] = "Audit 5R | Lap Ketidaksesuaian Page";
 		$data['id_dep']= $id_dept;
-        $where         = array('kd_dept_audit' => $id_dept);
-        $where2        = array('id_dept' => $id_dept);
-        $data['dept']  = $this->m_admin->getWhere('s_mst.tb_dept', $where2)->result();
+		$where         = array('kd_dept_audit' => $id_dept);
+		$where2        = array('id_dept' => $id_dept);
+		$data['dept']  = $this->m_admin->getWhere('s_mst.tb_dept', $where2)->result();
 		$data['area']  = $data['dept'][0]->kat_dept;
-        $data['audit'] = $this->m_admin->getAllAudit('s_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $where)->result();
+		$data['audit'] = $this->m_admin->getAllAudit('s_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $where)->result();
 		$this->load->view('admin/v_lk', $data);
 	}
 
@@ -738,7 +738,7 @@ class Admin extends CI_Controller {
 			$data['anp']   = "active";
 		}
 		$where_dept    = array('kat_dept' => $data['area']);
-        $data['dept']  = $this->m_admin->getWhere('s_mst.tb_dept',$where_dept)->result();
+		$data['dept']  = $this->m_admin->getWhere('s_mst.tb_dept',$where_dept)->result();
 
 		$this->load->view('admin/v_dept_mtpab', $data);
 	}
@@ -761,12 +761,13 @@ class Admin extends CI_Controller {
 	}
 
 	// Fungsi untuk menampilkan data monitoring per bagian dan area tertentu
+	// Fungsi untuk menampilkan data monitoring per bagian dan area tertentu
 	function monitoring(){
 		$id_dept       = $this->input->post('id_dept');
 		$data['title'] = "Audit 5R | Monitoring Audit Page";
 		$data['id_dep']= $this->input->post('id_dept');
-        $where2        = array('id_dept' => $id_dept);
-        $data['dept']  = $this->m_admin->getWhere('s_mst.tb_dept', $where2)->result();
+    $where2        = array('id_dept' => $id_dept);
+    $data['dept']  = $this->m_admin->getWhere('s_mst.tb_dept', $where2)->result();
 		$data['area']  = $data['dept'][0]->kat_dept;
 		
 		$kd_lok_audit  = $this->input->post('kd_lok_audit');
@@ -775,7 +776,7 @@ class Admin extends CI_Controller {
 
 		$periode       = date('Y-m', strtotime($tgl_audit));
 		
-        $where         = array('kd_dept_audit' => $id_dept, 'periode' => $periode, 'kd_lok_audit' => $kd_lok_audit);
+    $where         = array('kd_dept_audit' => $id_dept, 'periode' => $periode, 'kd_lok_audit' => $kd_lok_audit);
 
 		if ($data['area'] == 'PABRIK') {
 			$data['ap']    = "active";
@@ -796,8 +797,10 @@ class Admin extends CI_Controller {
 		$r3A        = $this->m_monitoring->getJlhTemuan3A('s_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $kd_lok_audit, $kd_dept_audit, $tgl_audit)->result();
 		$r3B        = $this->m_monitoring->getJlhTemuan3B('s_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $kd_lok_audit, $kd_dept_audit, $tgl_audit)->result();
 		$r3C        = $this->m_monitoring->getJlhTemuan3C('s_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $kd_lok_audit, $kd_dept_audit, $tgl_audit)->result();
-		$r4A        = $this->m_monitoring->getJlhTemuan4A('s_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $kd_lok_audit, $kd_dept_audit, $tgl_audit)->result();
-
+		$r4A        = $this->m_monitoring->getJlhTemuan4A($kd_lok_audit, $kd_dept_audit, $tgl_audit)->result();
+		
+		
+		// RINGKAS
 		if($r1A[0]->jlh_tem_audit == 0) {
 			$r1AT = 4;
 		} else if($r1A[0]->jlh_tem_audit > 0 && $r1A[0]->jlh_tem_audit < 4) {
@@ -834,6 +837,7 @@ class Admin extends CI_Controller {
 			$r1CT = 0;
 		}
 
+		// RAPI
 		if($r2A[0]->jlh_tem_audit == 0) {
 			$r2AT = 4;
 		} else if($r2A[0]->jlh_tem_audit > 0 && $r2A[0]->jlh_tem_audit < 4) {
@@ -870,6 +874,7 @@ class Admin extends CI_Controller {
 			$r2CT = 0;
 		}
 
+		// RESIK
 		if($r3A[0]->jlh_tem_audit == 0) {
 			$r3AT = 4;
 		} else if($r3A[0]->jlh_tem_audit > 0 && $r3A[0]->jlh_tem_audit < 4) {
@@ -906,18 +911,23 @@ class Admin extends CI_Controller {
 			$r3CT = 0;
 		}
 
-		if($r4A[0]->jlh_tem_audit == 0) {
-			$r4AT = 4;
-		} else if($r4A[0]->jlh_tem_audit > 0 && $r4A[0]->jlh_tem_audit < 4) {
-			$r4AT = 3;
-		} else if($r4A[0]->jlh_tem_audit > 3 && $r4A[0]->jlh_tem_audit < 8) {
-			$r4AT = 2;
-		} else if($r4A[0]->jlh_tem_audit > 7 && $r4A[0]->jlh_tem_audit <= 10) {
-			$r4AT = 1;
-		} else {
+		// RAWAT
+		if (count($r4A) == 0) {
 			$r4AT = 0;
+		} else {	
+			if($r4A[0]->kode_pt == 1) {
+				$r4AT = 0;
+			} else if($r4A[0]->kode_pt == 2) {
+				$r4AT = 1;
+			} else if($r4A[0]->kode_pt == 3) {
+				$r4AT = 2;
+			} else if($r4A[0]->kode_pt == 4) {
+				$r4AT = 3;
+			} else {
+				$r4AT = 4;
+			}
 		}
-
+		
 		$data['r1'] = $r1AT + $r1BT + $r1CT;
 		$data['r2'] = $r2AT + $r2BT + $r2CT;
 		$data['r3'] = $r3AT + $r3BT + $r3CT;
@@ -1101,7 +1111,7 @@ class Admin extends CI_Controller {
 				'kd_dept_audit' => $row->id_dept,
 			);
 
-			// get jlh temuan open per auditee
+			// get jlh temuan open per auditie
 			$data_sum_temuan[$i] = $this->m_admin->getSumTemAuditee($row->id_dept)->result();
 			if ($data_sum_temuan[$i] == null) {
 				$real_sum[$i] = 0;

@@ -259,11 +259,12 @@ class Home extends CI_Controller {
 			);
 			$this->m_log->insertLog('s_log.tb_log', $data_log);
 			$this->session->set_flashdata('success', "Berhasil submit data audit.");
-			redirect(base_url('home/form'));
+			$res = array('success' => 'Berhasil Submit Data');
+			return json_encode($res);
 		} else{
 			$this->session->set_flashdata('error', "Gagal submit data audit.");
-			echo "<script>location='".base_url()."home/form';</script>";
-			exit;
+			$res = array('failed' => 'Gagal Submit Data');
+			return json_encode($res);
 		}
 	}
 

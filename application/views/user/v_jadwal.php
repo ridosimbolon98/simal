@@ -178,22 +178,25 @@
                   <thead>
                     <tr class="text-center">
                       <th>Kode</th>
-                      <th>Tgl & Waktu</th>
+                      <th>Jadwal</th>
                       <th>Auditor</th>
+                      <th>Status</th>
                       <th>Realisasi</th>
                       <th>Periode</th>
-                  </tr>
+                    </tr>
                   </thead>
                   <tbody>
                     <?php foreach($jadwal as $row): ?>
                     <tr class="text-center">
                       <td><?= $row->kd_jadwal; ?></td>
-                      <td><?= substr($row->tgl_waktu,0,16) ?></td>
-                      <td><?= strtoupper($row->nama); ?></td>
-                      <td><?= ($row->realisasi == 'f') ? "BELUM" : "SUDAH" ; ?></td>
-                      <td><?= $row->periode; ?></td>
+                      <td><?= $row->tgl_audit ?></td>
+                      <td><?= $row->username . ',' . preg_replace("/[^a-zA-Z0-9,]/", "", $row->auditor); ?></td>
+                      <td><?= ($row->realisasi == 'f') ? "<span class='text-danger'>BELUM</span>" : "<span class='text-success'>SUDAH</span>" ; ?></td>
+                      <td><?= $row->realisasi_audit ?></td>
+                      <td><?= $row->periode ?></td>
                     </tr>
                     <?php endforeach; ?>
+                  </tbody>
                 </table>
               </div>
             </div>
@@ -205,12 +208,7 @@
   <!-- /.content-wrapper -->
 
 
-  <footer class="main-footer">
-    <div class="float-right d-none d-sm-block">
-      <b>Version</b> 1.0 Beta
-    </div>
-    <strong>Developt by IT NBI &copy; 2022 </strong>
-  </footer>
+  <?php include (APPPATH.'views/footer/footer.php'); ?>
 
   <!-- Control Sidebar -->
   <aside class="control-sidebar control-sidebar-dark">
