@@ -248,9 +248,9 @@ class Auditor extends CI_Controller {
 		$data['title']   = "Audit 5R | Data Jadwal Audit Page";
 		$level           = $this->session->userdata("level");
 		$userid          = $this->session->userdata("user_id");
-		$where           = array ('auditor' => $userid);
+		$where           = array ('koor' => $userid);
 		
-		$data['jadwal']  = $this->m_auditor->getJadwal('s_mst.tb_jadwal','s_mst.tb_user','s_mst.tb_dept',$where)->result();
+		$data['jadwal']  = $this->m_auditor->getWhere('s_tmp.tb_jadwal',$where)->result();
 		$this->load->view('auditor/v_jadwal', $data);
 	}
 

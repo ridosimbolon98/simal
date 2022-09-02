@@ -179,9 +179,10 @@
                   <thead>
                     <tr class="text-center">
                       <th>Kode</th>
-                      <th>Tgl & Waktu</th>
+                      <th>Jadwal</th>
                       <th>Auditee</th>
-                      <th>Auditor</th>
+                      <th>Anggota</th>
+                      <th>Status</th>
                       <th>Realisasi</th>
                       <th>Periode</th>
                   </tr>
@@ -190,13 +191,15 @@
                     <?php foreach($jadwal as $row): ?>
                     <tr class="text-center">
                       <td><?= $row->kd_jadwal; ?></td>
-                      <td><?= substr($row->tgl_waktu,0,16) ?></td>
+                      <td><?= $row->tgl_audit ?></td>
                       <td><?= $row->area_dept ?></td>
-                      <td><?= strtoupper($row->nama) ?></td>
-                      <td><?= ($row->realisasi == 'f') ? "BELUM" : "SUDAH" ; ?></td>
+                      <td><?= preg_replace("/[^a-zA-Z0-9,]/", "", $row->auditor); ?></td>
+                      <td><?= ($row->realisasi == 'f') ? "<span class='text-danger'>BELUM</span>" : "<span class='text-success'>SUDAH</span>" ; ?></td>
+                      <td><?= $row->realisasi_audit ?></td>
                       <td><?= $row->periode ?></td>
                     </tr>
                     <?php endforeach; ?>
+                  </tbody>
                 </table>
               </div>
             </div>
