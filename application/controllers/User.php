@@ -322,7 +322,7 @@ class User extends CI_Controller {
 		// data utk notif wa
 		$waktu     = time();
 		$jlh_tem   = count($dataOtor);
-		$des	   = "Anda telah melakukan audit di auditie: ".$dept." hari ini,".date('d-m-Y')." dengan total temuan yang sudah diotorisasi sebanyak: ".$jlh_tem." temuan.\nTerima kasih atas kerjasamanya.";
+		$des	     = "Anda telah melakukan audit di auditie: ".$dept." hari ini,".date('d-m-Y')." dengan total temuan yang sudah diotorisasi sebanyak: ".$jlh_tem." temuan.\nTerima kasih atas kerjasamanya.";
 		$status_wa = false;
 		$tipe_trx  = "OTORISASI";
 		$no_wa_aud = $data_wa_aud[0]->no_wa;
@@ -463,26 +463,26 @@ class User extends CI_Controller {
 			exit;
 		}
 
-		$wh_aud    = array(
-			'id_auditor' => $data_audit[0]->user_audit
-		);
-		$data_wa_aud = $this->m_user->getWhere('s_mst.tb_wa', $wh_aud)->result();
+		// $wh_aud    = array(
+		// 	'id_auditor' => $data_audit[0]->user_audit
+		// );
+		// $data_wa_aud = $this->m_user->getWhere('s_mst.tb_wa', $wh_aud)->result();
 
-		// data utk notif wa
-		$waktu     = time();
-		$des	     = "User auditie *".strtoupper($username)."* telah melakukan tindak lanjut temuan dengan ID: ".$id_audit.", per tanggal ".date("d-m-Y").". Harap auditor segera dilakukan pengecekan dan jika sudah sesuai, silakan temuan tersebut untuk di closed.\n\nTerima kasih atas kerjasamanya.";
-		$status_wa = false;
-		$tipe_trx  = "TINDAK LANJUT AUDITIE";
+		// // data utk notif wa
+		// $waktu     = time();
+		// $des	     = "User auditie *".strtoupper($username)."* telah melakukan tindak lanjut temuan dengan ID: ".$id_audit.", per tanggal ".date("d-m-Y").". Harap auditor segera dilakukan pengecekan dan jika sudah sesuai, silakan temuan tersebut untuk di closed.\n\nTerima kasih atas kerjasamanya.";
+		// $status_wa = false;
+		// $tipe_trx  = "TINDAK LANJUT AUDITIE";
 
-		$data_notif = array(
-			'id'        => $waktu,
-			'user'      => $data_wa_aud[0]->nama,
-			'no_wa'     => $data_wa_aud[0]->no_wa,
-			'tipe_trx'  => $tipe_trx,
-			'deskripsi' => $des,
-			'date'      => date("Y-m-d H:i:s"),
-			'status'    => $status_wa,
-		);
+		// $data_notif = array(
+		// 	'id'        => $waktu,
+		// 	'user'      => $data_wa_aud[0]->nama,
+		// 	'no_wa'     => $data_wa_aud[0]->no_wa,
+		// 	'tipe_trx'  => $tipe_trx,
+		// 	'deskripsi' => $des,
+		// 	'date'      => date("Y-m-d H:i:s"),
+		// 	'status'    => $status_wa,
+		// );
 		
 		for ($i=0; $i < $jumlah; $i++) {
 			// config upload
@@ -510,7 +510,7 @@ class User extends CI_Controller {
 			'gambar_sesudah' => json_encode($data_gbr),
 		);
 		$whereUpd = array('id_audit' => $id_audit);
-		$update = $this->m_auditor->updateData('s_mst.tb_audit', $data_update, $whereUpd);
+		$update = $this->m_user->updateData('s_mst.tb_audit', $data_update, $whereUpd);
 
 		if ($update){
 			$log_type = 'insert';
@@ -527,11 +527,12 @@ class User extends CI_Controller {
 			);
 			$this->m_log->insertLog('s_log.tb_log', $data_log);
 			$this->session->set_flashdata('success', "Berhasil submit gambar tindak lanjut temuan audit ID: $id_audit.");
-			redirect(base_url('user/lk'));
+			$res = array('success' => 'Berhasil Submit Data');
+			return json_encode($res);
 		} else {
 			$this->session->set_flashdata('error', "Gagal submit gambar tindak lanjut sesudah audit ID: $id_audit.");
-			echo "<script>location='".base_url()."user/lk';</script>";
-			exit;
+			$res = array('failed' => 'Gagal Submit Data');
+			return json_encode($res);
 		}
   }
 

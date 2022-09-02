@@ -81,7 +81,7 @@ class M_user extends CI_Model {
 
     // ambil jumlah referensi audit ke bagian lain
     function getJlhTemNum($dept){
-        $sql = "SELECT SUM(jlh_tem_audit) as total FROM s_mst.tb_audit
+        $sql = "SELECT count(jlh_tem_audit) as total FROM s_mst.tb_audit
         WHERE kd_dept_audit='$dept' AND status='false'";
         return $this->db->query($sql);
     }

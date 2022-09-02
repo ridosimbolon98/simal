@@ -14,22 +14,22 @@
     <script src="<?= base_url(); ?>assets/js/jquery.min.js"></script>
     <script src="<?= base_url(); ?>assets/js/jquery.form.js"></script>
     <style type="text/css">
-    .test {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 9999;
-      background-color: #fff;
-    }
-    .progress{
-      width: 50%;
-    }
-    .loading {
-      width: 100%;
-      height: 100%;
-    }
+        .test {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 9999;
+        background-color: #fff;
+        }
+        .progress{
+        width: 50%;
+        }
+        .loading {
+        width: 100%;
+        height: 100%;
+        }
     </style>
 
 </head>

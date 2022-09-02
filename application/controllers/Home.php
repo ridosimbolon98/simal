@@ -215,6 +215,7 @@ class Home extends CI_Controller {
 			$data_gbr[$i] = $data_gbr[$i]['file_name'];
 		}
 
+		$wh_aud      = array('id_auditor' => $area);
 		$whereArea   = array('id_dept' => $area);
 		$bagian_dept = $this->m_home->getWhere('s_mst.tb_dept', $whereArea)->result();
 
@@ -244,6 +245,31 @@ class Home extends CI_Controller {
 			// update counter
 			$data_id = array('counter' => $id_aud);
 			$this->m_home->updateData('s_mst.tb_counter', $data_id, $whCounter);
+
+			// kirim notif ke user
+			$data_wa_aud = $this->m_home->getWhere('s_mst.tb_wa', $wh_aud)->result();
+			// data utk notif wa
+			$waktu     = time();
+			$des	     = "Auditor telah melakukan audit di auditie: *".$bagian_dept[0]->area_dept."* hari ini,".date('d-m-Y')." dengan ID Audit: *".$id_aud."*. Harap segera melakukan otorisasi temuan. Jika tidak berkenan atas temuan tertentu, silakan hubungi auditor terkait untuk lakukan banding.\nTerima kasih atas kerjasamanya.";
+			$status_wa = false;
+			$tipe_trx  = "TEMUAN BARU";
+			$no_wa_aud = $data_wa_aud[0]->no_wa;
+
+			$data_notif = array(
+				'id'        => $waktu,
+				'user'      => $data_wa_aud[0]->nama,
+				'no_wa'     => $no_wa_aud,
+				'tipe_trx'  => $tipe_trx,
+				'deskripsi' => $des,
+				'date'      => date("Y-m-d H:i:s"),
+				'status'    => $status_wa,
+			);		
+
+			// send notif
+			$send_notif = $this->m_home->insert('s_wa.tb_notif', $data_notif);
+			if (!$send_notif) {
+				$this->session->set_flashdata('error', "Gagal kirim notifikasi otorisasi wa.");
+			}
 
 			$log_type = 'insert';
 			$log_desc = 'Tambah Data Audit Area: '.$area.', Lokasi: '.$k_lok;

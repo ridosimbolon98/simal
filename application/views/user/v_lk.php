@@ -18,9 +18,27 @@
   <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/plugins/toastr/toastr.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/dist/css/adminlte.min.css">
+  <script src="<?= base_url(); ?>assets/js/jquery.min.js"></script>
+  <script src="<?= base_url(); ?>assets/js/jquery.form.js"></script>
   <style>
     .img-audit{
       height: 100px !important;
+    }
+    .test {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 9999;
+      background-color: #fff;
+    }
+    .progress{
+      width: 50%;
+    }
+    .loading {
+      width: 100%;
+      height: 100%;
     }
   </style>
 </head>
@@ -327,10 +345,24 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="submit" class="btn btn-primary" id="simpanUK">Simpan</button>
+            <button type="submit" class="btn btn-primary" onclick="return confirm('Apakah anda yakin submit tindaklanjut  audit ini?');">Submit</button>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
           </div>
         </form>
+        <br>
+
+        <div class="test d-none">
+            <div class="loading d-flex flex-wrap justify-content-center align-items-center">
+                <div class="progress">
+                    <div class="progress-bar" aria-valuenow="" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+                    0%
+                    </div>
+                </div>
+                <div class="text-center">
+                    <p>Mohon menunggu, sedang proses upload gambar</p>
+                </div>
+            </div>
+        </div>
       </div>
     </div>
   </div>
@@ -340,8 +372,6 @@
 </div>
 <!-- ./wrapper -->
 
-<!-- jQuery -->
-<script src="<?= base_url(); ?>assets/adminlte/plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap 4 -->
 <script src="<?= base_url(); ?>assets/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="<?= base_url(); ?>assets/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -450,6 +480,36 @@
     return confirm('Apakah anda yakin update rekomendasi?');
   });
 
+</script>
+<script>
+  $(document).ready(function(){        
+      $('form').ajaxForm({
+          beforeSend:function(){
+              $(".test").fadeOut();
+              $('#success').empty();
+              $('.progress-bar').text('0%');
+              $('.progress-bar').css('width', '0%');
+          },
+          
+          uploadProgress:function(event, position, total, percentComplete){
+              $(".test").fadeIn();
+              $(".test").removeClass("d-none");
+              $('.progress-bar').text(percentComplete + '0%');
+              $('.progress-bar').css('width', percentComplete + '0%');
+          },
+
+          success:function(data){
+            let res = JSON.parse(data);
+            console.log(res);
+            //$(".test").fadeOut();
+            //location.reload();
+          },
+          error: function(data){
+            let res = JSON.parse(data);
+            console.log(res);
+          }
+      });
+  });
 </script>
 <script>
   <?php if($this->session->flashdata('success')){ ?>
