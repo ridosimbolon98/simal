@@ -105,6 +105,14 @@
           </li>
           <li class="nav-header">MASTER DATA</li>
           <li class="nav-item">
+            <a href="<?= base_url(); ?>auditor/otorisasi" class="nav-link">
+              <i class="nav-icon fas fa-unlock-alt"></i>
+              <p>
+                Audit Hari Ini
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
             <a href="<?= base_url(); ?>auditor" class="nav-link active">
               <i class="nav-icon fas fa-th"></i>
               <p>
@@ -147,6 +155,7 @@
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="<?= base_url('auditor'); ?>">Home</a></li>
+              <li class="breadcrumb-item"><a href="<?= base_url('auditor'); ?>">Area Audit</a></li>
               <li class="breadcrumb-item active">Data Audit</li>
             </ol>
           </div>
@@ -180,8 +189,8 @@
                 <table id="example1" class="table table-bordered table-striped">
                   <thead>
                     <tr class="text-center">
-                      <th>No</th>
-                      <th>Area</th>
+                      <th>ID</th>
+                      <th>Auditie</th>
                       <th>Tgl Audit</th>
                       <th>5R</th>
                       <th>Aspek</th>
@@ -200,8 +209,8 @@
                     
                   <?php $no=1; foreach($audit as $row): ?>
                     <tr>
-                      <td class="text-center"><?= $no++; ?></td>
-                      <td><?= $row->kd_lok_audit ?></td>
+                      <td class="text-center"><?= $row->id_audit ?></td>
+                      <td><?= $row->area_dept ?></td>
                       <td><?= $row->tgl_audit ?></td>
                       <td><?= $row->kd_5r_audit ?></td>
                       <td><?= $row->desk_aspek ?></td>
@@ -235,8 +244,9 @@
                       <td><?= $row->rekomendasi ?></td>
                       <td class="text-center"><?= ($row->status == 'f') ? "OPEN" : "CLOSED" ; ?></td>
                       <td class="text-center">
+                        <a id="upload_temuan" class="btn btn-sm btn-success" href="javascript:;" data-toggle="modal" data-target="#upload-temuan" data-id="<?= $row->id_audit; ?>" data-dept="<?= $row->kd_dept_audit; ?>"> Update</a>
                         <a id="update-temuan" class="btn btn-sm btn-primary" href="javascript:;" data-toggle="modal" data-target="#update-rekom" data-id="<?= $row->id_audit; ?>" data-rekom="<?= $row->rekomendasi; ?>" data-dept="<?= $row->kd_dept_audit; ?>" data-due_date="<?= $row->due_date; ?>">Update</a>
-                        <a href="<?= base_url(); ?>auditor/close_audit/<?= $row->id_audit ?>" class="btn btn-sm btn-danger" onclick="return confirm('Apakah anda yakin close audit ini?')"> Close</a>
+                        <a href="<?= base_url(); ?>auditor/close_audit/<?= $id_dept ?>/<?= $row->id_audit ?>" class="btn btn-sm btn-danger" onclick="return confirm('Apakah anda yakin close audit ini?')"> Close</a>
                       </td>
                     </tr>
                   <?php endforeach; ?>
@@ -368,6 +378,35 @@
   </div>
   <!-- End Update Rekomendasi -->
 
+  <!-- Modal Update Kondisi Sesudah -->
+  <div class="modal fade bd-example-modal-lg" id="upload-temuan" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Upload Gambar Temuan</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="<?= base_url(); ?>auditor/update_gbr" method="post" enctype="multipart/form-data">
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="rekom">Gambar Temuan</label>
+              <input type="hidden" name="idaudit" class="form-control" id="id_audit">
+              <input type="hidden" name="iddept" class="form-control" id="id_dept">
+              <input type="file" class="form-control" name="files[]" id="gambar_sesudah" multiple required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" onclick="return confirm('Apakah anda yakin upload gambar ini?')">Simpan</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- End Update Kondisi Sesudah -->
+
 </div>
 <!-- ./wrapper -->
 
@@ -479,6 +518,14 @@
     $("#id_dept").val(dept);
     $("#rekom").val(rekom);
     $("#due_date").val(due_date);
+  });
+
+  $(document).on("click", "#upload_temuan", function () {
+    var id_aud = $(this).data("id_aud");
+    var dept = $(this).data("dept");
+
+    $("#id_audit").val(id_aud);
+    $("#id_dept").val(dept);
   });
 
   $('#simpanUK').click(function(){

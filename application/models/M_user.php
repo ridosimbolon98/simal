@@ -79,6 +79,13 @@ class M_user extends CI_Model {
         return $this->db->query($sql);
     }
 
+    // ambil jumlah referensi audit ke bagian lain
+    function getJlhTemNum($dept){
+        $sql = "SELECT SUM(jlh_tem_audit) as total FROM s_mst.tb_audit
+        WHERE kd_dept_audit='$dept' AND status='false'";
+        return $this->db->query($sql);
+    }
+
     function getAuditPerID($table,$table2,$table3,$table4,$where) {
 		$this->db->select('*');
 		$this->db->from($table);
@@ -94,6 +101,12 @@ class M_user extends CI_Model {
         $sql = "SELECT distinct(section), kd_jadwal, tgl_waktu, auditee, auditor, realisasi, periode, nama FROM s_mst.tb_jadwal a LEFT OUTER JOIN s_mst.tb_user b on
         a.auditor=b.id_user LEFT OUTER JOIN s_mst.tb_dept c on
         a.auditee=c.section WHERE a.auditee='$auditee'";
+        return $this->db->query($sql);
+	}
+
+    // INSERT DATA AUDIT KE TABEL S_LOG>TB_AUDIT
+    function insertLogAudit($table,$table2,$id_audit) {
+        $sql = "insert into $table (select * from $table2 WHERE id_audit='$id_audit')";
         return $this->db->query($sql);
 	}
 }

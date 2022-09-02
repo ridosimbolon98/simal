@@ -23,6 +23,12 @@ class M_auditor extends CI_Model {
 		return $this->db->insert($table,$data);
 	}
 
+    // fungsi untuk hapus data 
+    function delete($table,$where){
+        $this->db->where($where);
+        return $this->db->delete($table);
+    }
+
     // Fungsi untuk ambil data dari database
     function get($table){
         return $this->db->get($table);
@@ -67,5 +73,17 @@ class M_auditor extends CI_Model {
 		return $this->db->get();
 	}
 
+    // INSERT DATA AUDIT KE TABEL S_LOG>TB_AUDIT
+    function insertLogAudit($table,$table2,$id_audit) {
+        $sql = "insert into $table (select * from $table2 WHERE id_audit='$id_audit')";
+        return $this->db->query($sql);
+	}
+
+
+    // AMBIL DATA AREA BERDASARKAN ID AUDITOR DAN 
+    function getAreaByAuditor($table,$table2,$id_audit) {
+        $sql = "select distinct(area_dept), id_dept from $table a left join $table2 b on a.kd_dept_audit=b.id_dept where user_audit='$id_audit'";
+        return $this->db->query($sql);
+	}
 
 }

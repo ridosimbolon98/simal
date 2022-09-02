@@ -74,7 +74,7 @@ class Home extends CI_Controller {
 		$lokasi         = $this->input->post('lokasi2');
 		$area           = $this->input->post('area2');
 		$periode        = date('Y-m');
-		$koor_audit = strtoupper($this->session->userdata("username"));
+		$koor_audit     = strtoupper($this->session->userdata("username"));
 		array_push($auditor, $koor_audit);
 
 		$whereArea   = array('id_dept' => $area);
@@ -165,8 +165,12 @@ class Home extends CI_Controller {
 		echo json_encode($data);
 	}
 
+	
+
 	function send(){
 		date_default_timezone_set("Asia/Jakarta");
+		$this->load->library('compress');
+
 		$lokasi        = $this->session->userdata("lokasi");
 		$data['title'] = "Audit 5R-$lokasi| Form Audit Page";
 		$data_gbr      = array();
@@ -182,22 +186,26 @@ class Home extends CI_Controller {
 		$jlh_tem = $this->input->post('jlh_temuan');
 		$jumlah  = count($_FILES['files']['name']);
 
-		for ($i=0; $i < $jumlah; $i++) {
-			$_FILES['file']['name'] = $_FILES['files']['name'][$i];
-			$_FILES['file']['type'] = $_FILES['files']['type'][$i];
-			$_FILES['file']['tmp_name'] = $_FILES['files']['tmp_name'][$i];
-			$_FILES['file']['error'] = $_FILES['files']['error'][$i];
-			$_FILES['file']['size'] = $_FILES['files']['size'][$i];
+		// ambil data id_audit terakhir
+		$whCounter  = array('id' => 1);
+		$id_current = $this->m_home->get('s_mst.tb_counter')->result();
+		$id_aud     = $id_current[0]->counter + 1;
 
-			$config['upload_path']   = $_SERVER['DOCUMENT_ROOT'].'/temuan_audit';
-			$config['allowed_types'] = 'jpg|png|jpeg';
-			$config['remove_space']  = TRUE;
-			$config['file_name']     = $_FILES['files']['name'][$i];
-			$this->load->library('upload',$config);
-	
-			if($this->upload->do_upload('file')){
-				$fileUpload   = $this->upload->data();
-				$data_gbr[$i]['file_name'] = $fileUpload['file_name'];
+		for ($i=0; $i < $jumlah; $i++) {
+			
+			// config upload
+			$root_folder             = $_SERVER['DOCUMENT_ROOT'].'/temuan_audit/';
+			$imname[$i]              = $_FILES['files']['tmp_name'][$i];
+			$source_photo[$i]        = $imname[$i];
+			$namecreate[$i]          = "AUDIT5R_".$i."_".time();
+			$namecreatenumber[$i]    = rand(1000 , 10000);
+			$picname[$i]             = $namecreate[$i].$namecreatenumber[$i];
+			$finalname[$i]           = $picname[$i].".jpeg";
+			$dest_photo[$i]          = $root_folder.$finalname[$i];
+			$compressimage[$i]       = $this->compress->compress_image($source_photo[$i], $dest_photo[$i], 60);
+
+			if($compressimage[$i]){
+				$data_gbr[$i]['file_name'] = $finalname[$i];
 			} else {
 				$error = array('error' => $this->upload->display_errors());
 				echo "<pre>";
@@ -211,6 +219,7 @@ class Home extends CI_Controller {
 		$bagian_dept = $this->m_home->getWhere('s_mst.tb_dept', $whereArea)->result();
 
 		$data_audit = array(
+			'id_audit'      => $id_aud,
 			'kd_lok_audit'  => $k_lok,
 			'tgl_audit'     => date("Y-m-d"),
 			'kd_5r_audit'   => $k_5r,
@@ -232,6 +241,10 @@ class Home extends CI_Controller {
 
 		$insert = $this->m_home->insert('s_mst.tb_audit',$data_audit);
 		if ($insert){
+			// update counter
+			$data_id = array('counter' => $id_aud);
+			$this->m_home->updateData('s_mst.tb_counter', $data_id, $whCounter);
+
 			$log_type = 'insert';
 			$log_desc = 'Tambah Data Audit Area: '.$area.', Lokasi: '.$k_lok;
 			$ip       = $this->input->ip_address();
@@ -259,7 +272,10 @@ class Home extends CI_Controller {
 	}
 
 
-	
+	function coba($date){
+		date_default_timezone_set("Asia/Jakarta");
+		echo date("Y-m-d H:i:s", $date/10000);
+	}
 	
 
 

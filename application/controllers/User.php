@@ -34,14 +34,15 @@ class User extends CI_Controller {
 		$bagian        = $this->session->userdata('bagian');
 		$dept          = $this->session->userdata('dept');
 		$where         = array(
-			's_mst.tb_audit.bagian_dept' => $dept,
+			's_mst.tb_audit.kd_dept_audit' => $bagian,
 			'otorisasi'   => 'SUDAH',
 		);
 
-		$whereAud           = array('bagian_dept' => $dept, 'status' => false, 'otorisasi' => 'BELUM');
+		$whereAud           = array('kd_dept_audit' => $bagian, 'status' => false, 'otorisasi' => 'BELUM');
 
-		$data['jlh_otor'] = $this->m_user->getWhere('s_mst.tb_audit', $whereAud)->num_rows();
-        $data['jlh_refa'] = $this->m_user->getRefOtherNum($dept)->num_rows();
+		$data['jlh_otor']   = $this->m_user->getWhere('s_mst.tb_audit', $whereAud)->num_rows();
+        $data['jlh_refa']   = $this->m_user->getRefOtherNum($bagian)->num_rows();
+        $data['jlh_temuan'] = $this->m_user->getJlhTemNum($bagian)->result();
 
 		$data['dept']      = $this->m_user->getDept('s_mst.tb_dept')->result();
 		$data['audit']     = $this->m_user->getAllAudit('s_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $where)->result();
@@ -94,7 +95,7 @@ class User extends CI_Controller {
 		$data['title']     = "Audit 5R | Temuan Referensi Page";
         $kd_dept           = $this->session->userdata('bagian');
         $dept              = $this->session->userdata('dept');
-		$where             = array('s_mst.tb_audit.bagian_dept' => $dept, 'status_ref' => false);
+		$where             = array('s_mst.tb_audit.kd_dept_audit' => $kd_dept, 'status_ref' => false);
         $data['ref_audit'] = $this->m_user->getRefAudit('s_mst.tb_referensi', 's_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $where)->result();
 		$this->load->view('user/v_ref_temuan', $data);
 	}
@@ -270,13 +271,13 @@ class User extends CI_Controller {
         $dept          = $this->session->userdata('dept');
 		$whereAudit    = array(
 			'tgl_audit'     => date('Y-m-d'),
-			's_mst.tb_audit.bagian_dept' => $dept,
+			's_mst.tb_audit.kd_dept_audit' => $bagian,
 			'status'        => false,
 			'otorisasi'     => 'BELUM',
 		);
 
-		$whereRef           = array('s_mst.tb_audit.bagian_dept' => $dept, 'status_ref' => false);
-		$whereAud           = array('bagian_dept' => $dept, 'status' => false, 'otorisasi' => 'BELUM');
+		$whereRef           = array('s_mst.tb_audit.kd_dept_audit' => $bagian, 'status_ref' => false);
+		$whereAud           = array('kd_dept_audit' => $bagian, 'status' => false, 'otorisasi' => 'BELUM');
 
 		$data['jlh_otor'] = $this->m_user->getWhere('s_mst.tb_audit', $whereAud)->num_rows();
         $data['jlh_refa'] = $this->m_user->getRefAudit('s_mst.tb_referensi', 's_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $whereRef)->num_rows();
@@ -298,20 +299,43 @@ class User extends CI_Controller {
         $dept          = $this->session->userdata('dept');
 		$whereAudit    = array(
 			'tgl_audit'     => date('Y-m-d'),
-			's_mst.tb_audit.bagian_dept' => $dept,
+			's_mst.tb_audit.kd_dept_audit' => $bagian,
 			'status'        => false,
 			'otorisasi'     => 'BELUM',
 		);
 
 		$whereJA = array(
-			'auditee' => $bagian,
+			'id_dept' => $bagian,
 			'periode' => date('Y-m'),
 		);
 
 		$data_otor = array('otorisasi' => 'SUDAH');
-		$data_ja   = array('realisasi' => true);
+		$data_ja   = array('realisasi' => true, 'realisasi_audit' => date('Y-m-d'));
 
-		$dataOtor = $this->m_user->getAllAudit('s_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $whereAudit)->result();
+		$dataOtor  = $this->m_user->getAllAudit('s_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $whereAudit)->result();
+
+		$wh_aud    = array(
+			'id_auditor' => $dataOtor[0]->user_audit
+		);
+		// $data_wa_aud = $this->m_user->getWhere('s_mst.tb_wa', $wh_aud)->result();
+		
+		// data utk notif wa
+		$waktu     = time();
+		$jlh_tem   = count($dataOtor);
+		$des	   = "Anda telah melakukan audit di auditie: ".$dept." hari ini,".date('d-m-Y')." dengan total temuan yang sudah diotorisasi sebanyak: ".$jlh_tem." temuan.\nTerima kasih atas kerjasamanya.";
+		$status_wa = false;
+		$tipe_trx  = "OTORISASI";
+		$no_wa_aud = $data_wa_aud[0]->no_wa;
+
+		$data_notif = array(
+			'id'        => $waktu,
+			'user'      => $data_wa_aud[0]->nama,
+			'no_wa'     => $no_wa_aud,
+			'tipe_trx'  => $tipe_trx,
+			'deskripsi' => $des,
+			'date'      => date("Y-m-d H:i:s"),
+			'status'    => $status_wa,
+		);		
 
 		// lakukan otorisasi
 		foreach ($dataOtor as $row) {
@@ -326,8 +350,14 @@ class User extends CI_Controller {
 		}
 
 		if ($update){
+			// kirim notif wa
+			// $send_notif = $this->m_user->insert('s_wa.tb_notif', $data_notif);
+			// if (!$send_notif) {
+			// 	$this->session->set_flashdata('error', "Gagal kirim notifikasi otorisasi wa.");
+			// }
+
 			// LAKUKAN REALISASI JADWAL AUDIT
-			$isRealisasi = $this->m_user->updateData('s_mst.tb_jadwal', $data_ja, $whereJA);
+			$isRealisasi = $this->m_user->updateData('s_tmp.tb_jadwal', $data_ja, $whereJA);
 			if (!$isRealisasi) {
 				$this->session->set_flashdata('isrealisasi', "Gagal update realisasi jadwal.");
 			}
@@ -366,15 +396,22 @@ class User extends CI_Controller {
 		$gbr_awal   = $data_audit[0]->gambar;
 		$gbr_ssdh   = $data_audit[0]->gambar_sesudah;
 
-		// delete gambar awal dari server
-		for ($i=0; $i < count(json_decode($gbr_awal, true)) ; $i++) { 
-			unlink($_SERVER['DOCUMENT_ROOT'].'/temuan_audit/'.json_decode($gbr_awal, true)[$i]);
+		// transfer to history audit
+		$transfer = $this->m_user->insertLogAudit('s_mst.tb_audit', 's_log.tb_audit', $id_audit)->result();
+		if(!$transfer){
+			$this->session->set_flashdata('error', "Gagal replikasi data audit ID: $id_audit. Silakan ulangi lagi");
+			redirect(base_url('user/otorisasi'));
 		}
 
-		// delete gambar sesudah dari server
-		for ($i=0; $i < count(json_decode($gbr_ssdh, true)) ; $i++) { 
-			unlink($_SERVER['DOCUMENT_ROOT'].'/temuan_audit/'.json_decode($gbr_ssdh, true)[$i]);
-		}
+		// delete gambar awal dari server
+		// for ($i=0; $i < count(json_decode($gbr_awal, true)) ; $i++) { 
+		// 	unlink($_SERVER['DOCUMENT_ROOT'].'/temuan_audit/'.json_decode($gbr_awal, true)[$i]);
+		// }
+
+		// // delete gambar sesudah dari server
+		// for ($i=0; $i < count(json_decode($gbr_ssdh, true)) ; $i++) { 
+		// 	unlink($_SERVER['DOCUMENT_ROOT'].'/temuan_audit/'.json_decode($gbr_ssdh, true)[$i]);
+		// }
 
 		// delete data audit dari database
 		$delete = $this->m_user->delete('s_mst.tb_audit', $where);
@@ -401,45 +438,69 @@ class User extends CI_Controller {
 		}
 	}
 
-    // Fungsi untuk update gambar sesudah
-    function update_gbr(){
+  // Fungsi untuk update gambar sesudah
+	function update_gbr(){
+		$this->load->library('compress');
+		
 		$app_url  = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? "https" : "http");
 		$app_url .= "://" . $_SERVER['HTTP_HOST'];
 		$data['SITE_URL']= $app_url;
+		$username  = $this->session->userdata("username");
 
 		date_default_timezone_set("Asia/Jakarta");
-        $id_audit = $this->input->post('id_audit');
+        $id_audit = $this->input->post('idaudit');
 		$jumlah   = count($_FILES['files']['name']);
+		
+		$whereAud = array('id_audit' => $id_audit);
 
 		// cek apakah data audit sudah close
 		$isClosed  = array('id_audit' => $id_audit, 'status' => 't');
 		$dataAudit = $this->m_user->getWhere('s_mst.tb_audit', $isClosed)->num_rows();
+		$data_audit = $this->m_user->getWhere('s_mst.tb_audit', $whereAud)->result();
 		if ($dataAudit > 0) {
-			$this->session->set_flashdata('error', "Gagal update gambar sesudah audit ID: $id_audit. Temuan audit sudah di closed!");
+			$this->session->set_flashdata('error', "Gagal update gambar tindak lanjut temuan audit ID: $id_audit. Temuan audit sudah di closed!");
 			echo "<script>location='".base_url()."user/lk';</script>";
 			exit;
 		}
 
-		for ($i=0; $i < $jumlah; $i++) {
-			$_FILES['file']['name']     = $_FILES['files']['name'][$i];
-			$_FILES['file']['type']     = $_FILES['files']['type'][$i];
-			$_FILES['file']['tmp_name'] = $_FILES['files']['tmp_name'][$i];
-			$_FILES['file']['error']    = $_FILES['files']['error'][$i];
-			$_FILES['file']['size']     = $_FILES['files']['size'][$i];
+		$wh_aud    = array(
+			'id_auditor' => $data_audit[0]->user_audit
+		);
+		$data_wa_aud = $this->m_user->getWhere('s_mst.tb_wa', $wh_aud)->result();
 
-			$config['upload_path']   = $_SERVER['DOCUMENT_ROOT'].'/temuan_audit';
-			$config['allowed_types'] = 'jpg|png|jpeg';
-			$config['remove_space']  = TRUE;
-			$config['file_name']     = $_FILES['files']['name'][$i];
-			$this->load->library('upload',$config);
-	
-			if($this->upload->do_upload('file')){
-				$fileUpload   = $this->upload->data();
-				$data_gbr[$i]['file_name'] = $fileUpload['file_name'];
+		// data utk notif wa
+		$waktu     = time();
+		$des	   = "User auditie *".strtoupper($username)."* telah melakukan tindak lanjut temuan dengan ID: ".$id_audit.", per tanggal ".date("d-m-Y").". Harap auditor segera dilakukan pengecekan dan jika sudah sesuai, silakan temuan tersebut untuk di closed.\n\nTerima kasih atas kerjasamanya.";
+		$status_wa = false;
+		$tipe_trx  = "TINDAK LANJUT AUDITIE";
+
+		$data_notif = array(
+			'id'        => $waktu,
+			'user'      => $data_wa_aud[0]->nama,
+			'no_wa'     => $data_wa_aud[0]->no_wa,
+			'tipe_trx'  => $tipe_trx,
+			'deskripsi' => $des,
+			'date'      => date("Y-m-d H:i:s"),
+			'status'    => $status_wa,
+		);
+		
+		for ($i=0; $i < $jumlah; $i++) {
+			// config upload
+			$root_folder             = $_SERVER['DOCUMENT_ROOT'].'/temuan_audit/';
+			$imname[$i]              = $_FILES['files']['tmp_name'][$i];
+			$source_photo[$i]        = $imname[$i];
+			$namecreate[$i]          = "AUDIT5R_".$i."_".$id_audit."_".time();
+			$namecreatenumber[$i]    = rand(1000 , 10000);
+			$picname[$i]             = $namecreate[$i].$namecreatenumber[$i];
+			$finalname[$i]           = $picname[$i].".jpeg";
+			$dest_photo[$i]          = $root_folder.$finalname[$i];
+			$compressimage[$i]       = $this->compress->compress_image($source_photo[$i], $dest_photo[$i], 60);
+
+			if($compressimage[$i]){
+				$data_gbr[$i]['file_name'] = $finalname[$i];
 			} else {
-				$error = array('error' => $this->upload->display_errors());
 				echo "<pre>";
-				print_r($error);
+				print_r('error upload gambar audit');
 				echo "</pre>";
 			}
 			$data_gbr[$i] = $data_gbr[$i]['file_name'];
@@ -449,11 +510,11 @@ class User extends CI_Controller {
 			'gambar_sesudah' => json_encode($data_gbr),
 		);
 		$whereUpd = array('id_audit' => $id_audit);
-		$update = $this->m_user->updateData('s_mst.tb_audit', $data_update, $whereUpd);
+		$update = $this->m_auditor->updateData('s_mst.tb_audit', $data_update, $whereUpd);
 
 		if ($update){
-			$log_type = 'update';
-			$log_desc = "Update Gambar Sesudah Data Audit ID: $id_audit, By User";
+			$log_type = 'insert';
+			$log_desc = "Insert Gambar Temuan Audit ID: $id_audit, By User: $username";
 			$ip       = $this->input->ip_address();
 			$userLog  = $this->session->userdata("username");
 			date_default_timezone_set("Asia/Jakarta");
@@ -465,14 +526,14 @@ class User extends CI_Controller {
 				'ip'            => $ip
 			);
 			$this->m_log->insertLog('s_log.tb_log', $data_log);
-			$this->session->set_flashdata('success', "Berhasil submit gambar sesudah audit ID: $id_audit.");
+			$this->session->set_flashdata('success', "Berhasil submit gambar tindak lanjut temuan audit ID: $id_audit.");
 			redirect(base_url('user/lk'));
 		} else {
-			$this->session->set_flashdata('error', "Gagal submit gambar sesudah audit ID: $id_audit.");
+			$this->session->set_flashdata('error', "Gagal submit gambar tindak lanjut sesudah audit ID: $id_audit.");
 			echo "<script>location='".base_url()."user/lk';</script>";
 			exit;
 		}
-    }
+  }
 
 	// menampilkan halaman detail temuan per id
 	function detail_temuan($id_audit){
@@ -515,13 +576,13 @@ class User extends CI_Controller {
 		$data['SITE_URL']= $app_url;
 
 		$data['title']   = "User Audit | Data Ranking Audit 5R";
-		$data['dept']    = $this->session->userdata('dept');
+		$data['dept']    = $this->session->userdata('bagian');
 		$data['id_user'] = $this->session->userdata('user_id');
 		$whereUserId     = array('id_user' => $data['id_user']);
 		$data['user']    = $this->m_user->getUserById('s_mst.tb_user', 's_mst.tb_dept',$whereUserId)->result();
 		$data['area']    = $data['user'][0]->kat_dept;
 		$where           = array(
-			'nama_dep'   => $data['dept'],
+			'dept_ranking'   => $data['dept'],
 		);
 		$data['ranking'] = $this->m_user->getWhere('s_mst.tb_ranking', $where)->result();
 		$this->load->view('user/v_ranking', $data);

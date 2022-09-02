@@ -33,4 +33,6 @@ class M_auth extends CI_Model {
 		$this->db->order_by($table.'.date', 'DESC');		
 		return $this->db->get();
 	}
+
+	
 }

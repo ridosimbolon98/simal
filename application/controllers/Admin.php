@@ -139,6 +139,14 @@ class Admin extends CI_Controller {
 		$this->load->view('admin/v_user', $data);
 	}
 
+	function get_dept(){
+		$area  = $this->input->post('data');
+		$where = array('kat_dept' => $area);
+		$data  = $this->m_admin->getWhere('s_mst.tb_dept', $where)->result();
+		echo json_encode($data);
+	}
+
+
 	// Insert data user ke database tb_user
 	public function addUser(){
 		$data['title'] = "Audit 5R | Data User Page";
@@ -146,6 +154,7 @@ class Admin extends CI_Controller {
 		$username      = htmlspecialchars(trim($this->input->post("username")));
 		$password      = htmlspecialchars(trim($this->input->post("password")));
 		$level         = $this->input->post("level");
+		$area          = $this->input->post("area_usr");
 		$bagian        = $this->input->post("bagian");
 
 		// cek apakah username suda dipakai apa belum
@@ -245,9 +254,12 @@ class Admin extends CI_Controller {
 	function auditor(){
 		$data['title']   = "Audit 5R | Data Auditor Page";
 		$level           = $this->session->userdata("level");
+		$whereAngg       = array('level_auditor' => 'ANGGOTA');
+		$whereKoor       = array('level_auditor' => 'KOORDINATOR');
 		$data['dept']    = $this->m_admin->get('s_mst.tb_dept')->result();
 		$data['user']    = $this->m_admin->getUsers('s_mst.tb_user','s_mst.tb_dept')->result();
-		$data['auditor'] = $this->m_admin->get('s_mst.tb_auditor')->result();
+		$data['koor_aud']= $this->m_admin->getUserKoorAud('s_mst.tb_user','s_mst.tb_auditor', $whereKoor)->result();
+		$data['auditor'] = $this->m_admin->getWhere('s_mst.tb_auditor', $whereAngg)->result();
 		$data['map_adt'] = $this->m_admin->getMapAuditors('s_mst.tb_map_auditor','s_mst.tb_auditor', 's_mst.tb_user')->result();
 		$this->load->view('admin/v_data_auditor', $data);
 	}
@@ -294,6 +306,83 @@ class Admin extends CI_Controller {
 			echo "<script>location='".base_url()."admin/auditor';</script>";
 		} else{
 			$this->session->set_flashdata('error', 'Gagal tambah auditor. Ada kesalahan di sisi server. Silakan ulangi lagi!');
+			echo "<script>location='".base_url()."admin/auditor';</script>";
+			exit;
+		}
+	}
+
+	// Edit data auditor ke database tb_auditor
+	public function editAuditor(){
+		$data['title'] = "Audit 5R | Data Auditor Page";
+		$id_auditor    = $this->input->post("id_auditor");
+		$nama          = htmlspecialchars(trim(strtoupper($this->input->post("nama"))));
+		$area          = $this->input->post("area");
+		$level         = $this->input->post("level");
+
+		// cek apakah nama auditor suda dipakai apa belum
+		$whereAuditor  = array('nama_auditor' => $nama);
+		$isAuditor     = $this->m_admin->getWhere('s_mst.tb_auditor', $whereAuditor)->num_rows(); 
+		if ($isAuditor > 0){
+			$this->session->set_flashdata('warning', 'Nama auditor sudah ada di sistem. Silakan pilih nama lain!');
+			echo "<script>location='".base_url()."admin/auditor';</script>";
+			exit;
+		}
+		$whereID = array('id_auditor' => $id_auditor);
+		$data_auditor  = array(
+			'nama_auditor' => $nama,
+			'area_auditor' => $area,
+			'level_auditor'=> $level,
+		);
+
+		// update auditor ke tb_auditor
+		$updateAuditor  = $this->m_admin->updateData('s_mst.tb_auditor', $data_auditor, $whereID);
+		if ($updateAuditor){
+			$log_type = 'update';
+			$log_desc = 'Update Data Auditor dengan nama: '.$nama. ', level: '.$level.', area: '.$area;
+			$ip       = $this->input->ip_address();
+			$userLog  = $this->session->userdata("username");
+			date_default_timezone_set("Asia/Jakarta");
+			$data_log = array(
+				'username'      => $userLog,
+				'type_log'      => $log_type,
+				'deskripsi_log' => $log_desc,
+				'date'          => date("Y-m-d H:i:s"),
+				'ip'            => $ip
+			);
+			$this->m_log->insertLog('s_log.tb_log', $data_log);
+			$this->session->set_flashdata('success', "Data auditor $nama, berhasil diperbaharui ke sistem.");
+			echo "<script>location='".base_url()."admin/auditor';</script>";
+		} else{
+			$this->session->set_flashdata('error', 'Gagal update data auditor. Ada kesalahan di sisi server. Silakan ulangi lagi!');
+			echo "<script>location='".base_url()."admin/auditor';</script>";
+			exit;
+		}
+	}
+
+	// delete auditor
+	function deleteAuditor($id_auditor){
+		$whereID = array('id_auditor' => $id_auditor);
+
+		// delete map auditor dari tb_auditor
+		$deleteAuditor  = $this->m_admin->delete('s_mst.tb_auditor', $whereID);
+		if ($deleteAuditor){
+			$log_type = 'delete';
+			$log_desc = 'Delete Data Auditor dengan ID: '.$id_auditor;
+			$ip       = $this->input->ip_address();
+			$userLog  = $this->session->userdata("username");
+			date_default_timezone_set("Asia/Jakarta");
+			$data_log = array(
+				'username'      => $userLog,
+				'type_log'      => $log_type,
+				'deskripsi_log' => $log_desc,
+				'date'          => date("Y-m-d H:i:s"),
+				'ip'            => $ip
+			);
+			$this->m_log->insertLog('s_log.tb_log', $data_log);
+			$this->session->set_flashdata('success', "Data auditor dengan ID: $id_auditor, berhasil dihapus.");
+			echo "<script>location='".base_url()."admin/auditor';</script>";
+		} else{
+			$this->session->set_flashdata('error', 'Gagal hapus data auditor. Ada kesalahan di sisi server. Silakan ulangi lagi!');
 			echo "<script>location='".base_url()."admin/auditor';</script>";
 			exit;
 		}
@@ -349,15 +438,116 @@ class Admin extends CI_Controller {
 		}
 	}
 
+	// Update data mamp auditor ke database tb_Map_auditor
+	public function updateMapAuditor(){
+		$data['title'] = "Audit 5R | Data Auditor Page";
+		$id_map        = $this->input->post("id_map");
+		$auditor       = $this->input->post("auditor");
+		$koordinator   = $this->input->post("koordinator");
+		
+		// cek apakah koor ada di tb_user
+		$whereKoor     = array('id_user' => $koordinator);
+		$getKoor       = $this->m_admin->getKoor('s_mst.tb_user', 's_mst.tb_dept', $whereKoor)->result();
+		
+		// cek apakah nama auditor sudah dimapping apa belum
+		$whereMA       = array('id_auditor' => $auditor, 'id_koor' => $koordinator);
+		$isMapAuditor  = $this->m_admin->getWhere('s_mst.tb_map_auditor', $whereMA)->num_rows(); 
+		if ($isMapAuditor > 0){
+			$this->session->set_flashdata('warning', 'Nama auditor sudah dimapping di sistem. Silakan pilih nama lain!');
+			echo "<script>location='".base_url()."admin/auditor';</script>";
+			exit;
+		}
+
+		$whereIdMap     = array('id_ma' => $id_map);
+		$data_ma  = array(
+			'id_auditor' => $auditor,
+			'id_koor'    => $koordinator,
+			'area_ma'    => $getKoor[0]->area_dept,
+		);
+
+		// insert auditor ke tb_auditor
+		$updateMapAuditor  = $this->m_admin->updateData('s_mst.tb_map_auditor', $data_ma, $whereIdMap);
+		if ($updateMapAuditor){
+			$log_type = 'update';
+			$log_desc = 'Update Data Map Auditor dengan ID Auditor: '.$auditor. ', Koordinator: '.$koordinator;
+			$ip       = $this->input->ip_address();
+			$userLog  = $this->session->userdata("username");
+			date_default_timezone_set("Asia/Jakarta");
+			$data_log = array(
+				'username'      => $userLog,
+				'type_log'      => $log_type,
+				'deskripsi_log' => $log_desc,
+				'date'          => date("Y-m-d H:i:s"),
+				'ip'            => $ip
+			);
+			$this->m_log->insertLog('s_log.tb_log', $data_log);
+			$this->session->set_flashdata('success', "ID Auditor: $auditor, berhasil dimapping ke sistem dengan data baru.");
+			echo "<script>location='".base_url()."admin/auditor';</script>";
+		} else{
+			$this->session->set_flashdata('error', 'Gagal update mapping auditor. Ada kesalahan di sisi server. Silakan ulangi lagi!');
+			echo "<script>location='".base_url()."admin/auditor';</script>";
+			exit;
+		}
+	}
+
+	// delete map auditor
+	function deleteMapAuditor($id_map){
+		$whereID = array('id_ma' => $id_map);
+
+		// delete map auditor dari tb_auditor
+		$deleteMapAuditor  = $this->m_admin->delete('s_mst.tb_map_auditor', $whereID);
+		if ($deleteMapAuditor){
+			$log_type = 'delete';
+			$log_desc = 'Delete Data Map Auditor dengan ID: '.$id_map;
+			$ip       = $this->input->ip_address();
+			$userLog  = $this->session->userdata("username");
+			date_default_timezone_set("Asia/Jakarta");
+			$data_log = array(
+				'username'      => $userLog,
+				'type_log'      => $log_type,
+				'deskripsi_log' => $log_desc,
+				'date'          => date("Y-m-d H:i:s"),
+				'ip'            => $ip
+			);
+			$this->m_log->insertLog('s_log.tb_log', $data_log);
+			$this->session->set_flashdata('success', "Data map auditor dengan ID: $id_map, berhasil dihapus.");
+			// echo "<script>location='".base_url()."admin/auditor';</script>";
+		} else{
+			$this->session->set_flashdata('error', 'Gagal hapus data map auditor. Ada kesalahan di sisi server. Silakan ulangi lagi!');
+			echo "<script>location='".base_url()."admin/auditor';</script>";
+			exit;
+		}
+	}
+
 	// FUNGSI UNTUK MENAMPILKAN HALAMAN JADWAL
 	function jadwal(){
-		$data['title']   = "Audit 5R | Data Jadwal Audit Page";
+		$data['title']   = "Audit 5R | Data Jadwal Audit";
+		$periode         = date('Y-m');
+		$wh_periode      = array('periode' => $periode);
+		$wh_jap          = array('area' => 'PABRIK' ,'periode' => $periode);
+		$wh_janp         = array('area' => 'NON-PABRIK' ,'periode' => $periode);
+
+
 		$level           = $this->session->userdata("level");
 		$data['dept']    = $this->m_admin->get('s_mst.tb_dept')->result();
 		$data['section'] = $this->m_admin->get('s_mst.tb_section')->result();
-		$data['jadwal']  = $this->m_admin->getJadwal('s_mst.tb_jadwal','s_mst.tb_user','s_mst.tb_dept')->result();
+		$data['all_jadwal'] = $this->m_admin->getJadwal('s_mst.tb_jadwal','s_mst.tb_user','s_mst.tb_dept')->result();
+		$data['jadwal']  = $this->m_admin->getJadwalAuditor('s_tmp.tb_jadwal', 's_mst.tb_user', $wh_periode)->result();
+		$data['jap']     = $this->m_admin->getWhere('s_tmp.tb_jadwal', $wh_jap)->result();
+		$data['janp']    = $this->m_admin->getWhere('s_tmp.tb_jadwal', $wh_janp)->result();
 		$where           = array('level' => 'auditor');
 		$data['user']    = $this->m_admin->getWhere('s_mst.tb_user', $where)->result();
+
+		// ambil data realisasi jadwal audit
+		$jpt = $this->m_admin->getJadwalByRealisasi('PABRIK', 'true', $periode)->result();
+		$jpf = $this->m_admin->getJadwalByRealisasi('PABRIK', 'false', $periode)->result();
+		$jnpt = $this->m_admin->getJadwalByRealisasi('NON-PABRIK', 'true', $periode)->result();
+		$jnpf = $this->m_admin->getJadwalByRealisasi('NON-PABRIK', 'false', $periode)->result();
+		$data['jp_true']   = $jpt[0]->total;
+		$data['jp_false']  = $jpf[0]->total;
+		$data['jnp_true']  = $jnpt[0]->total;
+		$data['jnp_false'] = $jnpf[0]->total;
+
 		$this->load->view('admin/v_jadwal', $data);
 	}
 
@@ -383,6 +573,13 @@ class Admin extends CI_Controller {
 		echo json_encode($data);
 	}
 
+	// FUNGSI UNTUK MENGAMBIL DATA AUditor
+	function getAuditor(){
+		$id_koor   = $this->input->post('data');
+		$data = $this->m_admin->getDataAuditorByKoor('s_mst.tb_map_auditor', 's_mst.tb_auditor', $id_koor)->result();
+		echo json_encode($data);
+	}
+
 	// SUBMIT DATA JADWAL AUDIT KE TB_JADWAL
 	function addJadwal(){
 		date_default_timezone_set("Asia/Jakarta");
@@ -390,55 +587,68 @@ class Admin extends CI_Controller {
 		
 		$dt            = date_create($this->input->post("date_time"));
 		$auditee       = $this->input->post("auditee");
+		$koordinator   = $this->input->post("koordinator");
 		$auditor       = $this->input->post("auditor[]");
 		$periode       = date_format($dt,'Y-m');
 
-
+		$aud = array();
 		for ($i=0; $i < count($auditor) ; $i++) { 
-			// cek apakah jadwal audit suda ada pada periode tersebut atau tidak
-			$whereJA     = array(
-				'auditee' => $auditee,
-				'auditor' => $auditor[$i],
-				'periode' => $periode,
-			);
-	
-			$isJA[$i] = $this->m_admin->getWhere('s_mst.tb_jadwal', $whereJA)->num_rows(); 
-			if ($isJA[$i] > 0){
-				$this->session->set_flashdata('warning', "Jadwal auditor: $auditor[$i], pada auditee: $auditee, periode: $periode, sudah ada di jadwal. Silakan pilih jadwal/periode lain!");
-				continue;
-			}
-
-			$kd_jadwal[$i] = "JA".date("YmdHi").$i;
-	
-			$data_jadwal[$i] = array(
-				'kd_jadwal' => $kd_jadwal[$i],
-				'tgl_waktu' => date_format($dt,'d-m-Y H:i'),
-				'auditee'   => $auditee,
-				'auditor'   => $auditor[$i],
-				'realisasi' => false,
-				'periode'   => $periode,
-				'updated'   => date("Y-m-d H:i:s"),
-			);
-	
-			// insert user ke tb_user
-			$insertJadwal  = $this->m_admin->insertData('s_mst.tb_jadwal', $data_jadwal[$i]);
-
-			$log_type = 'insert';
-			$log_desc = "Tambah data jadwal auditor: $auditor[$i], pada auditee: $auditee, periode: $periode";
-			$ip       = $this->input->ip_address();
-			$userLog  = $this->session->userdata("username");
-			date_default_timezone_set("Asia/Jakarta");
-			$data_log = array(
-				'username'      => $userLog,
-				'type_log'      => $log_type,
-				'deskripsi_log' => $log_desc,
-				'date'          => date("Y-m-d H:i:s"),
-				'ip'            => $ip
-			);
-			$this->m_log->insertLog('s_log.tb_log', $data_log);
+			array_push($aud, $auditor[$i]);
 		}
 
+		// cek apakah jadwal audit suda ada pada periode tersebut atau tidak
+		$whereJA     = array(
+			'auditee' => $auditee,
+			'auditor' => $koordinator,
+			'anggota_auditor' => json_encode($aud),
+			'periode' => $periode,
+		);
+
+		$isJA = $this->m_admin->getWhere('s_mst.tb_jadwal', $whereJA)->num_rows(); 
+		if ($isJA > 0){
+			$this->session->set_flashdata('warning', "Jadwal auditor: $koordinator, pada auditee: $auditee, periode: $periode, sudah ada di jadwal. Silakan pilih jadwal/periode lain!");
+			echo "<script>location='".base_url()."admin/jadwal';</script>";
+			exit;
+		}
+
+		$kd_jadwal = "JA".date("YmdHi");
+
+		$data_jadwal = array(
+			'kd_jadwal' => $kd_jadwal,
+			'tgl_waktu' => date_format($dt,'d-m-Y H:i'),
+			'auditee'   => $auditee,
+			'auditor'   => $koordinator,
+			'realisasi' => false,
+			'periode'   => $periode,
+			'updated'   => date("Y-m-d H:i:s"),
+			'wa_status' => false,
+			'anggota_auditor' => json_encode($aud),
+		);
+
+		// insert user ke tb_user
+		$insertJadwal  = $this->m_admin->insertData('s_mst.tb_jadwal', $data_jadwal);
+
+		$log_type = 'insert';
+		$log_desc = "Tambah data jadwal auditor: $koordinator, pada auditee: $auditee, periode: $periode";
+		$ip       = $this->input->ip_address();
+		$userLog  = $this->session->userdata("username");
+		date_default_timezone_set("Asia/Jakarta");
+		$data_log = array(
+			'username'      => $userLog,
+			'type_log'      => $log_type,
+			'deskripsi_log' => $log_desc,
+			'date'          => date("Y-m-d H:i:s"),
+			'ip'            => $ip
+		);
+		$this->m_log->insertLog('s_log.tb_log', $data_log);
+
 		if ($insertJadwal){
+			// replikasi ke tmp.tb_jadwal
+			$duplikat_tmp = $this->m_admin->replikasiDataJadwalBaru($kd_jadwal);
+			if (!$duplikat_tmp) {
+				$this->session->set_flashdata('warning', "Jadwal auditor berhasil ditambahkan namun gagal di repplikasi!");
+				echo "<script>location='".base_url()."admin/jadwal';</script>";
+			}
 			$this->session->set_flashdata('success', "Jadwal auditor berhasil ditambahkan");
 			echo "<script>location='".base_url()."admin/jadwal';</script>";
 		} else{
@@ -723,7 +933,7 @@ class Admin extends CI_Controller {
 	// Fungsi untuk menampilkan ranking auditee
 	function ranking(){
 		$data['title']   = "Audit 5R | Ranking Audit Page";
-		$data['ranking'] = $this->m_admin->getRanking('s_mst.tb_ranking')->result();
+		$data['ranking'] = $this->m_admin->getRanking('s_mst.tb_ranking', 's_mst.tb_dept')->result();
 		$this->load->view('admin/v_ranking', $data);
 	}
 
@@ -757,7 +967,7 @@ class Admin extends CI_Controller {
 			$r3A[$i] = $this->m_monitoring->getJlhTemuan3A('s_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $area, $row->id_dept, $periode)->result();
 			$r3B[$i] = $this->m_monitoring->getJlhTemuan3B('s_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $area, $row->id_dept, $periode)->result();
 			$r3C[$i] = $this->m_monitoring->getJlhTemuan3C('s_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $area, $row->id_dept, $periode)->result();
-			$r4A[$i] = $this->m_monitoring->getJlhTemuan4A('s_mst.tb_audit', 's_mst.tb_dept', 's_mst.tb_aspek', 's_mst.tb_par_temuan', $area, $row->id_dept, $periode)->result();
+			$r4A[$i] = $this->m_monitoring->getJlhTemuan4A($area, $row->id_dept, $periode)->result();
 
 			if($r1A[$i][0]->jlh_tem_audit == 0) {
 				$r1AT[$i] = 4;
@@ -867,17 +1077,22 @@ class Admin extends CI_Controller {
 				$r3CT[$i] = 0;
 			}
 
-			if($r4A[$i][0]->jlh_tem_audit == 0) {
-				$r4AT[$i] = 4;
-			} else if($r4A[$i][0]->jlh_tem_audit > 0 && $r4A[$i][0]->jlh_tem_audit < 4) {
-				$r4AT[$i] = 3;
-			} else if($r4A[$i][0]->jlh_tem_audit > 3 && $r4A[$i][0]->jlh_tem_audit < 8) {
-				$r4AT[$i] = 2;
-			} else if($r4A[$i][0]->jlh_tem_audit > 7 && $r4A[$i][0]->jlh_tem_audit <= 10) {
-				$r4AT[$i] = 1;
-			} else {
+			if (count($r4A[$i]) == 0) {
 				$r4AT[$i] = 0;
 			}
+			
+			if($r4A[$i][0]->kode_pt == 1) {
+				$r4AT[$i] = 0;
+			} else if($r4A[$i][0]->kode_pt == 2) {
+				$r4AT[$i] = 1;
+			} else if($r4A[$i][0]->kode_pt == 3) {
+				$r4AT[$i] = 2;
+			} else if($r4A[$i][0]->kode_pt == 4) {
+				$r4AT[$i] = 3;
+			} else {
+				$r4AT[$i] = 4;
+			}
+			
 
 			// cek updated temuan terakhir
 			$whereDateClose[$i] = array(

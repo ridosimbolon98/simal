@@ -41,9 +41,10 @@ class M_admin extends CI_Model {
     }
 
     // Fungsi untuk ambil data ranking dari database
-    function getRanking($table){
+    function getRanking($table,$table2){
         $this->db->select('*');
 		$this->db->from($table);
+        $this->db->join($table2, $table.'.dept_ranking='.$table2.'.id_dept');
         $this->db->order_by($table.'.periode_ranking', 'DESC');
         $this->db->order_by($table.'.row_number', 'ASC');
         return $this->db->get();
@@ -59,7 +60,17 @@ class M_admin extends CI_Model {
 		$this->db->select('*');
 		$this->db->from($table);
 		$this->db->join($table2, $table.'.kd_dept='.$table2.'.id_dept');
-        $this->db->order_by($table.'.id_user', 'DESC');
+        $this->db->order_by($table.'.nama', 'ASC');
+		return $this->db->get();
+	}
+
+    // Fungsi untuk mengambil data users koordinator
+    function getUserKoorAud($table,$table2,$where) {
+		$this->db->select('*');
+		$this->db->from($table);
+		$this->db->join($table2, $table.'.username='.$table2.'.nama_auditor');
+		$this->db->where($where);
+        $this->db->order_by($table.'.nama', 'ASC');
 		return $this->db->get();
 	}
 
@@ -86,7 +97,7 @@ class M_admin extends CI_Model {
 		$this->db->select('*');
 		$this->db->from($table);
 		$this->db->join($table2, $table.'.auditor='.$table2.'.id_user');
-		$this->db->join($table3, $table.'.auditee='.$table3.'.section');
+		$this->db->join($table3, $table.'.auditee='.$table3.'.area_dept');
 		return $this->db->get();
 	}
     
@@ -173,5 +184,40 @@ class M_admin extends CI_Model {
     function getJlhPareto($aspek,$kat5r,$periode){
         $sql = "select * from s_mst.tb_pareto a join s_mst.tb_aspek b on a.aspek=b.id_aspek where kode_aspek='$aspek' and a.kat_5r='$kat5r' and a.periode='$periode' order by jumlah desc limit(3)";
         return $this->db->query($sql);
+    }
+
+    // ambil data auditie by section
+    function getDataAuditie($table,$section){
+        $sql ="select area_dept from $table where section='$section'";
+        return $this->db->query($sql);
+    }
+
+    // ambil data auditie by section
+    function getDataAuditorByKoor($table, $table2, $id_koor){
+        $sql ="select * from $table a left join $table2 b on a.id_auditor=b.id_auditor where id_koor=$id_koor";
+        return $this->db->query($sql);
+    }
+
+    // ambil data jumlah jadwal based realisasi dan periode
+    function getJadwalByRealisasi($area, $realisasi, $periode){
+        $sql ="select count(distinct(id_dept)) as total from s_tmp.tb_jadwal where area='$area' and realisasi='$realisasi' and periode='$periode'";
+        return $this->db->query($sql);
+    }
+
+    // insert dan update jadwal audit ke tmp
+    function replikasiDataJadwalBaru($kd_jadwal){
+        $sql ="insert into s_tmp.tb_jadwal (select id_dept,kat_dept as area,area_dept,section,kd_jadwal,auditor,anggota_auditor,realisasi,periode,
+        tgl_waktu as tgl_audit from s_mst.tb_dept a join s_mst.tb_jadwal b
+         on b.auditee=a.section  where b.kd_jadwal='$kd_jadwal' order by a.section);";
+        return $this->db->query($sql);
+    }
+
+    // fungsi untuk ambil data jadwal auditor
+    function getJadwalAuditor($table,$table2,$where){
+        $this->db->select('*');
+		$this->db->from($table);
+		$this->db->join($table2, $table.'.koor='.$table2.'.id_user');
+        $this->db->where($where);
+		return $this->db->get();
     }
 }

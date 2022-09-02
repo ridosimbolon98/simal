@@ -193,7 +193,6 @@
                       <th>Tim Audit</th>
                       <th>Status</th>
                       <th>Otorisasi</th>
-                      <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -221,9 +220,6 @@
                       </td>
                       <td class="text-center"><?= ($row->status == 'f') ? "OPEN" : "CLOSED" ; ?></td>
                       <td class="text-center"><?= $row->otorisasi ?></td>
-                      <td class="text-center">
-                        <a id="btnDelOtor" class="btn btn-sm btn-danger" href="<?= base_url(); ?>user/del_audit/<?= $row->id_audit; ?>" data-toggle="tooltip" data-html="true" title="Delete Data Audit" onclick="return confirm('Apakah anda yakin hapus data audit ini?');"><i class="fa fa-trash"></i></a>
-                      </td>
                     </tr>
                     <?php endforeach; ?>
                 </table>

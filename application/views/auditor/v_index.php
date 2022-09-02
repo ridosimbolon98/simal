@@ -29,9 +29,6 @@
             <button type="button" class="uk-button uk-button-small uk-input uk-form-small uk-margin-top ubl" uk-toggle="target: #modal-add">Ada Temuan</button>
         </div>
         <div class="uk-margin">
-            <button type="button" class="uk-button uk-button-secondary uk-button-small uk-input uk-form-small uk-margin-top" uk-toggle="target: #no-temuan">Tidak Ada Temuan</button>
-        </div>
-        <div class="uk-margin">
             <a href="<?= base_url('auditor'); ?>" class="uk-button uk-button-default uk-button-small uk-input uk-form-small uk-margin-top">Masuk ke Halaman Auditor</a>
         </div>
     </form>

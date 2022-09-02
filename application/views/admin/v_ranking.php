@@ -282,7 +282,7 @@
                         <tr>
                            <td class="text-center"><?= $no++; ?></td>
                            <td class="text-center"><?= $row->area_ranking; ?></td>
-                           <td class="text-center"><?= $row->nama_dep; ?></td>
+                           <td class="text-center"><?= $row->area_dept; ?></td>
                            <td class="text-center"><?= $row->periode_ranking; ?></td>
                            <td class="text-center"><?= $row->total_ranking; ?></td>
                            <td class="text-center"><?= $row->row_number; ?></td>

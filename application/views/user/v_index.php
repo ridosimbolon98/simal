@@ -32,6 +32,14 @@
       color: #fff !important;
       background-color: #ffc107 !important;
     }
+    .ib_info:hover{
+      color: #fff !important;
+      background-color: #46A2B8 !important;
+    }
+
+    .ib_info a:hover {
+      color:#fff !important;
+    }
   </style>
 </head>
 <body class="hold-transition sidebar-mini">
@@ -185,7 +193,7 @@
                 <a class="bg_mt" href="<?= base_url('user/otorisasi'); ?>">
                   <div id="dept-widget" class="info-box-content">
                     <span class="info-box-text">Halaman Otorisasi Audit</span>
-                    <span class="info-box-number"><?= $jlh_otor; ?> temuan</span>
+                    <span class="info-box-number"><?= $jlh_otor; ?> Item Temuan</span>
                   </div>
                 </a>
               </div>
@@ -197,7 +205,19 @@
                 <a class="bg_mt" href="<?= base_url('user/ref_temuan'); ?>">
                   <div id="dept-widget" class="info-box-content">
                     <span class="info-box-text">Halaman Referensi Audit</span>
-                    <span class="info-box-number"><?= $jlh_refa ?> referensi</span>
+                    <span class="info-box-number"><?= $jlh_refa ?> Referensi</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+
+            <div class="col-md-3 col-sm-6 col-12">
+              <div class="info-box ib_info">
+                <span class="info-box-icon bg-info"><i class="fas fa-book"></i></span>
+                <a class="bg_mt" href="<?= base_url('user/'); ?>">
+                  <div id="dept-widget" class="info-box-content">
+                    <span class="info-box-text">Halaman Temuan Audit</span>
+                    <span class="info-box-number"><?= $jlh_temuan[0]->total ?> Temuan Open</span>
                   </div>
                 </a>
               </div>

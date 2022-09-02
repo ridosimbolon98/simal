@@ -105,6 +105,14 @@
           </li>
           <li class="nav-header">MASTER DATA</li>
           <li class="nav-item">
+            <a href="<?= base_url(); ?>auditor/otorisasi" class="nav-link">
+              <i class="nav-icon fas fa-unlock-alt"></i>
+              <p>
+                Audit Hari Ini
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
             <a href="<?= base_url(); ?>auditor" class="nav-link">
               <i class="nav-icon fas fa-th"></i>
               <p>

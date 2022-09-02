@@ -347,12 +347,17 @@
             </select>
           </div>
           <div class="form-group">
+            <label for="bagian">Pilih Area</label>
+            <select class="form-control" name="area_usr" id="area_user" required>
+                <option value="" disabled-selected>--Pilih Area--</option>
+                <option value="PABRIK" >PABRIK</option>
+                <option value="NON-PABRIK" >NON-PABRIK</option>
+            </select>
+          </div>
+          <div class="form-group">
             <label for="bagian">Bagian User</label>
-            <select class="form-control" name="bagian" id="" required>
+            <select class="form-control" name="bagian" id="bag_usr" required>
                 <option value="" disabled-selected>--Pilih Bagian--</option>
-                <?php foreach($area as $row): ?>
-                  <option value="<?= $row->id_dept ?>"><?= $row->area_dept ?> -- <?= $row->bagian_dept ?></option>
-                <?php endforeach; ?>
             </select>
           </div>
         </div>
@@ -491,6 +496,34 @@ $(document).on("click", "#update_user", function () {
 	$("#nama").val(nama);
 	$("#level").val(level);
 	$("#bagian").val(bagian);
+});
+</script>
+
+<script>
+let au = document.getElementById('area_user');
+au.addEventListener("input", () => {
+  $(".s_dept_u").remove();
+  var area = au.value;
+  $.ajax({
+    type: "POST",
+    url: "<?php echo base_url(); ?>" + "admin/get_dept",
+    data: {data: area},
+    async: false,
+    success: function (result) {
+      var data = jQuery.parseJSON(result);
+      var i = 0;
+      while (i < data.length) {
+        $("#bag_usr").append(
+          "<option class='s_dept_u' value='" +
+            data[i].id_dept +
+            "'>" +
+            data[i].area_dept + " -- " + data[i].bagian_dept +
+            "</option>"
+        );
+        i++;
+      }
+    },
+  });
 });
 </script>
 

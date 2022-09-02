@@ -60,13 +60,13 @@
                         <form action="<?= base_url(); ?>home/send" method="post" enctype="multipart/form-data">
                             <div class="mb-3">
                                 <label for="k_5r" class="form-label">Kategori 5R</label>
-                                <input name="k_lok" type="hidden" class="form-control" value="<?= $this->session->userdata("lokasi") ?>">
+                                <input id="k_lok" name="k_lok" type="hidden" class="form-control" value="<?= $this->session->userdata("lokasi") ?>">
                                 <select name="k_5r" id="k_5r" class="form-select form-select-sm" aria-label="k_5r" required>
                                     <option value="" disabled selected>--Pilih Kategori 5R--</option>
-                                    <option value="RINGKAS">RINGKAS</option>
-                                    <option value="RAPI">RAPI</option>
-                                    <option value="RESIK">RESIK</option>
-                                    <option value="RAWAT">RAWAT</option>
+                                    <option value="RINGKAS">RINGKAS (R1)</option>
+                                    <option value="RAPI">RAPI (R2)</option>
+                                    <option value="RESIK">RESIK (R3)</option>
+                                    <option value="RAWAT">RAWAT (R4)</option>
                                 </select>
                             </div>
                             <div class="mb-3">
@@ -152,7 +152,7 @@
 
         $(document).ready(function() {
             $(".s_ta").remove();
-            var data_lok = "PABRIK";
+            var data_lok = k_lok.value;
             $.ajax({
                 type: 'POST',
                 url: base_url + "home/get_ta",
@@ -178,7 +178,7 @@
         s_5r.addEventListener("input", () => {
             $(".s_aspek").remove();
             var data_5r = s_5r.value;
-            var data_lok = "PABRIK";
+            var data_lok = k_lok.value;
             $.ajax({
                 type: 'POST',
                 url: base_url + "home/get_at",
@@ -191,7 +191,7 @@
                         $("#a_tem").append(
                             "<option class='s_aspek' value='" +
                                 data[iter].id_aspek +
-                                "'>" +
+                                "'>" + data[iter].kode_aspek + ". " +
                                 data[iter].desk_aspek +
                                 "</option>"
                         );
@@ -205,7 +205,7 @@
             $(".s_kt").remove();
             var data_tem = $("#a_tem").val();
             var data_5r = $("#k_5r").val();
-            var data_lok = "PABRIK";
+            var data_lok = k_lok.value;
             $.ajax({
                 type: 'POST',
                 url: base_url + "home/get_kt",
@@ -218,7 +218,7 @@
                         $("#k_tem").append(
                             "<option class='s_kt' value='" +
                                 data2[iter].id_pt +
-                                "'>" +
+                                "'>" + data2[iter].kode_pt + ". " +
                                 data2[iter].desk_pt +
                                 "</option>"
                         );

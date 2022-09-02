@@ -14,7 +14,8 @@
   <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
   <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
   <link rel="stylesheet" href="<?= base_url(); ?>assets/bootstrap/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="<?= base_url(); ?>assets/multi-select/dist/css/BsMultiSelect.min.css">
+  <!-- <link rel="stylesheet" href="<?= base_url(); ?>assets/multi-select/dist/css/BsMultiSelect.min.css"> -->
+  <link rel="stylesheet" href="<?= base_url(); ?>assets/custom/bootstrap/css/bootstrap-select.min.css">
   <!-- Toastr -->
   <link rel="stylesheet" href="<?= base_url(); ?>assets/adminlte/plugins/toastr/toastr.min.css">
   <!-- Theme style -->
@@ -238,16 +239,131 @@
     <section class="content">
       <div class="container-fluid">
 
-        <div class="mb-3">
-          <button class="btn btn-info mr-2" data-toggle="modal" data-target="#add-jadwal"><i class="fa fa-plus"></i> Tambah Jadwal Audit Baru</button>
+        <div class="mb-1">
+          <button class="btn btn-info mr-2 mb-2" data-toggle="modal" data-target="#add-jadwal"><i class="fa fa-plus"></i> Tambah Jadwal Audit Baru</button>
+          <a href="http://192.168.10.30:8000/send-jadwal" class="btn btn-success mr-2 mb-2" target="_blank">Kirim Notif Whatsapp Jadwal Audit</a>
+        </div>
+
+        <div class="mb-2">
+          <div class="row">
+            <div class="col-md-6">
+              <!-- Pabrik Donut Chart -->
+              <div class="card card-primary card-outline">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <i class="far fa-chart-bar"></i>
+                    Chart Jadwal Pabrik
+                  </h3>
+
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div id="p-chart" style="height: 200px;"></div>
+                </div>
+              </div>
+              <!-- End Pabrik Donut Chart -->
+            </div>
+            <div class="col-md-6">
+              <!-- Non Pabrik Donut Chart -->
+              <div class="card card-warning card-outline">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <i class="far fa-chart-bar"></i>
+                    Chart Jadwal Non-Pabrik
+                  </h3>
+
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div id="np-chart" style="height: 200px;"></div>
+                </div>
+              </div>
+              <!-- End Non Pabrik Donut Chart -->
+            </div>
+          </div>
         </div>
 
         <div class="row">
-          <div class="col-12">
-
+          <div class="col-md-6">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Tabel Data Jadwal Audit</h3>
+                <h3 class="card-title">Jadwal Audit Pabrik Periode: <?= date('m-Y'); ?></h3>
+              </div>
+
+              <div class="card-body">
+                <table id="jap" class="table table-bordered table-striped">
+                  <thead>
+                    <tr class="text-center">
+                      <th>Kode</th>
+                      <th>Jadwal</th>
+                      <th>Area</th>
+                      <th>Realisasi</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach($jap as $row): ?>
+                    <tr class="text-center">
+                      <td class="text-center"><?= $row->kd_jadwal; ?></td>
+                      <td><?= $row->tgl_audit ?></td>
+                      <td><?= $row->area_dept ?></td>
+                      <td><?= $row->realisasi_audit ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Jadwal Audit Non-Pabrik Periode: <?= date('m-Y'); ?></h3>
+              </div>
+
+              <div class="card-body">
+                <table id="janp" class="table table-bordered table-striped">
+                  <thead>
+                    <tr class="text-center">
+                      <th>Kode</th>
+                      <th>Tgl & Waktu</th>
+                      <th>Area</th>
+                      <th>Realisasi</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach($janp as $row): ?>
+                    <tr class="text-center">
+                      <td class="text-center"><?= $row->kd_jadwal; ?></td>
+                      <td><?= $row->tgl_audit ?></td>
+                      <td><?= $row->area_dept ?></td>
+                      <td><?= $row->realisasi_audit ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Detail Jadwal Audit Periode: <?= date('m-Y'); ?></h3>
               </div>
 
               <div class="card-body">
@@ -255,26 +371,22 @@
                   <thead>
                     <tr class="text-center">
                       <th>Kode</th>
-                      <th>Tgl & Waktu</th>
-                      <th>Auditee</th>
+                      <th>Jadwal</th>
+                      <th>Area</th>
+                      <th>Auditie</th>
                       <th>Auditor</th>
                       <th>Realisasi</th>
-                      <th>Periode</th>
-                      <th>Action</th>
                   </tr>
                   </thead>
                   <tbody>
                     <?php foreach($jadwal as $row): ?>
                     <tr class="text-center">
                       <td class="text-center"><?= $row->kd_jadwal; ?></td>
-                      <td><?= substr($row->tgl_waktu,0,16) ?></td>
+                      <td><?= $row->tgl_audit ?></td>
+                      <td><?= $row->area ?></td>
                       <td><?= $row->area_dept ?></td>
-                      <td><?= strtoupper($row->nama) ?></td>
-                      <td><?= ($row->realisasi == 'f') ? "BELUM" : "SUDAH" ; ?></td>
-                      <td><?= $row->periode ?></td>
-                      <td class="text-center">
-                        <a id="update-jadwal" class="btn btn-sm btn-primary" href="javascript:;" data-toggle="modal" data-target="#update-jadwal" data-id="<?= $row->kd_jadwal; ?>"> Edit</a>
-                      </td>
+                      <td><?= $row->username . ',' . preg_replace("/[^a-zA-Z0-9,]/", "", $row->auditor); ?></td>
+                      <td><?= ($row->realisasi == 'f') ? "<span class='text-danger'>BELUM</span>" : "<span class='text-success'>SUDAH</span>" ; ?></td>
                     </tr>
                     <?php endforeach; ?>
                 </table>
@@ -334,13 +446,18 @@
               <small id="ds"></small>
             </div>
             <div class="form-group">
-              <label for="auditor">Auditor</label>
-              <select name="auditor[]" class="form-select form-control" id="auditor" aria-label="auditor" multiple="multiple" required>
-                <option value="" disabled selected>--Pilih Tim Audit--</option>
+              <label for="koordinator">Koordinator</label>
+              <select name="koordinator" class="form-control" id="koordinator" aria-label="koordinator" required>
+                <option value="" disabled selected>--Pilih Koordinator Audit--</option>
                 <?php foreach($user as $row): ?>
                   <option value="<?= $row->id_user; ?>"><?= strtoupper($row->nama); ?></option>
                 <?php endforeach; ?>
               </select>
+            </div>
+            <div class="form-group">
+              <label for="auditor">Auditor</label>
+              <div id="auditor" class="form-check">
+              </div>
             </div>
           </div>
           <div class="modal-footer">
@@ -379,7 +496,14 @@
 <script src="<?= base_url(); ?>assets/adminlte/dist/js/adminlte.min.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="<?= base_url(); ?>assets/adminlte/dist/js/demo.js"></script>
-<script src="<?= base_url(); ?>assets/multi-select/dist/js/BsMultiSelect.min.js"></script>
+<!-- <script src="<?= base_url(); ?>assets/multi-select/dist/js/BsMultiSelect.min.js"></script> -->
+<script src="<?= base_url(); ?>assets/custom/bootstrap/js/bootstrap-select.min.js"></script>
+<!-- FLOT CHARTS -->
+<script src="<?= base_url(); ?>assets/adminlte/plugins/flot/jquery.flot.js"></script>
+<!-- FLOT RESIZE PLUGIN - allows the chart to redraw when the window is resized -->
+<script src="<?= base_url(); ?>assets/adminlte/plugins/flot/plugins/jquery.flot.resize.js"></script>
+<!-- FLOT PIE PLUGIN - also used to draw donut charts -->
+<script src="<?= base_url(); ?>assets/adminlte/plugins/flot/plugins/jquery.flot.pie.js"></script>
 <!-- Sweetalert -->
 <script src="<?= base_url(); ?>assets/sweetalert/sweetalert.min.js"></script>
 <!-- Toastr -->
@@ -391,19 +515,14 @@
       "responsive": true, "lengthChange": true, "autoWidth": false,
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
     }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-    $('#example2').DataTable({
-      "paging": true,
-      "lengthChange": false,
-      "searching": false,
-      "ordering": true,
-      "info": true,
-      "autoWidth": false,
-      "responsive": true,
+    $("#jap").DataTable({
+      "responsive": true, "lengthChange": true, "autoWidth": false,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
     });
-  });
-
-  $(document).ready(function(){
-    $('#auditor').bsMultiSelect();
+    $("#janp").DataTable({
+      "responsive": true, "lengthChange": true, "autoWidth": false,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+    });
   });
 </script>
 
@@ -411,6 +530,7 @@
   let base_url = window.location.origin + "/audit/";
   let area     = document.getElementById("area");
   let section  = document.getElementById("section");
+  let koor     = document.getElementById("koordinator");
 
   area.addEventListener("input", () => {
       $(".s_sect").remove();
@@ -457,6 +577,107 @@
           }
       });
   });
+
+  koor.addEventListener("input", () => {
+      $(".s_auditor").remove();
+      var data_koor = koor.value;
+      $.ajax({
+          type: 'POST',
+          url: base_url + "admin/getAuditor",
+          data: {data: data_koor},
+          cache: false,
+          success: function(msg){
+              console.log(msg);
+              var data = JSON.parse(msg);
+              var iter = 0;
+              console.log(data[0].id_auditor);
+              console.log(data[0].nama_auditor);
+              while (iter < data.length) {
+                  $("#auditor").append(
+                    "<input id='auditor"+iter+"' type='checkbox' class='form-check-input' name='auditor[]' value='"+data[iter].nama_auditor+"'>"+
+                    "<label class='form-check-label' for='auditor"+iter+"'>"+data[iter].nama_auditor+"</label>"+
+                    "<br>"
+                  );
+                  iter++;
+              }
+          }
+      });
+  });
+
+</script>
+<script>
+  var pData = [
+    {
+      label: 'Sudah',
+      data : <?= $jp_true ?>,
+      color: '#3c8dbc'
+    },
+    {
+      label: 'Belum',
+      data : <?= $jp_false ?>,
+      color: '#0073b7'
+    }
+  ];
+
+  var npData = [
+    {
+      label: 'Sudah',
+      data : <?= $jnp_true ?>,
+      color: '#d39e33'
+    },
+    {
+      label: 'Belum',
+      data : <?= $jnp_false ?>,
+      color: '#8e6410'
+    }
+  ];
+
+    $.plot('#p-chart', pData, {
+      series: {
+        pie: {
+          show       : true,
+          radius     : 1,
+          innerRadius: 0.3,
+          label      : {
+            show     : true,
+            radius   : 2 / 3,
+            formatter: labelFormatter,
+            threshold: 0.1
+          }
+
+        }
+      },
+      legend: {
+        show: false
+      }
+    });
+
+    $.plot('#np-chart', npData, {
+      series: {
+        pie: {
+          show       : true,
+          radius     : 1,
+          innerRadius: 0.3,
+          label      : {
+            show     : true,
+            radius   : 2 / 3,
+            formatter: labelFormatter,
+            threshold: 0.1
+          }
+
+        }
+      },
+      legend: {
+        show: false
+      }
+    });
+
+  function labelFormatter(label, series) {
+    return '<div style="font-size:13px; text-align:center; padding:2px; color: #fff; font-weight: 600;">'
+      + label
+      + '<br>'
+      + Math.round(series.percent) + '%</div>'
+  }
 </script>
 
 <script>

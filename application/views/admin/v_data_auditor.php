@@ -463,7 +463,7 @@
                   <label for="koordinator">Koordinator Auditor</label>
                   <select class="form-control" name="koordinator" id="" required>
                     <option value="" disabled-selected>--Pilih Koordinator--</option>
-                    <?php foreach($user as $row): ?>
+                    <?php foreach($koor_aud as $row): ?>
                       <option value="<?= $row->id_user ?>" ><?= strtoupper($row->nama) ?></option>
                     <?php endforeach; ?>
                   </select>
@@ -509,7 +509,7 @@
                   <label for="koordinator">Koordinator Auditor</label>
                   <select class="form-control" name="koordinator" id="koordinator" required>
                     <option value="" disabled-selected>--Pilih Koordinator--</option>
-                    <?php foreach($user as $row): ?>
+                    <?php foreach($koor_aud as $row): ?>
                       <option value="<?= $row->id_user ?>" ><?= strtoupper($row->nama) ?></option>
                     <?php endforeach; ?>
                   </select>
