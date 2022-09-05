@@ -522,33 +522,65 @@ class Admin extends CI_Controller {
 	// FUNGSI UNTUK MENAMPILKAN HALAMAN JADWAL
 	function jadwal(){
 		$data['title']   = "Audit 5R | Data Jadwal Audit";
-		$periode         = date('Y-m');
-		$wh_periode      = array('periode' => $periode);
-		$wh_jap          = array('area' => 'PABRIK' ,'periode' => $periode);
-		$wh_janp         = array('area' => 'NON-PABRIK' ,'periode' => $periode);
+		$periode         = $this->input->post('periode');
+		if (isset($periode)) {
+			$wh_periode      = array('periode' => $periode);
+			$wh_jap          = array('area' => 'PABRIK' ,'periode' => $periode);
+			$wh_janp         = array('area' => 'NON-PABRIK' ,'periode' => $periode);
 
 
-		$level           = $this->session->userdata("level");
-		$data['dept']    = $this->m_admin->get('s_mst.tb_dept')->result();
-		$data['section'] = $this->m_admin->get('s_mst.tb_section')->result();
-		$data['all_jadwal'] = $this->m_admin->getJadwal('s_mst.tb_jadwal','s_mst.tb_user','s_mst.tb_dept')->result();
-		$data['jadwal']  = $this->m_admin->getJadwalAuditor('s_tmp.tb_jadwal', 's_mst.tb_user', $wh_periode)->result();
-		$data['jap']     = $this->m_admin->getWhere('s_tmp.tb_jadwal', $wh_jap)->result();
-		$data['janp']    = $this->m_admin->getWhere('s_tmp.tb_jadwal', $wh_janp)->result();
-		$where           = array('level' => 'auditor');
-		$data['user']    = $this->m_admin->getWhere('s_mst.tb_user', $where)->result();
+			$level           = $this->session->userdata("level");
+			$data['dept']    = $this->m_admin->get('s_mst.tb_dept')->result();
+			$data['section'] = $this->m_admin->get('s_mst.tb_section')->result();
+			$data['all_jadwal'] = $this->m_admin->getJadwal('s_mst.tb_jadwal','s_mst.tb_user','s_mst.tb_dept')->result();
+			$data['jadwal']  = $this->m_admin->getJadwalAuditor('s_tmp.tb_jadwal', 's_mst.tb_user', $wh_periode)->result();
+			$data['jap']     = $this->m_admin->getWhere('s_tmp.tb_jadwal', $wh_jap)->result();
+			$data['janp']    = $this->m_admin->getWhere('s_tmp.tb_jadwal', $wh_janp)->result();
+			$where           = array('level' => 'auditor');
+			$data['user']    = $this->m_admin->getWhere('s_mst.tb_user', $where)->result();
 
-		// ambil data realisasi jadwal audit
-		$jpt = $this->m_admin->getJadwalByRealisasi('PABRIK', 'true', $periode)->result();
-		$jpf = $this->m_admin->getJadwalByRealisasi('PABRIK', 'false', $periode)->result();
-		$jnpt = $this->m_admin->getJadwalByRealisasi('NON-PABRIK', 'true', $periode)->result();
-		$jnpf = $this->m_admin->getJadwalByRealisasi('NON-PABRIK', 'false', $periode)->result();
-		$data['jp_true']   = $jpt[0]->total;
-		$data['jp_false']  = $jpf[0]->total;
-		$data['jnp_true']  = $jnpt[0]->total;
-		$data['jnp_false'] = $jnpf[0]->total;
+			// ambil data realisasi jadwal audit
+			$jpt = $this->m_admin->getJadwalByRealisasi('PABRIK', 'true', $periode)->result();
+			$jpf = $this->m_admin->getJadwalByRealisasi('PABRIK', 'false', $periode)->result();
+			$jnpt = $this->m_admin->getJadwalByRealisasi('NON-PABRIK', 'true', $periode)->result();
+			$jnpf = $this->m_admin->getJadwalByRealisasi('NON-PABRIK', 'false', $periode)->result();
+			$data['jp_true']   = $jpt[0]->total;
+			$data['jp_false']  = $jpf[0]->total;
+			$data['jnp_true']  = $jnpt[0]->total;
+			$data['jnp_false'] = $jnpf[0]->total;
+			$data['periode'] = $periode;
 
-		$this->load->view('admin/v_jadwal', $data);
+			$this->load->view('admin/v_jadwal', $data);
+		} else {
+			$periode         = date('Y-m');
+			$wh_periode      = array('periode' => $periode);
+			$wh_jap          = array('area' => 'PABRIK' ,'periode' => $periode);
+			$wh_janp         = array('area' => 'NON-PABRIK' ,'periode' => $periode);
+
+
+			$level           = $this->session->userdata("level");
+			$data['dept']    = $this->m_admin->get('s_mst.tb_dept')->result();
+			$data['section'] = $this->m_admin->get('s_mst.tb_section')->result();
+			$data['all_jadwal'] = $this->m_admin->getJadwal('s_mst.tb_jadwal','s_mst.tb_user','s_mst.tb_dept')->result();
+			$data['jadwal']  = $this->m_admin->getJadwalAuditor('s_tmp.tb_jadwal', 's_mst.tb_user', $wh_periode)->result();
+			$data['jap']     = $this->m_admin->getWhere('s_tmp.tb_jadwal', $wh_jap)->result();
+			$data['janp']    = $this->m_admin->getWhere('s_tmp.tb_jadwal', $wh_janp)->result();
+			$where           = array('level' => 'auditor');
+			$data['user']    = $this->m_admin->getWhere('s_mst.tb_user', $where)->result();
+
+			// ambil data realisasi jadwal audit
+			$jpt = $this->m_admin->getJadwalByRealisasi('PABRIK', 'true', $periode)->result();
+			$jpf = $this->m_admin->getJadwalByRealisasi('PABRIK', 'false', $periode)->result();
+			$jnpt = $this->m_admin->getJadwalByRealisasi('NON-PABRIK', 'true', $periode)->result();
+			$jnpf = $this->m_admin->getJadwalByRealisasi('NON-PABRIK', 'false', $periode)->result();
+			$data['jp_true']   = $jpt[0]->total;
+			$data['jp_false']  = $jpf[0]->total;
+			$data['jnp_true']  = $jnpt[0]->total;
+			$data['jnp_false'] = $jnpf[0]->total;
+			$data['periode'] = $periode;
+
+			$this->load->view('admin/v_jadwal', $data);
+		}
 	}
 
 	// FUNGSI UNTUK MENGAMBIL DATA SECTION

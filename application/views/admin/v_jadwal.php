@@ -243,6 +243,16 @@
           <button class="btn btn-info mr-2 mb-2" data-toggle="modal" data-target="#add-jadwal"><i class="fa fa-plus"></i> Tambah Jadwal Audit Baru</button>
           <a href="http://192.168.10.30:8000/send-jadwal" class="btn btn-success mr-2 mb-2" target="_blank">Kirim Notif Whatsapp Jadwal Audit</a>
         </div>
+        <div class="my-1">
+          <!-- Filter Periode -->
+          <form class="form-inline" action="<?= base_url(); ?>admin/jadwal" method="post">
+            <div class="form-group mb-2">
+            <label class="mr-2 mb-2">Pilih Periode</label>
+            <input type="month" name="periode" class="form-control form-control-sm mr-2 mb-2" required>
+            <button type="submit" class="btn btn-info btn-sm mb-2"><i class="fa fa-filter"></i> Tampilkan</button>
+            </div>
+          </form>
+        </div>
 
         <div class="mb-2">
           <div class="row">
@@ -301,7 +311,7 @@
           <div class="col-md-6">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Jadwal Audit Pabrik Periode: <?= date('m-Y'); ?></h3>
+                <h3 class="card-title">Jadwal Audit Pabrik Periode: <?= $periode; ?></h3>
               </div>
 
               <div class="card-body">
@@ -331,7 +341,7 @@
           <div class="col-md-6">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Jadwal Audit Non-Pabrik Periode: <?= date('m-Y'); ?></h3>
+                <h3 class="card-title">Jadwal Audit Non-Pabrik Periode: <?= $periode; ?></h3>
               </div>
 
               <div class="card-body">
@@ -363,7 +373,7 @@
           <div class="col-md-12">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Detail Jadwal Audit Periode: <?= date('m-Y'); ?></h3>
+                <h3 class="card-title">Detail Jadwal Audit Periode: <?= $periode; ?></h3>
               </div>
 
               <div class="card-body">
