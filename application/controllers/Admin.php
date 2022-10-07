@@ -690,6 +690,39 @@ class Admin extends CI_Controller {
 		}
 	}
 	
+	// fungsi untuk reschedule jadwal audit
+	function editJadwal(){
+		date_default_timezone_set("Asia/Jakarta");
+		$data['title'] = "Audit 5R | Edit Jadwal Audit Page";
+		
+		$kode_jadwal = $this->input->post("kode");
+		$tgl_audit   = $this->input->post("tgl_audit");
+
+		$update = $this->db->query('SELECT s_mst.updatejadwal(kodejadwal=>`'.$kode_jadwal.'`, tglaudit=>`'.$tgl_audit.'`)')->result();
+		// $update = $this->m_admin->rescheduleJadwalAudit($kode_jadwal, $tgl_audit);
+
+		if ($update[0]->updatejadwal) {
+			$log_type = 'update';
+			$log_desc = "Rechedule data jadwal kode: $kode_jadwal, jadi tgl: $tgl_audit";
+			$ip       = $this->input->ip_address();
+			$userLog  = $this->session->userdata("username");
+			date_default_timezone_set("Asia/Jakarta");
+			$data_log = array(
+				'username'      => $userLog,
+				'type_log'      => $log_type,
+				'deskripsi_log' => $log_desc,
+				'date'          => date("Y-m-d H:i:s"),
+				'ip'            => $ip
+			);
+			$this->m_log->insertLog('s_log.tb_log', $data_log);
+
+			$this->session->set_flashdata('success', "Jadwal auditor berhasil diperbaharui");
+			echo "<script>location='".base_url()."admin/jadwal';</script>";
+		} else {
+			$this->session->set_flashdata('error', "Jadwal auditor gagal diperbaharui");
+			echo "<script>location='".base_url()."admin/jadwal';</script>";
+		}
+	}
 
 
 	/**================================================================================================================
@@ -1346,7 +1379,115 @@ class Admin extends CI_Controller {
 		$this->load->view('admin/v_pareto', $data);
 	}
 
-	
+	// menampilkan halaman laporan tindak lanjut
+	function tl() {
+		$data['title'] = "Halaman Laporan Tindak Lanjut | Admin Audit";
+		
+		if(isset($_POST['periode'])){
+			$periode       = $this->input->post("periode");
+			$data['periode'] = $periode;
+
+			$data['jlh_tb'] = $this->m_admin->getJlhTB($periode)->result(); //jlh temuan baru
+			$data['jlh_os'] = $this->m_admin->getJlhOS($periode)->result(); //jlh temuan open sebelumnya
+			$data['jlh_btl'] = $this->m_admin->getJlhBTL($periode)->result(); //jlh temuan belum tindak lanjut all
+			$data['jlh_stl'] = $this->m_admin->getJlhSTL($periode)->result(); //jlh temuan sudah tindaklanjut all
+
+			$data['jlh_stl_p'] = $this->m_admin->getJlhTSTL('PABRIK',$periode)->result(); //jlh temuan sudah tindak lanjut pabrik
+			$data['jlh_stl_np'] = $this->m_admin->getJlhTSTL('NON-PABRIK',$periode)->result(); //jlh temuan sudah tindak lanjut non-pabrik
+			$data['jlh_btl_p'] = $this->m_admin->getJlhTBTL('PABRIK',$periode)->result(); //jlh temuan sudah tindak lanjut pabrik
+			$data['jlh_btl_np'] = $this->m_admin->getJlhTBTL('NON-PABRIK',$periode)->result(); //jlh temuan sudah tindak lanjut non-pabrik
+
+			// data temuan yg pabrik dan non-pabrik yg belum ditindaklanjut
+			$data['data_btl_p'] = $this->m_admin->getDataTBTL('PABRIK',$periode)->result();
+			$data['data_btl_np'] = $this->m_admin->getDataTBTL('NON-PABRIK',$periode)->result();
+			$data['data_stl_p'] = $this->m_admin->getDataTSTL('PABRIK',$periode)->result();
+			$data['data_stl_np'] = $this->m_admin->getDataTSTL('NON-PABRIK',$periode)->result();
+		} else {
+			$periode = date('Y-m');
+			$data['periode'] = $periode;
+
+			$data['jlh_tb'] = $this->m_admin->getJlhTB($periode)->result(); //jlh temuan baru
+			$data['jlh_os'] = $this->m_admin->getJlhOS($periode)->result(); //jlh temuan open sebelumnya
+			$data['jlh_btl'] = $this->m_admin->getJlhBTL($periode)->result(); //jlh temuan open sebelumnya
+			$data['jlh_stl'] = $this->m_admin->getJlhSTL($periode)->result(); //jlh temuan open sebelumnya
+
+			$data['jlh_stl_p'] = $this->m_admin->getJlhTSTL('PABRIK',$periode)->result(); //jlh temuan sudah tindak lanjut pabrik
+			$data['jlh_stl_np'] = $this->m_admin->getJlhTSTL('NON-PABRIK',$periode)->result(); //jlh temuan sudah tindak lanjut non-pabrik
+			$data['jlh_btl_p'] = $this->m_admin->getJlhTBTL('PABRIK',$periode)->result(); //jlh temuan sudah tindak lanjut pabrik
+			$data['jlh_btl_np'] = $this->m_admin->getJlhTBTL('NON-PABRIK',$periode)->result(); //jlh temuan sudah tindak lanjut non-pabrik
+
+			// data temuan yg pabrik dan non-pabrik yg belum ditindaklanjut
+			$data['data_tl_p'] = $this->m_admin->getDataTL('PABRIK',$periode)->result();
+			$data['data_tl_np'] = $this->m_admin->getDataTL('NON-PABRIK',$periode)->result();
+		}
+
+		$this->load->view('admin/v_tl', $data);
+	}
+
+	// fungsi untuk mengirim jadwal audit yg belum dilakukan
+	function sendJadwalBelum(){
+		date_default_timezone_set("Asia/Jakarta");
+		$periode = date('Y-m');
+		$jadwal_belum = $this->m_admin->getJadwalBelumAudit($periode)->result();
+
+		$id       = time();
+		$iter = 1;
+		$trx_type = "REMINDER JADWAL AUDIT 5R";
+		foreach ($jadwal_belum as $row) {
+			$data_notif[$iter] = array(
+				'id'        => $id + $iter,
+				'user'      => $row->nama,
+				'no_wa'     => $row->no_wa,
+				'tipe_trx'  => $trx_type,
+				'deskripsi' => "Halo, $row->nama. Ucok informasikan saat ini anda belum melakukan Audit 5R periode: *$row->periode*, pada auditie: *$row->area_dept*, dengan anggota: *".str_replace(array('"','[',']'), '', $row->auditor)."*, tanggal: *$row->tgl_audit*. \nMohon agar segera melakukan audit sebelum periode *$periode* berakhir.\n\nTerima kasih.",
+				'date'      => date("Y-m-d H:i:s"),
+				'status'    => false
+			);
+
+			$insert = $this->m_admin->insert('s_wa.tb_notif',$data_notif[$iter]);
+			if (!$insert) {
+				$this->session->set_flashdata('error', "Gagal kirim notif. Ada kesalahan di sisi server. Error 500!");
+				echo "<script>location='".base_url()."admin/jadwal';</script>";
+				exit;
+			}
+			$iter++;
+		}
+
+		$this->session->set_flashdata('success', "Berhasil kirim notif Wa jadwal audit");
+		echo "<script>location='".base_url()."admin/jadwal';</script>";
+		exit;
+	}
+
+	// fungsi untuk mengirim jadwal audit yg belum dilakukan
+	function SendNotifWA(){
+		date_default_timezone_set("Asia/Jakarta");
+		$data_wa = $this->m_admin->getDataWa()->result();
+
+		$id       = time();
+		$iter = 1;
+		$trx_type = "PERUBAHAN ALAMAT WEB AUDIT 5R";
+		foreach ($data_wa as $row) {
+			$data_notif[$iter] = array(
+				'id'        => $id + $iter,
+				'user'      => $row->nama,
+				'no_wa'     => $row->no_wa,
+				'tipe_trx'  => $trx_type,
+				'deskripsi' => "Halo, $row->nama. Ucok informasikan saat ini ada perubahan alamat web audit 5R menjadi:\nhttp://103.247.123.64:8346/audit/\n\natau melalui jaringan lokal:\nhttp://192.168.10.13:8346/audit\n\nTerima kasih.",
+				'date'      => date("Y-m-d H:i:s"),
+				'status'    => false
+			);
+
+			$insert = $this->m_admin->insert('s_wa.tb_notif',$data_notif[$iter]);
+			if (!$insert) {
+				$this->session->set_flashdata('error', "Gagal kirim notif. Ada kesalahan di sisi server. Error 500!");
+				echo "<script>location='".base_url()."admin/jadwal';</script>";
+				exit;
+			}
+			$iter++;
+		}
+
+		echo "berhasil";
+	}
 
 
 
@@ -1357,7 +1498,10 @@ class Admin extends CI_Controller {
 		$this->load->view('admin/v_log', $data);
 	}
 
-	public function coba(){
-		
+	public function open(){
+		$data['title'] = "Summary | Audit 5R";
+		$this->load->view('admin/v_excel.html');
 	}
+
+
 }

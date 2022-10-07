@@ -208,6 +208,14 @@
               </p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="<?= base_url(); ?>admin/tl" class="nav-link">
+              <i class="nav-icon fas fa-chart-bar"></i>
+              <p>
+                Tindak Lanjut
+              </p>
+            </a>
+          </li>
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

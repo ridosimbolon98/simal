@@ -210,6 +210,14 @@
               </p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="<?= base_url(); ?>admin/tl" class="nav-link">
+              <i class="nav-icon fas fa-chart-bar"></i>
+              <p>
+                Tindak Lanjut
+              </p>
+            </a>
+          </li>
         </ul>
       </nav>
 
@@ -241,7 +249,9 @@
 
         <div class="mb-1">
           <button class="btn btn-info mr-2 mb-2" data-toggle="modal" data-target="#add-jadwal"><i class="fa fa-plus"></i> Tambah Jadwal Audit Baru</button>
-          <a href="http://192.168.10.30:8000/send-jadwal" class="btn btn-success mr-2 mb-2" target="_blank">Kirim Notif Whatsapp Jadwal Audit</a>
+          <button class="btn btn-warning mr-2 mb-2" data-toggle="modal" data-target="#edit-jadwal"><i class="fa fa-pen-square"></i> Update Jadwal Audit</button>
+          <a href="http://192.168.10.30:8000/send-jadwal" class="btn btn-success mr-2 mb-2" target="_blank"><i class="fa fa-share text-white"></i> Kirim Notif Whatsapp Jadwal Audit</a>
+          <a href="<?= base_url('admin/sendJadwalBelum') ?>" class="btn btn-primary mr-2 mb-2" target="_blank"><i class="fa fa-phone text-white"></i> Kirim Notif Jadwal Belum Audit</a>
         </div>
         <div class="my-1">
           <!-- Filter Periode -->
@@ -474,6 +484,37 @@
     </div>
   </div>
   <!-- End Add Jadwal -->
+
+  <!-- Modal Update Jadwal -->
+  <div class="modal fade bd-example-modal-lg" id="edit-jadwal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Reschedule Jadwal By Kode Jadwal</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="<?= base_url(); ?>admin/editJadwal" method="post">
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="date_time">Kode Jadwal</label>
+              <input type="text" name="kode" class="form-control" placeholder="JA**********" required>
+            </div>
+            <div class="form-group">
+              <label for="date_time">Tanggal Audit</label>
+              <input type="date" name="tgl_audit" class="form-control" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" id="">Simpan</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- End Update Jadwal -->
 
 </div>
 <!-- ./wrapper -->

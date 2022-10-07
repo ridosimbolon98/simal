@@ -28,7 +28,9 @@ class Auth extends CI_Controller {
 		$where    = array(
 			'username' => $username,
 			'password' => md5($password)
-			);
+		);
+
+		//code...
 		$data     = $this->m_auth->autentikasi1('s_mst.tb_user','s_mst.tb_dept',$where)->result();
 		$cek      = $this->m_auth->autentikasi('s_mst.tb_user',$where)->num_rows();
 		
@@ -48,7 +50,7 @@ class Auth extends CI_Controller {
 			);
 
 			// Mencatat log login
- 			$this->session->set_userdata($data_session);
+				$this->session->set_userdata($data_session);
 			$log_type = 'login';
 			$log_desc = 'Login User';
 			$ip       = $this->input->ip_address();

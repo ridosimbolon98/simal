@@ -20,6 +20,8 @@ class Home extends CI_Controller {
 		}		
 	}
 
+	
+
 	function index(){
 		// hapus session audit
 		$this->session->unset_userdata('lokasi');

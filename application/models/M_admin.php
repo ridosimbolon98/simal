@@ -42,7 +42,7 @@ class M_admin extends CI_Model {
 
     // Fungsi untuk ambil data ranking dari database
     function getRanking($table,$table2){
-        $this->db->select('*');
+        $this->db->select('area_ranking, periode_ranking, total_ranking, area_dept, row_number');
 		$this->db->from($table);
         $this->db->join($table2, $table.'.dept_ranking='.$table2.'.id_dept');
         $this->db->order_by($table.'.periode_ranking', 'DESC');
@@ -158,8 +158,8 @@ class M_admin extends CI_Model {
 
     // ambil data jumlah temuan yg open per auditee
     function getSumTemAuditee($auditee){
-        $sql = "select sum(jlh_tem_audit) from s_mst.tb_audit where kd_dept_audit='$auditee' and status='false'";
-        return $this->db->query($sql);
+        $sql = "select sum(jlh_tem_audit) from s_mst.tb_audit where kd_dept_audit = ? and status = ? ";
+        return $this->db->query($sql, array($auditee, 'false'));
     }
 
 
@@ -219,5 +219,66 @@ class M_admin extends CI_Model {
 		$this->db->join($table2, $table.'.koor='.$table2.'.id_user');
         $this->db->where($where);
 		return $this->db->get();
+    }
+
+    // fungsi untuk jlh data temuan baru
+    function getJlhTB($periode){
+        $sql ="select count(*) from s_mst.tb_audit where status='false' and periode = '$periode'";
+        return $this->db->query($sql);
+    }
+
+    // fungsi untuk jlh data temuan open sebelumnya
+    function getJlhOS($periode){
+        $sql ="select count(*) from s_mst.tb_audit where status='false' and periode <> '$periode'";
+        return $this->db->query($sql);
+    }
+
+    // fungsi untuk jlh data temuan belum tindak lanjut
+    function getJlhBTL($periode){
+        $sql ="select count(*) from s_mst.tb_audit where status='false' and otorisasi='SUDAH' and periode = '$periode' and gambar_sesudah = '0'";
+        return $this->db->query($sql);
+    }
+
+    // fungsi untuk jlh data temuan sudah tindak lanjut
+    function getJlhSTL($periode){
+        $sql ="select count(*) from s_mst.tb_audit where status='false' and otorisasi='SUDAH' and periode = '$periode' and gambar_sesudah <> '0'";
+        return $this->db->query($sql);
+    }
+
+    // fungsi untuk jlh data temuan sudah tindak lanjut per area
+    function getJlhTSTL($area,$periode){
+        $sql ="select count(*) from s_mst.tb_audit where kd_lok_audit='$area' and otorisasi='SUDAH' and gambar_sesudah<>'0' and periode='$periode'";
+        return $this->db->query($sql);
+    }
+
+    // fungsi untuk jlh data temuan belum tindak lanjut per area
+    function getJlhTBTL($area,$periode){
+        $sql ="select count(*) from s_mst.tb_audit where kd_lok_audit='$area' and otorisasi='SUDAH' and gambar_sesudah='0' and periode='$periode'";
+        return $this->db->query($sql);
+    }
+
+    // fungsi untuk data temuan  tindak lanjut per area
+    function getDataTL($area,$periode){
+        $sql ="select id_audit,kd_lok_audit,b.area_dept,gambar_sesudah as tl,status from s_mst.tb_audit a left join s_mst.tb_dept b on a.kd_dept_audit=b.id_dept where kd_lok_audit='$area' and periode='$periode'";
+        return $this->db->query($sql);
+    }
+
+    // fungsi untuk reschedule jadwal audit
+    function rescheduleJadwalAudit($kode_jadwal, $tgl_audit){
+        $sql ="UPDATE s_mst.tb_jadwal SET tgl_waktu='$tgl_audit' WHERE kd_jadwal='$kode_jadwal';
+        UPDATE s_tmp.tb_jadwal SET tgl_audit='$tgl_audit' WHERE kd_jadwal='$kode_jadwal';";
+        return $this->db->query($sql);
+    }
+    
+    // fungsi untuk reschedule jadwal audit
+    function getJadwalBelumAudit($periode){
+        $sql ="select a.area_dept, a.koor, b.nama, a.auditor, b.no_wa, a.periode, a.tgl_audit from s_tmp.tb_jadwal a left outer join s_mst.tb_wa b on a.koor=b.id_auditor where realisasi='false' and a.periode='$periode' order by a.tgl_audit asc";
+        return $this->db->query($sql);
+    }
+
+    // fungsi untuk ambild ata wa audit
+    function getDataWa(){
+        $sql ="select distinct(nama) as nama, no_wa, tipe from s_mst.tb_wa order by nama asc";
+        return $this->db->query($sql);
     }
 }
