@@ -281,4 +281,16 @@ class M_admin extends CI_Model {
         $sql ="select distinct(nama) as nama, no_wa, tipe from s_mst.tb_wa order by nama asc";
         return $this->db->query($sql);
     }
+    
+    // fungsi untuk duplikasi ke s_log audit
+    function insertLogTemuanCutOff($tabel_log, $tabel_mst, $periode){
+        $sql ="insert into $tabel_log (select * from $tabel_mst where status='false' and periode='$periode')";
+        return $this->db->query($sql);
+    }
+
+    // fungsi untuk duplikasi ke s_log audit
+    function insertTmpTemuanCutOff($tabel_mst, $periode){
+        $sql ="insert into s_tmp.tb_audit (select * from $tabel_mst where status='false' and periode='$periode')";
+        return $this->db->query($sql);
+    }
 }

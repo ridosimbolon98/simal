@@ -38,6 +38,9 @@
       <li class="nav-item d-none d-sm-inline-block">
         <a href="<?= base_url(); ?>home/form" class="nav-link" target="_blank">Form Audit 5R</a>
       </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        <button id="eop" class="nav-link btn btn-outline-info btn-sm">EOP Temuan</button>
+      </li>
     </ul>
 
     <ul class="navbar-nav ml-auto">
@@ -502,6 +505,31 @@
     $("#janp").DataTable({
       "responsive": true, "lengthChange": true, "autoWidth": false,
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+    });
+  });
+</script>
+
+<script>
+  const bu = window.location.origin + "/audit/";
+  const eop = document.getElementById("eop");
+  eop.addEventListener("click", () => {
+    $.ajax({
+      type: 'POST',
+      url: bu + "admin/eop",
+      cache: false,
+      success: function(res){
+        var datas = JSON.parse(res);
+        if (datas.status === 200) {
+          toastr.success(datas.message);
+        } else if (datas.status === 400) {
+          toastr.error(datas.message);
+        } else {
+          toastr.error(datas.message);
+        }
+        setTimeout(function(){ 
+          location.reload();
+        }, 3000);
+      }
     });
   });
 </script>

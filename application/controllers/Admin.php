@@ -1458,6 +1458,124 @@ class Admin extends CI_Controller {
 		exit;
 	}
 
+
+	// FUNGSI UNTUK EOP Temuan
+	function eop(){
+		date_default_timezone_set("Asia/Jakarta");
+		$periode = new DateTime(date('Y-m'));
+		$periode->modify('-1 month');
+		$cutoff  = $periode->format('Y-m');
+
+		$where_eop = array('periode' => $cutoff);
+
+		// cek apakah bulan ini sudah dilakukan EOP atau tidak
+		$eop_bln = $this->m_admin->getWhere('s_tmp.tb_audit', $where_eop)->num_rows();
+		if ($eop_bln > 0) {
+			$msg = (object) [
+				'status' => 400,
+				'message' => 'EOP telah dilakukan. Silakan melakukan EOP di bulan berikutnya.',
+			];
+			echo json_encode($msg);
+			exit;
+		}
+
+		// insert data cutoff ke tabel log dan tmp
+		$insert_tmp = $this->m_admin->insertTmpTemuanCutOff('s_mst.tb_audit', $cutoff);
+		$insert_log = $this->m_admin->insertLogTemuanCutOff('s_log.tb_audit', 's_mst.tb_audit', $cutoff);
+
+		if ($insert_log && $insert_tmp) {
+			$audit_temp = $this->m_admin->get('s_tmp.tb_audit')->result();
+			$at_jlm = $this->m_admin->get('s_tmp.tb_audit')->num_rows();
+			if ($at_jlm < 1) {
+				$msg = (object) [
+					'status' => 400,
+					'message' => 'Data Kosong.',
+				];
+				echo json_encode($msg);
+				exit;
+			}
+
+			$whCounter  = array('id' => 1);
+			foreach ($audit_temp as $key) {
+				// ambil data id_audit terakhir
+				$id_current = $this->m_admin->get('s_mst.tb_counter')->result();
+				$id_aud     = $id_current[0]->counter + 1;
+				$data_audit = array(
+					'id_audit'      => $id_aud,
+					'kd_lok_audit'  => $key->kd_lok_audit,
+					'tgl_audit'     => date('Y-m').'-10',
+					'kd_5r_audit'   => $key->kd_5r_audit,
+					'kd_atem_audit' => $key->kd_atem_audit,
+					'kd_tem_audit'  => $key->kd_tem_audit,
+					'ket_audit'     => $key->ket_audit,
+					'jlh_tem_audit' => $key->jlh_tem_audit,
+					'gambar'        => $key->gambar,
+					'user_audit'    => $key->user_audit,
+					'kd_dept_audit' => $key->kd_dept_audit,
+					'status'        => $key->status,
+					'tim_audit'     => $key->tim_audit,
+					'gambar_sesudah'=> $key->gambar_sesudah,
+					'updated'       => date("Y-m-d"),
+					'periode'       => date("Y-m"),
+					'otorisasi'     => $key->otorisasi,
+					'bagian_dept'   => $key->bagian_dept,
+				);
+		
+				$response = $this->m_admin->insert('s_mst.tb_audit',$data_audit);
+				// close temuan
+				$status = array('status' => 'true');
+				$whAudit = array('id_audit' => $key->id_audit);
+				$this->m_admin->updateData('s_mst.tb_audit', $status, $whAudit);
+				
+				// update counter
+				$data_id = array('counter' => $id_aud);
+				$this->m_admin->updateData('s_mst.tb_counter', $data_id, $whCounter);
+			}
+
+			if ($response) {
+				$msg = (object) [
+					'status' => 200,
+					'message' => 'Berhasil End Of Periode.',
+				];
+				echo json_encode($msg);
+			} else {
+				$msg = (object)[
+					'status' => 500,
+					'message' => 'Gagal End Of Periode.!'.$response
+				];
+				echo json_encode($msg);
+			}
+			
+		} else {
+			// kirim notif bahwa gagal duplikasi cutoff
+			$msg = (object)[
+				'status' => 400,
+				'message' => 'Gagal Duplikasi Temuan End Of Periode.!'.$insert_log
+			];
+			echo json_encode($msg);
+		}
+ 
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**===================================================================================================================================================
+ * ===================================================================================================================================================
+ */
 	// fungsi untuk mengirim jadwal audit yg belum dilakukan
 	function SendNotifWA(){
 		date_default_timezone_set("Asia/Jakarta");
@@ -1472,7 +1590,7 @@ class Admin extends CI_Controller {
 				'user'      => $row->nama,
 				'no_wa'     => $row->no_wa,
 				'tipe_trx'  => $trx_type,
-				'deskripsi' => "Halo, $row->nama. Ucok informasikan saat ini ada perubahan alamat web audit 5R menjadi:\nhttp://103.247.123.64:8346/audit/\n\natau melalui jaringan lokal:\nhttp://192.168.10.13:8346/audit\n\nTerima kasih.",
+				'deskripsi' => "Ucok informasikan saat ini ada perubahan alamat web audit 5R menjadi:\nhttp://103.247.123.64:8346/audit/\n\natau melalui jaringan lokal:\nhttp://192.168.10.13:8346/audit\n\nTerima kasih.",
 				'date'      => date("Y-m-d H:i:s"),
 				'status'    => false
 			);
@@ -1496,11 +1614,6 @@ class Admin extends CI_Controller {
 		$data['title'] = "Data Log | Audit 5R";
 		$data['log']   = $this->m_admin->getLog('s_log.tb_log')->result();
 		$this->load->view('admin/v_log', $data);
-	}
-
-	public function open(){
-		$data['title'] = "Summary | Audit 5R";
-		$this->load->view('admin/v_excel.html');
 	}
 
 
