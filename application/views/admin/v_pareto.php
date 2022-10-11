@@ -274,154 +274,19 @@
                   </thead>
                   <tbody>
 
+                  <?php foreach ($jlh_pareto as $key) : ?>
                     <tr>
-                        <td rowspan="9" class="text-center">RINGKAS</td>
-                        <td rowspan="3" class="text-center">A : <?= $jlh_pareto[0][0]->desk_aspek ?></td>
-                        <td class="text-center"><?= $jlh_pareto[0][0]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[0][0]->jumlah ?></td>
+                        <td class="text-center"><?= $key->kat_5r ?></td>
+                        <td class="text-center"><?= $key->desk_aspek ?></td>
+                        <td class="text-center">
+                          <a href="<?= base_url(); ?>admin/detail_pareto/ringkas/<?= $periode; ?>/<?= $key->kd_partem ?>">
+                            <?= $key->desk_partem ?>
+                          </a>
+                        </td>
+                        <td class="text-center"><?= $key->jumlah ?></td>
                     </tr>
-                    <tr>
-                        <td class="text-center"><?= $jlh_pareto[0][1]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[0][1]->jumlah ?></td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><?= $jlh_pareto[0][2]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[0][2]->jumlah ?></td>
-                    </tr>
-
-                    <tr>
-                        <td rowspan="3" class="text-center">B : <?= $jlh_pareto[1][0]->desk_aspek ?></td>
-                        <td class="text-center"><?= $jlh_pareto[1][0]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[1][0]->jumlah ?></td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><?= $jlh_pareto[1][1]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[1][1]->jumlah ?></td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><?= $jlh_pareto[1][2]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[1][2]->jumlah ?></td>
-                    </tr>
-
-                    <tr>
-                        <td rowspan="3" class="text-center">C : <?= $jlh_pareto[2][0]->desk_aspek ?></td>
-                        <td class="text-center"><?= $jlh_pareto[2][0]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[2][0]->jumlah ?></td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><?= $jlh_pareto[2][1]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[2][1]->jumlah ?></td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><?= $jlh_pareto[2][2]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[2][2]->jumlah ?></td>
-                    </tr>
-
-
-
-                    <tr>
-                        <td rowspan="9" class="text-center">RAPI</td>
-                        <td rowspan="3" class="text-center">A : <?= $jlh_pareto[3][0]->desk_aspek ?></td>
-                        <td class="text-center"><?= $jlh_pareto[3][0]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[3][0]->jumlah ?></td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><?= $jlh_pareto[3][1]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[3][1]->jumlah ?></td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><?= $jlh_pareto[3][2]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[3][2]->jumlah ?></td>
-                    </tr>
+                  <?php endforeach; ?>
                     
-                    <tr>
-                        <td rowspan="3" class="text-center">B : <?= $jlh_pareto[4][0]->desk_aspek ?></td>
-                        <td class="text-center"><?= $jlh_pareto[4][0]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[4][0]->jumlah ?></td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><?= $jlh_pareto[4][1]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[4][1]->jumlah ?></td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><?= $jlh_pareto[4][2]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[4][2]->jumlah ?></td>
-                    </tr>
-
-                    <tr>
-                        <td rowspan="3" class="text-center">C : <?= $jlh_pareto[5][0]->desk_aspek ?></td>
-                        <td class="text-center"><?= $jlh_pareto[5][0]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[5][0]->jumlah ?></td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><?= $jlh_pareto[5][1]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[5][1]->jumlah ?></td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><?= $jlh_pareto[5][2]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[5][2]->jumlah ?></td>
-                    </tr>
-
-
-
-                    <tr>
-                        <td rowspan="9" class="text-center">RESIK</td>
-                        <td rowspan="3" class="text-center">A : <?= $jlh_pareto[6][0]->desk_aspek ?></td>
-                        <td class="text-center"><?= $jlh_pareto[6][0]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[6][0]->jumlah ?></td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><?= $jlh_pareto[6][1]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[6][1]->jumlah ?></td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><?= $jlh_pareto[6][2]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[6][2]->jumlah ?></td>
-                    </tr>
-
-                    <tr>
-                        <td rowspan="3" class="text-center">B : <?= $jlh_pareto[7][0]->desk_aspek ?></td>
-                        <td class="text-center"><?= $jlh_pareto[7][0]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[7][0]->jumlah ?></td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><?= $jlh_pareto[7][1]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[7][1]->jumlah ?></td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><?= $jlh_pareto[7][2]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[7][2]->jumlah ?></td>
-                    </tr>
-
-                    <tr>
-                        <td rowspan="3" class="text-center">C : <?= $jlh_pareto[8][0]->desk_aspek ?></td>
-                        <td class="text-center"><?= $jlh_pareto[8][0]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[8][0]->jumlah ?></td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><?= $jlh_pareto[8][1]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[8][1]->jumlah ?></td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><?= $jlh_pareto[8][2]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[8][2]->jumlah ?></td>
-                    </tr>
-
-
-                    <tr>
-                        <td rowspan="3" class="text-center">RAWAT</td>
-                        <td rowspan="3" class="text-center">A : <?= $jlh_pareto[9][0]->desk_aspek ?></td>
-                        <td class="text-center"><?= $jlh_pareto[9][0]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[9][0]->jumlah ?></td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><?= $jlh_pareto[9][1]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[9][1]->jumlah ?></td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><?= $jlh_pareto[9][2]->desk_partem ?></td>
-                        <td class="text-center"><?= $jlh_pareto[9][2]->jumlah ?></td>
-                    </tr>
                 </table>
               </div>
             </div>
@@ -476,7 +341,7 @@
 <script>
   $(function () {
     $("#example1").DataTable({
-      "responsive": true, "lengthChange": true, "autoWidth": false,
+      "responsive": true, "lengthChange": true, "pageLength": 50, "autoWidth": false,
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
     }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     $('#example2').DataTable({

@@ -1259,6 +1259,7 @@ class Admin extends CI_Controller {
 
 		if(isset($_POST['periode'])){
 			$periode       = $this->input->post("periode");
+			$data['periode'] = $periode;
 			$wherePeriode  = array('periode' => $periode);
 			$cekPareto     = $this->m_admin->getWhere('s_mst.tb_pareto',$wherePeriode)->result();
 			if (count($cekPareto) > 0) {
@@ -1313,6 +1314,7 @@ class Admin extends CI_Controller {
 			}
 		} else {
 			$periode       = date('Y-m');
+			$data['periode'] = $periode;
 			$wherePeriode  = array('periode' => $periode);
 			$cekPareto     = $this->m_admin->getWhere('s_mst.tb_pareto',$wherePeriode)->result();
 
@@ -1368,14 +1370,7 @@ class Admin extends CI_Controller {
 			}
 		}
 		
-		$aspek = ['A','B','C','A','B','C','A','B','C','A'];
-		$kat5r = ['RINGKAS','RINGKAS','RINGKAS','RAPI','RAPI','RAPI','RESIK','RESIK','RESIK','RAWAT'];
-		$data['periode'] = $periode;
-
-		for ($i=0; $i < 10; $i++) { 
-			$data['jlh_pareto'][$i] = $this->m_admin->getJlhPareto($aspek[$i],$kat5r[$i],$periode)->result();
-		}
-
+		$data['jlh_pareto'] = $this->m_admin->getJlhPareto($periode)->result();
 		$this->load->view('admin/v_pareto', $data);
 	}
 
@@ -1614,6 +1609,16 @@ class Admin extends CI_Controller {
 		$data['title'] = "Data Log | Audit 5R";
 		$data['log']   = $this->m_admin->getLog('s_log.tb_log')->result();
 		$this->load->view('admin/v_log', $data);
+	}
+
+	// Menampilkan Data Log
+	public function try(){
+		$data['title'] = "Data Log | Audit 5R";
+		$periode='2022-09';
+		$data_try  = $data['jlh_pareto'] = $this->m_admin->getJlhPareto($periode)->result();
+		echo "<pre>";
+		print_r($data_try);
+		echo "</pre>";
 	}
 
 

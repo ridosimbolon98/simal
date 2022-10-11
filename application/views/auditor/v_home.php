@@ -21,6 +21,7 @@
   <style>
     .img-audit{
       height: 100px !important;
+      width: 100px !important;
     }
     #area_aud:hover {
       cursor: pointer;

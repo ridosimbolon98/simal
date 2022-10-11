@@ -181,8 +181,17 @@ class M_admin extends CI_Model {
     }
 
     // ambil data jumlah paretor terbaik
-    function getJlhPareto($aspek,$kat5r,$periode){
-        $sql = "select * from s_mst.tb_pareto a join s_mst.tb_aspek b on a.aspek=b.id_aspek where kode_aspek='$aspek' and a.kat_5r='$kat5r' and a.periode='$periode' order by jumlah desc limit(3)";
+    function getJlhPareto($periode){
+        $sql = "select rr.* from
+            (select
+                ranked.*,
+                rank() over(partition by desk_aspek order by jumlah desc, desk_partem asc)
+            from
+                (select a.kat_5r, b.desk_aspek, a.desk_partem, a.jumlah, a.periode, a.kd_partem from s_mst.tb_pareto a join s_mst.tb_aspek b on a.aspek=b.id_aspek 
+                where a.periode='$periode'
+                order by a.kat_5r asc, b.desk_aspek asc, jumlah desc) ranked ) rr
+            where rr.rank <=3
+            order by rr.kat_5r asc, rr.desk_aspek asc, rr.jumlah desc";
         return $this->db->query($sql);
     }
 

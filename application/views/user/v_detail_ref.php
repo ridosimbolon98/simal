@@ -186,6 +186,12 @@
                     </div>
                   </div>
                   <div class="form-group row">
+                    <label for="" class="col-sm-3 col-form-label">Due Date Temuan</label>
+                    <div class="col-sm-9">
+                      <input type="date" class="form-control" disabled value="<?= $row->due_date; ?>">
+                    </div>
+                  </div>
+                  <div class="form-group row">
                     <label for="" class="col-sm-3 col-form-label">Area Audit</label>
                     <div class="col-sm-9">
                       <input type="text" class="form-control" disabled value="<?= $row->kd_lok_audit; ?>">
