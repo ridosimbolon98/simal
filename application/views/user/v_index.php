@@ -23,6 +23,7 @@
   <style>
     .img-audit{
       height: 100px !important;
+      width: 100px !important;
     }
     .ib_success:hover{
       background-color: #28A745 !important;

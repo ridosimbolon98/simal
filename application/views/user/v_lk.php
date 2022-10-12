@@ -23,6 +23,7 @@
   <style>
     .img-audit{
       height: 100px !important;
+      width: 100px !important;
     }
     .test {
       position: fixed;
