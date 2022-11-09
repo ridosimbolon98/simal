@@ -10,78 +10,41 @@ class Auth extends CI_Controller {
 	function __construct(){
 		parent::__construct();
 		$this->load->helper('url');
-		$this->load->model('m_auth');
-		$this->load->model('m_log');	
+		$this->load->model('m_auth');	
 	}
 
 	public function index()
 	{
-		$data['title'] = "Audit 5R | Login Page";
+		$data['title'] = "Simal | Login Page";
 		$this->load->view('auth/v_index', $data);
 	}
 
 	function login(){
-        $this->load->database();
+    $this->load->database();
+		date_default_timezone_set("Asia/Jakarta");
 
 		$username = htmlspecialchars(trim($this->input->post('username')));
 		$password = htmlspecialchars(trim($this->input->post('password')));
 		$where    = array(
 			'username' => $username,
 			'password' => md5($password)
-		);
-
-		//code...
-		$data     = $this->m_auth->autentikasi1('s_mst.tb_user','s_mst.tb_dept',$where)->result();
-		$cek      = $this->m_auth->autentikasi('s_mst.tb_user',$where)->num_rows();
+			);
+		$data     = $this->m_auth->getWhere('user',$where)->result();
+		$cek      = $this->m_auth->getWhere('user',$where)->num_rows();
 		
 		if($cek > 0){
-			$level    = $data[0]->level;
-			$userId   = $data[0]->id_user;
-			$bagian   = $data[0]->kd_dept;
-			$dept     = $data[0]->bagian_dept;
+			$level = $data[0]->level;
+			$uid   = $data[0]->uid;
 			// menyimpan data session
-			$data_session  = array(
+			$login_session  = array(
 				'username' => $username,
 				'level'    => $level,
-				'user_id'  => $userId,
+				'uid'      => $uid,
 				'status'   => "logged",
-				'bagian'   => $bagian,
-				'dept'     => $dept
 			);
-
-			// Mencatat log login
-				$this->session->set_userdata($data_session);
-			$log_type = 'login';
-			$log_desc = 'Login User';
-			$ip       = $this->input->ip_address();
-			$userLog  = $username;
-			date_default_timezone_set("Asia/Jakarta");
-			$data_log = array(
-				'username'      => $userLog,
-				'type_log'      => $log_type,
-				'deskripsi_log' => $log_desc,
-				'date'          => date("Y-m-d H:i:s"),
-				'ip'            => $ip
-			);
-			$this->m_log->insertLog('s_log.tb_log', $data_log);
-
-			switch ($level) {
-				case 'admin':
-					redirect(base_url("admin/pabrik"));
-					break;
-		
-				case 'auditor':
-					redirect(base_url("home"));
-					break;
-
-				case 'user':
-					redirect(base_url("user"));
-					break;
-				
-				default:
-					// user
-					break;
-			} 
+			$this->session->set_userdata($login_session);
+			$this->session->set_flashdata('success', "Selamat datang Admin.");
+			redirect(base_url("admin/index"));
 		} else {
 			echo "<script>alert('Gagal Login!. Pastikan username dan password benar.');</script>";
 			echo "<script>location='".base_url()."';</script>";
@@ -90,21 +53,7 @@ class Auth extends CI_Controller {
 
 	// Fungsi untuk logout
 	function logout() {
-
-		// Mencatat log logout
-		$log_type = 'logout';
-		$log_desc = 'Logout User';
-		$ip       = $this->input->ip_address();
-		$userLog  = $this->session->userdata("username");
 		date_default_timezone_set("Asia/Jakarta");
-		$data_log = array(
-			'username'      => $userLog,
-			'type_log'      => $log_type,
-			'deskripsi_log' => $log_desc,
-			'date'          => date("Y-m-d H:i:s"),
-			'ip'            => $ip
-		);
-		$this->m_log->insertLog('s_log.tb_log', $data_log);
 
 		// hapus session dan redirect ke halaman login
 		$this->session->sess_destroy();

@@ -2,7 +2,7 @@
 	color: #fff;
 }
 .text-green {
-	color: rgb(23, 119, 70);
+	color: #177746;
 }
 
 .text-orange {
@@ -22,12 +22,12 @@
 }
 
 .ubl {
-	background-color: #e26a2c;
+	background-color: #177746;
 	color: rgb(255, 255, 255);
 	border-radius: 3px;
 }
 .ubl:hover {
-	background-color: #e2692cc4;
+	background-color: #0b5c32;
 	color: rgba(255, 255, 255, 0.816);
 }
 

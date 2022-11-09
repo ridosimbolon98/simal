@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
-    <title> Login Page  | Audit 5R </title>
+    <title><?= $title; ?></title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Boxicons CDN Link -->
@@ -19,7 +19,7 @@
         
         <form class="form-login uk-box-shadow-large" method="post" action="<?= base_url(); ?>auth/login">
             <div class="uk-text-center">
-                <h2 class="uk-text-lead animate__animated animate__fadeInDown">Log In Audit<span class="text-orange uk-text-bolder">5R</span></h2>
+                <h2 class="uk-text-lead animate__animated animate__fadeInDown">Log In<span class="text-green uk-text-bolder"> Admin</span></h2>
                 <hr class="uk-divider-icon">
             </div>
             <div class="uk-margin">
@@ -36,6 +36,9 @@
                     <input id="password" class="uk-input uk-form-small uk-box-shadow-small" name="password" type="password" required autofocus placeholder="Input password">
                 </div>
             </div>
+			<div class="">
+				<a class="uk-text-center" href="<?= base_url(); ?>assets/user_guide/" target="_blank">*Panduan penggunaan sistem</a>
+			</div>
             <div class="uk-margin">
                 <button type="submit" class="uk-button uk-button-small uk-input uk-form-small uk-margin-top ubl">Log In</button>
             </div>
