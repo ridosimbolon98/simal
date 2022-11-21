@@ -4,6 +4,24 @@
     .img-audit{
       height: 100px !important;
     }
+    @media screen {
+      #printSection {
+        display: none;
+      }
+    }
+    @media print {
+      body * {
+        visibility:hidden;
+      }
+      #printSection, #printSection * {
+        visibility:visible;
+      }
+      #printSection {
+        position:absolute;
+        left:0;
+        top:0;
+      }
+    }
   </style>
 </head>
 <body class="hold-transition sidebar-mini">
@@ -97,6 +115,14 @@
               </p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="<?= base_url(); ?>admin/aka" class="nav-link">
+              <i class="nav-icon fas fa-file-invoice"></i>
+              <p>
+                Input AKA
+              </p>
+            </a>
+          </li>
         </ul>
       </nav>
       <!-- sidebar-menu -->
@@ -115,7 +141,7 @@
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="<?= base_url(); ?>">Home</a></li>
+              <li class="breadcrumb-item"><a href="<?= base_url('admin'); ?>">Home</a></li>
               <li class="breadcrumb-item active">Data Kartu Pelanggan</li>
             </ol>
           </div>
@@ -165,16 +191,6 @@
                   if ($is_filter) {
                     foreach($customer as $cst): ?>
                     <div class="form-group row">
-                      <label for="biaya" class="col-sm-2 col-form-label">Aksi</label>
-                      <div class="col-sm-10">
-                        <button id="btn_input_aka" class="btn btn-sm btn-info" 
-                        data-cid="<?= $cst->cid ?>"
-                        data-toggle="modal" 
-                        data-target="#input-aka">
-                        <i class="fa fa-plus-square text-white"></i> Input AKA</button>
-                      </div>
-                    </div>
-                    <div class="form-group row">
                       <label for="nama" class="col-sm-2 col-form-label">Nama</label>
                       <div class="col-sm-10">
                         <input type="text" readonly class="form-control-plaintext form-sm" id="nama" value="<?= $cst->nama ?>">
@@ -204,28 +220,29 @@
                       <th>Griya</th>
                       <th>AKA Lalu</th>
                       <th>AKA Akhir</th>
-                      <th>Jlh Pakai</th>
+                      <th>Jml Pakai</th>
                       <th>Biaya (Rp)</th>
                       <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     <?php $no=1; foreach($kartu as $row): ?>
-                        <tr class="text-center">
-                          <td><?= $no++; ?></td>
-                          <td><?= $row->bulan ?>/<?= $row->periode ?></td>
-                          <td><?= $row->nama_cust ?></td>
-                          <td><?= $row->nama_griya ?></td>
-                          <td><?= $row->aka_lalu ?></td>
-                          <td><?= $row->aka_akhir ?></td>
-                          <td><?= $row->jlh_pakai ?></td>
-                          <td><?php echo number_format($row->jlh_biaya,2,",","."); ?></td>
-                          <td class="text-center">
-                            <a id="detail_kartu" class="btn btn-sm btn-primary" href="javascript:;" data-toggle="modal" data-target="#detail-kartu" data-id="<?= $row->id; ?>" data-harga_pm="<?= $setup[0]->nilai; ?>"><i class="fa fa-receipt text-light"></i> Detail</a>
-                            <a class="btn btn-sm btn-secondary" href=""><i class="fa fa-print text-light"></i> Cetak</a>
-                          </td>
-                        </tr>
+                      <tr class="text-center">
+                        <td><?= $no++; ?></td>
+                        <td><?= $row->bulan ?>/<?= $row->periode ?></td>
+                        <td><?= $row->nama_cust ?></td>
+                        <td><?= $row->nama_griya ?></td>
+                        <td><?= $row->aka_lalu ?></td>
+                        <td><?= $row->aka_akhir ?></td>
+                        <td><?= $row->jlh_pakai ?></td>
+                        <td><?php echo number_format($row->jlh_biaya,2,",","."); ?></td>
+                        <td class="text-center">
+                          <a id="detail_kartu" class="btn btn-sm btn-primary" href="javascript:;" data-toggle="modal" data-target="#detail-kartu" data-id="<?= $row->id; ?>" data-harga_pm="<?= $setup[0]->nilai; ?>"><i class="fa fa-receipt text-light"></i> Detail</a>
+                          <a class="btn btn-sm btn-secondary" href="<?= base_url(); ?>admin/print/<?= $row->id ?>" target="_blank"><i class="fa fa-print text-light"></i> Cetak</a>
+                        </td>
+                      </tr>
                     <?php endforeach; ?>
+                  </tbody>
                 </table>
               </div>
             </div>
@@ -251,44 +268,6 @@
 </div>
 <!-- ./wrapper -->
 
-<!-- Modal Input AKA -->
-<div class="modal fade bd-example-modal-lg" id="input-aka" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Input AKA (Angka Kedudukan Air)</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <form action="<?= base_url(); ?>admin/input_new_aka" method="post">
-        <div class="modal-body">
-          <div class="form-group">
-            <label for="nama">ID Pelanggan</label>
-            <input type="text" hidden name="cust_id" id="csid1">
-            <input type="text" disabled class="form-control" id="csid">
-          </div>
-          <div class="form-group">
-            <label for="nama">Periode</label>
-            <input type="text" hidden name="tahun" value="<?= $tahun ?>">
-            <input type="text" hidden name="bulan" id="bulan1">
-            <input type="text" disabled class="form-control" id="bulan">
-          </div>
-          <div class="form-group">
-            <label for="nama">AKA (Angka Kedudukan Air) Akhir (M3)</label>
-            <input type="number" name="aka_akhir" class="form-control" placeholder="Input jumlah AKA Akhir" required autofocus>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary" id=""><i class="fa fa-save text-light"></i> Simpan</button>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fa fa-times-circle text-light"></i> Batal</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-<!-- End Add AKA -->
-
 <!-- Modal Detail AKA -->
 <div class="modal fade bd-example-modal-lg" id="detail-kartu" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
@@ -299,58 +278,42 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
-        <div class="form-group row">
-          <label for="nama_cust" class="col-sm-2 col-form-label">Nama</label>
-          <div class="col-sm-10">
-            <input type="text" readonly class="form-control-plaintext" id="nama_cust">
-          </div>
+      <div id="printThis" class="modal-body">
+        <div class="row">
+          <div class="col-4">Nama</div>
+          <div class="col-8">: <span id="nama_cust"></span></div>
         </div>
-        <div class="form-group row">
-          <label for="harga_pm" class="col-sm-2 col-form-label">Harga / M3</label>
-          <div class="col-sm-10">
-            <input type="number" readonly class="form-control-plaintext" id="harga_pm">
-          </div>
+        <div class="row">
+          <div class="col-4">Harga / M3</div>
+          <div class="col-8">: <span id="harga_pm"></span></div>
         </div>
-        <div class="form-group row">
-          <label for="biaya_mtc" class="col-sm-2 col-form-label">B. Perawatan</label>
-          <div class="col-sm-10">
-            <input type="number" readonly class="form-control-plaintext"   id="biaya_mtc">
-          </div>
+        <div class="row">
+          <div class="col-4">B. Perawatan</div>
+          <div class="col-8">: <span id="biaya_mtc"></span></div>
         </div>
-        <div class="form-group row">
-          <label for="alamat_cust" class="col-sm-2 col-form-label">Alamat</label>
-          <div class="col-sm-10">
-            <input type="text"  readonly class="form-control-plaintext"  id="alamat_cust">
-          </div>
+        <div class="row">
+          <div class="col-4">Alamat</div>
+          <div class="col-8">: <span id="alamat_cust"></span></div>
         </div>
-        <div class="form-group row">
-          <label for="periode" class="col-sm-2 col-form-label">Periode (Bln / Thn)</label>
-          <div class="col-sm-10">
-            <input type="text" readonly class="form-control-plaintext" id="periode">
-          </div>
+        <div class="row">
+          <div class="col-4">Periode (Bln / Thn)</div>
+          <div class="col-8">: <span id="periode"></span></div>
         </div>
-        <div class="form-group row">
-          <label for="stand_meter" class="col-sm-2 col-form-label">Stand Meter</label>
-          <div class="col-sm-10">
-            <input type="text" readonly class="form-control-plaintext" id="stand_meter">
-          </div>
+        <div class="row">
+          <div class="col-4">Stand Meter</div>
+          <div class="col-8">: <span id="stand_meter"></span></div>
         </div>
-        <div class="form-group row">
-          <label for="pemakaian" class="col-sm-2 col-form-label">Pemakaian (M3)</label>
-          <div class="col-sm-10">
-            <input type="text" readonly class="form-control-plaintext" id="pemakaian">
-          </div>
+        <div class="row">
+          <div class="col-4">Pemakaian (M3)</div>
+          <div class="col-8">: <span id="pemakaian"></span></div>
         </div>
-        <div class="form-group row">
-          <label for="total_bayar" class="col-sm-2 col-form-label">Total Bayar (Rp)</label>
-          <div class="col-sm-10">
-            <input type="text" readonly class="form-control-plaintext" id="total_bayar">
-          </div>
+        <div class="row">
+          <div class="col-4">Total Bayar (Rp)</div>
+          <div class="col-8">: <span id="total_bayar"></span></div>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="submit" class="btn btn-primary" id=""><i class="fa fa-save text-light"></i> Cetak</button>
+        <a href="" class="btn btn-primary" id="btnCetak" target="_blank"><i class="fa fa-save text-light"></i> Cetak</a>
         <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fa fa-times-circle text-light"></i> Batal</button>
       </div>
     </div>
@@ -396,26 +359,14 @@
     });
   });
 
-  $(document).on("click", "#btn_input_aka", function () {
-    var cid = $(this).data("cid");
-    var year = "<?= $tahun ?>";
-
-    $.ajax({
-      type: 'POST',
-      url: base_url + "admin/last_cust_aka",
-      data: {cid: cid, tahun: year},
-      cache: false,
-      success: function(msg){
-        var kmp_data = JSON.parse(msg);
-        var next_month = (kmp_data.length + 1);
-        var bln = moment().format(year+'-'+next_month, 'YYYY-mm');
-        $("#csid").val(cid);
-        $("#csid1").val(cid);
-        $("#bulan").val(bln);
-        $("#bulan1").val(bln);
-      }
-    });
-  });
+  // format currency
+  function commify(n) {
+    var parts = n.toString().split(".");
+    const numberPart = parts[0];
+    const decimalPart = parts[1];
+    const thousands = /\B(?=(\d{3})+(?!\d))/g;
+    return numberPart.replace(thousands, ".") + (decimalPart ? "," + decimalPart : "");
+  }
 
   $(document).on("click", "#detail_kartu", function () {
     var id = $(this).data("id");
@@ -429,17 +380,40 @@
       success: function(msg){
         var kartu_byid = JSON.parse(msg);
         console.log(kartu_byid);
-        $("#nama_cust").val(kartu_byid[0].nama_cust);
-        $("#harga_pm").val(harga_pm);
-        $("#biaya_mtc").val(kartu_byid[0].biaya_mtc);
-        $("#alamat_cust").val(kartu_byid[0].alamat_cust+', '+kartu_byid[0].alamat_griya);
-        $("#periode").val(kartu_byid[0].bulan+'-'+kartu_byid[0].periode);
-        $("#stand_meter").val(kartu_byid[0].stand_meter);
-        $("#pemakaian").val(kartu_byid[0].jlh_pakai);
-        $("#total_bayar").val(kartu_byid[0].jlh_biaya);
+        $("#nama_cust").text(kartu_byid[0].nama_cust);
+        $("#harga_pm").text(commify(harga_pm));
+        $("#biaya_mtc").text(commify(kartu_byid[0].biaya_mtc));
+        $("#alamat_cust").text(kartu_byid[0].alamat_cust+', '+kartu_byid[0].alamat_griya);
+        $("#periode").text(kartu_byid[0].bulan+'-'+kartu_byid[0].periode);
+        $("#stand_meter").text(kartu_byid[0].stand_meter);
+        $("#pemakaian").text(kartu_byid[0].jlh_pakai);
+        $("#total_bayar").text(commify(kartu_byid[0].jlh_biaya));
+        $("#btnCetak").attr("href","<?= base_url() ?>admin/print/"+id);
       }
     });
   });
+</script>
+
+<script>
+  // function print detail
+  document.getElementById("btnCetak").onclick = function () {
+    printElement(document.getElementById("printThis"));
+  }
+  function printElement(elem) {
+    var domClone = elem.cloneNode(true);
+
+    var $printSection = document.getElementById("printSection");
+
+    if (!$printSection) {
+        var $printSection = document.createElement("div");
+        $printSection.id = "printSection";
+        document.body.appendChild($printSection);
+    }
+
+    $printSection.innerHTML = "";
+    $printSection.appendChild(domClone);
+    window.print();
+  }
 </script>
 
 <script>

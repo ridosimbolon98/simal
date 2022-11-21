@@ -116,6 +116,14 @@
               </p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="<?= base_url(); ?>admin/aka" class="nav-link">
+              <i class="nav-icon fas fa-file-invoice"></i>
+              <p>
+                Input AKA
+              </p>
+            </a>
+          </li>
         </ul>
       </nav>
       <!-- sidebar-menu -->
@@ -153,9 +161,6 @@
                 <h2><?= $jlh_user ?></h2>
                 <b>Admin</b>
               </div>
-              <div class="card-footer bg-info-b text-center">
-                <a href="" class="text-center text-light">Lebih lanjut</a>
-              </div>
             </div>
           </div>
           <div class="col-sm-4">
@@ -163,9 +168,6 @@
               <div class="card-body">
                 <h2><?= $jlh_cust ?></h2>
                 <b>Pengguna</b>
-              </div>
-              <div class="card-footer bg-warning-b text-center">
-                <a href="" class="text-center text-light">Lebih lanjut</a>
               </div>
             </div>
           </div>
@@ -175,9 +177,6 @@
                 <h2><?= $jlh_griya ?></h2>
                 <b>Griya</b>
               </div>
-              <div class="card-footer bg-primary-b text-center">
-                <a href="" class="text-center text-light">Lebih lanjut</a>
-              </div>
             </div>
           </div>
           <div class="col-sm-4">
@@ -185,9 +184,6 @@
               <div class="card-body">
                 <h2><?= $jlh_sudah_cetak ?></h2>
                 <b>Sudah Cetak</b>
-              </div>
-              <div class="card-footer bg-danger-b text-center">
-                <a href="" class="text-center text-light">Lebih lanjut</a>
               </div>
             </div>
           </div>
@@ -197,9 +193,6 @@
                 <h2><?= $jlh_belum_cetak ?></h2>
                 <b>Belum Cetak</b>
               </div>
-              <div class="card-footer bg-secondary-b text-center">
-                <a href="" class="text-center text-light">Lebih lanjut</a>
-              </div>
             </div>
           </div>
           <div class="col-sm-4">
@@ -207,9 +200,6 @@
               <div class="card-body">
                 <h2><?= $jlh_belum_cetak + $jlh_sudah_cetak  ?></h2>
                 <b>Total Kartu</b>
-              </div>
-              <div class="card-footer bg-success-b text-center">
-                <a href="" class="text-center text-light">Lebih lanjut</a>
               </div>
             </div>
           </div>

@@ -98,6 +98,14 @@
               </p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="<?= base_url(); ?>admin/aka" class="nav-link">
+              <i class="nav-icon fas fa-file-invoice"></i>
+              <p>
+                Input AKA
+              </p>
+            </a>
+          </li>
         </ul>
       </nav>
       <!-- sidebar-menu -->
@@ -116,7 +124,7 @@
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="<?= base_url(); ?>">Home</a></li>
+              <li class="breadcrumb-item"><a href="<?= base_url('admin'); ?>">Home</a></li>
               <li class="breadcrumb-item active">Data Pengaturan</li>
             </ol>
           </div>
@@ -141,8 +149,9 @@
                   <thead>
                     <tr class="text-center">
                       <th>ID</th>
+                      <th>Jenis</th>
                       <th>Tipe</th>
-                      <th>Biaya (Rp)</th>
+                      <th>Nilai</th>
                       <th>Aksi</th>
                   </tr>
                   </thead>
@@ -150,8 +159,17 @@
                     <?php foreach($setup as $row): ?>
                     <tr class="text-center">
                       <td><?= $row->sid ?></td>
+                      <td><?= $row->trx ?></td>
                       <td><?= $row->tipe ?></td>
-                      <td><?php echo number_format($row->nilai,2,",","."); ?></td>
+                      <td>
+                      <?php 
+                        if($row->trx == 'BIAYA'){
+                          echo "Rp ". number_format($row->nilai,2,",","."); 
+                        } else {
+                          echo $row->nilai; 
+                        }
+                      ?>
+                      </td>
                       <td class="text-center">
                         <a id="update_setup" class="btn btn-sm btn-primary" href="javascript:;" data-toggle="modal" data-target="#update-setup" data-sid="<?= $row->sid; ?>" data-trx="<?= $row->trx; ?>" data-tipe="<?= $row->tipe; ?>" data-nilai="<?= $row->nilai; ?>"><i class="fa fa-pen-square text-light"></i> Edit</a>
                       </td>

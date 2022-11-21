@@ -345,6 +345,23 @@ class Admin extends CI_Controller {
 		}
 	}
 
+	// fungsi untuk menampilkan AKA Customer bulan berjalan
+	function aka(){
+		date_default_timezone_set("Asia/Jakarta"); 
+		$data['title'] = "SIMAL | AKA Pelanggan";
+		$bulan         = date('m'); 
+		$tahun         = date('Y'); 
+
+		$where_periode = array(
+			'periode' => $tahun
+		);
+
+		$data['tahun'] = $tahun;
+		// ambil data AKA customer per periode tertentu
+		$data['aka_cust'] = $this->m_admin->getAKACustToday('kartu_meter', 'customer', 'griya', $where_periode)->result();
+		$this->load->view('admin/v_aka_cust', $data);
+	}
+
 	// fungsi untuk insert AKA pelanggan baru
 	function input_new_aka() {
 		date_default_timezone_set("Asia/Jakarta"); 
@@ -402,10 +419,10 @@ class Admin extends CI_Controller {
 		$insert_aka_new = $this->m_admin->insertData('kartu_meter', $data_aka_new);
 		if ($insert_aka_new) {
 			$this->session->set_flashdata('success', "Berhasil input AKA Baru.");
-			redirect(base_url('admin/kartu'));
+			redirect(base_url('admin/aka'));
 		} else {
 			$this->session->set_flashdata('error', "Gagal input AKA Baru.");
-			redirect(base_url('admin/kartu'));
+			redirect(base_url('admin/aka'));
 		}
 		
 	}
@@ -448,6 +465,34 @@ class Admin extends CI_Controller {
 		}
 	}
 
+
+	// test print
+	function print($id){
+		$this->load->library('Escpos');
+					
+		// ambil data kartu meter pelanggan per periode by customer id, data customer by cid dan setup biaya
+		$where = array('kartu_meter.id' => $id);
+		$where_setup = array('trx' => 'NAMA', 'tipe' => 'USAHA');
+		$tagihan  = $this->m_admin->getTagihanPeriodeById('kartu_meter','customer','griya', $where)->result();
+		$shop = $this->m_admin->getWhere('setup', $where_setup)->result();
+		$nama_shop = $shop[0]->nilai; 
+
+		$items = [];
+		foreach ($tagihan as $row) {
+			$items = [
+				["item"=> "Nama","value"=> $row->nama_cust],
+				["item"=> "B. Perawatan","value"=> number_format((int)$row->biaya_mtc,0,",",".")],
+				["item"=> "Alamat","value"=> $row->alamat_cust],
+				["item"=> "Periode","value"=> $row->bulan . '/' . $row->periode],
+				["item"=> "Standmeter","value"=> $row->stand_meter],
+				["item"=> "Pemakaian (M3)","value"=> $row->jlh_pakai],
+				["item"=> "Total Bayar (Rp)","value"=> number_format((int)$row->jlh_biaya,0,",",".")]
+			];
+		}
+
+		$this->escpos->print($items,$nama_shop);
+		exit;
+	}
 
 	
 }

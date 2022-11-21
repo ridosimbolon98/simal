@@ -1,10 +1,13 @@
 <?php include (APPPATH.'views/admin/components/header.php'); ?>
 
 <style>
-    .img-audit{
-      height: 100px !important;
-    }
-  </style>
+  .img-audit{
+    height: 100px !important;
+  }
+  .btn-aka{
+    min-width: 100px;
+  }
+</style>
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
@@ -57,7 +60,7 @@
           </li>
           <li class="nav-header">MASTER DATA</li>
           <li class="nav-item">
-            <a href="<?= base_url(); ?>admin/user" class="nav-link active">
+            <a href="<?= base_url(); ?>admin/user" class="nav-link">
               <i class="nav-icon fas fa-users"></i>
               <p>
                 Data Admin
@@ -98,7 +101,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="<?= base_url(); ?>admin/aka" class="nav-link">
+            <a href="<?= base_url(); ?>admin/aka" class="nav-link active">
               <i class="nav-icon fas fa-file-invoice"></i>
               <p>
                 Input AKA
@@ -119,12 +122,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Data Admin</h1>
+            <h1>Data AKA Pelanggan</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="<?= base_url('admin'); ?>">Home</a></li>
-              <li class="breadcrumb-item active">Data Admin</li>
+              <li class="breadcrumb-item active">Data AKA Pelanggan</li>
             </ol>
           </div>
         </div>
@@ -135,39 +138,56 @@
     <section class="content">
       <div class="container-fluid">
 
-        <div class="mb-3">
-          <button class="btn btn-info mr-2" data-toggle="modal" data-target="#add-user"><i class="fa fa-plus-square"></i> Tambah Admin Baru</button>
-        </div>
-
         <div class="row">
           <div class="col-12">
 
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Tabel Data Admin</h3>
+                <h3 class="card-title">Tabel Data AKA Pelanggan</h3>
               </div>
-              <!-- /.card-header -->
+
               <div class="card-body">
                 <table id="example1" class="table table-bordered table-striped">
                   <thead>
                     <tr class="text-center">
-                      <th>ID Admin</th>
+                      <th>No.</th>
                       <th>Nama</th>
-                      <th>Username</th>
-                      <th>Level</th>
+                      <th>Griya</th>
+                      <th>Alamat</th>
+                      <th>Golongan</th>
+                      <th>Periode</th>
+                      <th>AKA Lalu</th>
+                      <th>AKA Akhir</th>
                       <th>Aksi</th>
                   </tr>
                   </thead>
                   <tbody>
-                    <?php foreach($users as $row): ?>
+                    <?php $no=1;foreach($aka_cust as $row): ?>
                     <tr class="text-center">
-                      <td><?= $row->uid ?></td>
-                      <td><?= $row->nama ?></td>
-                      <td><?= $row->username ?></td>
-                      <td><?= $row->level ?></td>
-                      <td class="text-center">
-                        <a id="update_user" class="btn btn-sm btn-primary" href="javascript:;" data-toggle="modal" data-target="#update-user" data-uid="<?= $row->uid; ?>" data-nama="<?= $row->nama; ?>" data-username="<?= $row->username; ?>" data-level="<?= $row->level; ?>"><i class="fa fa-pen-square text-light"></i> Edit</a>
-                        <a class="btn btn-sm btn-danger" href="<?= base_url(); ?>admin/delete_user/<?= $row->uid; ?>" onclick="return confirm('Apakah anda yakin hapus user ini?');"><i class="fa fa-trash text-light"></i>  Hapus</a>
+                      <td><?= $no++ ?></td>
+                      <td><?= $row->nama_cust ?></td>
+                      <td><?= $row->nama_griya ?></td>
+                      <td><?= $row->alamat_cust.', '.$row->alamat_griya ?></td>
+                      <td><?= $row->golongan ?></td>
+                      <td><?= $row->bulan.'-'.$row->periode ?></td>
+                      <td><?= $row->aka_lalu ?></td>
+                      <td><?= $row->aka_akhir ?></td>
+                      <td class="text-center btn-aka">
+                        <a id="input_aka" class="btn btn-sm btn-primary" 
+                          href="javascript:;" 
+                          data-toggle="modal" 
+                          data-target="#input-aka" 
+                          data-id_aka="<?= $row->id_aka; ?>" 
+                          data-cid="<?= $row->cid; ?>" 
+                          data-nama="<?= $row->nama_cust; ?>" 
+                          data-griya_id="<?= $row->id_griya; ?>" 
+                          data-griya_name="<?= $row->nama_griya; ?>" 
+                          data-alamat_c="<?= $row->alamat_cust; ?>" 
+                          data-alamat_g="<?= $row->alamat_griya; ?>" 
+                          data-aka_akhir="<?= $row->aka_akhir; ?>" 
+                          data-golongan="<?= $row->golongan; ?>">
+                          <i class="fa fa-pen-square text-light"></i> Input AKA
+                        </a>
                       </td>
                     </tr>
                     <?php endforeach; ?>
@@ -196,138 +216,127 @@
 </div>
 <!-- ./wrapper -->
 
-<!-- Modal Add User -->
-<div class="modal fade bd-example-modal-lg" id="add-user" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+<!-- Modal Add Aka -->
+<div class="modal fade bd-example-modal-lg" id="input-aka" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Tambah Admin Baru</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Input AKA Pelanggan</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form action="<?= base_url(); ?>admin/add_user" method="post">
+      <form action="<?= base_url('admin/input_new_aka') ?>" method="post">
         <div class="modal-body">
-          <div class="form-group">
-            <label for="nama">Nama</label>
-            <input type="text" name="nama" class="form-control" placeholder="Input nama user" required autofocus>
+          <div class="form-group row">
+            <label for="nama_cust" class="col-sm-2 col-form-label">ID Pelanggan</label>
+            <div class="col-sm-10">
+              <input type="hidden" name="cust_id" class="form-control" id="cust_id">
+              <input type="text" readonly class="form-control" id="id_cust">
+            </div>
           </div>
-          <div class="form-group">
-            <label for="username">Username</label>
-            <input type="text" name="username" class="form-control" placeholder="Input username" required>
+          <div class="form-group row">
+            <label for="nama_cust" class="col-sm-2 col-form-label">Nama</label>
+            <div class="col-sm-10">
+              <input type="text" readonly class="form-control" id="nama_cust">
+            </div>
           </div>
-          <div class="form-group">
-            <label for="password">Password</label>
-            <input id="password" type="password" name="password" class="form-control" placeholder="Input password" required>
+          <div class="form-group row">
+            <label for="harga_pm" class="col-sm-2 col-form-label">Alamat</label>
+            <div class="col-sm-10">
+              <textarea type="text" readonly class="form-control" row="3" id="alamat_cust"></textarea>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="konf_pass">Konfirmasi Password</label>
-            <input id="konfPassword" type="password" name="konf_pass" class="form-control" placeholder="Input konfirmasi password" required>
-            <span id="alertPass"></span>
+          <div class="form-group row">
+            <label for="biaya_mtc" class="col-sm-2 col-form-label">AKA Lalu</label>
+            <div class="col-sm-10">
+              <input type="number" readonly class="form-control" id="aka_lalu">
+            </div>
           </div>
-          <div class="form-group">
-            <label for="level">Level Admin</label>
-            <select class="form-control" name="level" id="" required>
-                <option value="" disabled-selected>--Pilih Level--</option>
-                <option value="admin" >ADMIN</option>
-                <option value="auditor" >USER</option>
-            </select>
+          <div class="form-group row">
+            <label for="alamat_cust" class="col-sm-2 col-form-label">Periode</label>
+            <div class="col-sm-10">
+              <input type="text" hidden name="tahun" id="tahun1">
+              <input type="text" hidden name="bulan" id="bulan1">
+              <input type="text" readonly class="form-control"  id="periode_aka">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="periode" class="col-sm-2 col-form-label">AKA Akhir</label>
+            <div class="col-sm-10">
+              <input type="number" name="aka_akhir" step="1" class="form-control" id="aka_akhir">
+            </div>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-primary" id="">Simpan</button>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary" id=""><i class="fa fa-save text-light"></i> Submit</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fa fa-times-circle text-light"></i> Batal</button>
         </div>
       </form>
     </div>
   </div>
 </div>
-<!-- End Add User -->
+<!-- End Add Aka -->
 
-<!-- Modal Update User -->
-<div class="modal fade bd-example-modal-lg" id="update-user" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Edit Data Admin</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <form action="<?= base_url(); ?>admin/editUser" method="post">
-        <div class="modal-body">
-          <div class="form-group">
-            <label for="nama">Nama</label>
-            <input type="hidden" name="id_user" class="form-control" id="id_user">
-            <input type="text" name="nama" class="form-control" id="nama" required autofocus>
-          </div>
-          <div class="form-group">
-            <label for="username">Username</label>
-            <input type="text" name="username" class="form-control" id="username" required>
-          </div>
-          <div class="form-group">
-            <label for="level">Level Admin</label>
-            <select class="form-control" name="level" id="level" required>
-                <option value="" disabled-selected>--Pilih Level--</option>
-                <option value="admin" >ADMIN</option>
-            </select>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary" id="">Simpan</button>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-<!-- End Update User -->
 
 
 <!-- Script File -->
 <?php include (APPPATH.'views/admin/components/scripts.php'); ?>
+<script src="<?= base_url(); ?>assets/js/moment-with-locales.min.js"></script>
 
 <!-- Page specific script -->
 <script>
   $(function () {
     $("#example1").DataTable({
       "responsive": true, "lengthChange": true, "autoWidth": false,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
     }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
   });
 
 </script>
 
 <script>
-let pass = document.getElementById("password");
-let pass_konf = document.getElementById("konfPassword");
+let base_url = window.location.origin + "/simal/";
+$(document).on("click", "#input_aka", function () {
+  var year        = "<?= $tahun ?>";
+	var aka_id      = $(this).data("aka_id");
+	var cid         = $(this).data("cid");
+	var nama        = $(this).data("nama");
+	var alamat_g    = $(this).data("alamat_g");
+	var alamat_c    = $(this).data("alamat_c");
+	var griya_id    = $(this).data("griya_id");
+	var aka_akhir   = $(this).data("aka_akhir");
 
-pass_konf.addEventListener("input", () => {
-	let alertPass = document.getElementById("alertPass");
-
-	if (pass.value != pass_konf.value) {
-		alertPass.innerHTML = "*Konfirmasi password tidak sama!";
-		alertPass.setAttribute("class", "alert alert-warning my-2");
-	} else {
-    
-  }
+  $.ajax({
+    type: 'POST',
+    url: base_url + "admin/last_cust_aka",
+    data: {cid: cid, tahun: year},
+    cache: false,
+    success: function(msg){
+      var kmp_data = JSON.parse(msg);
+      if ((kmp_data.length + 1) <= 12) {
+        var next_month = (kmp_data.length + 1);
+        var thn = year;
+      } else {
+        var next_month = '01';
+        var thn = (parseInt(year)+1);
+      }
+      var per = moment().format(thn+'-'+next_month, 'YYYY-mm');
+      $("#periode_aka").val(per);
+      $("#bulan1").val(next_month);
+      $("#tahun1").val(thn);
+      $("#id_cust").val(cid);
+      $("#cust_id").val(cid);
+      $("#id_aka").val(aka_id);
+      $("#nama_cust").val(nama);
+      $("#alamat_cust").val(alamat_c +', '+ alamat_g);
+      $("#aka_lalu").val(aka_akhir);
+    }
+  });
 });
 </script>
 
-<script>
-$(document).on("click", "#update_user", function () {
-	var id       = $(this).data("id");
-	var username = $(this).data("username");
-	var nama     = $(this).data("nama");
-	var level    = $(this).data("level");
-	var bagian   = $(this).data("bagian");
 
-	$("#id_user").val(id);
-	$("#username").val(username);
-	$("#nama").val(nama);
-	$("#level").val(level);
-	$("#bagian").val(bagian);
-});
-</script>
 
 <script>
   <?php if($this->session->flashdata('success')){ ?>

@@ -56,6 +56,33 @@ class M_admin extends CI_Model {
         return $this->db->get();
     }
 
+    // fungsi untuk ambil data AKA pelanggan per periode
+    function getAKACustToday($table,$table2,$table3,$where) {
+        $this->db->select("
+            $table.bulan,
+            $table.periode,
+            $table.aka_lalu,
+            $table.aka_akhir,
+            $table.jlh_pakai,
+            $table.jlh_biaya,
+            $table.id as id_aka,
+            $table2.golongan,
+            $table2.cid,
+            $table2.nama as nama_cust,
+            $table3.nama as nama_griya,
+            $table3.id as id_griya,
+            $table2.alamat as alamat_cust,
+            $table3.alamat as alamat_griya,
+        ");
+		$this->db->from($table);
+		$this->db->join($table2, $table.'.cid='.$table2.'.cid');
+		$this->db->join($table3, $table2.'.griya_id='.$table3.'.id');
+        $this->db->where($where);
+        $this->db->order_by("$table.bulan", 'DESC');
+        $this->db->limit(1);
+        return $this->db->get();
+    }
+
     // fungsi untuk ambil data kartu meter pelanggan per periode by id
     function getTagihanPeriodeById($table,$table2,$table3,$where) {
         $this->db->select("

@@ -97,6 +97,14 @@
               </p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="<?= base_url(); ?>admin/aka" class="nav-link">
+              <i class="nav-icon fas fa-file-invoice"></i>
+              <p>
+                Input AKA
+              </p>
+            </a>
+          </li>
         </ul>
       </nav>
       <!-- sidebar-menu -->
@@ -115,7 +123,7 @@
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="<?= base_url(); ?>">Home</a></li>
+              <li class="breadcrumb-item"><a href="<?= base_url('admin'); ?>">Home</a></li>
               <li class="breadcrumb-item active">Data Pelanggan</li>
             </ol>
           </div>
@@ -136,7 +144,7 @@
 
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Tabel Data Customer</h3>
+                <h3 class="card-title">Tabel Data Pelanggan</h3>
               </div>
 
               <div class="card-body">
